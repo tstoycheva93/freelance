@@ -31,8 +31,6 @@ public class User extends BaseEntity {
     )
     private UserRole userRole;
 
-
-
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 

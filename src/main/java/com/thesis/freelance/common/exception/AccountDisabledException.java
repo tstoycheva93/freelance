@@ -1,15 +1,12 @@
 package com.thesis.freelance.common.exception;
 
-import org.springframework.http.HttpStatus;
-
-public class AccountDisabledException extends ApiException {
+public class AccountDisabledException extends RuntimeException {
     
-    public AccountDisabledException() {
-        super(
-            "Your account has been deactivated",
-            HttpStatus.FORBIDDEN,
-            "ACCOUNT_DISABLED",
-            "Please contact support to reactivate your account"
-        );
+    public AccountDisabledException(String msg) {
+        super(msg);
+    }
+    
+    public AccountDisabledException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }

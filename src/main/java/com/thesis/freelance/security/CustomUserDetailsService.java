@@ -1,6 +1,7 @@
 package com.thesis.freelance.security;
 
 import com.thesis.freelance.common.enums.ActivityStatus;
+import com.thesis.freelance.common.exception.AccountDisabledException;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                         new UsernameNotFoundException("User not found with username: " + username)
                 );
 
+        // Check if account is active before creating UserDetails
+        if (user.getActivityStatus() != ActivityStatus.ACTIVE) {
+            throw new AccountDisabledException("Account is deactivated for user: " + username);
+        }
+
         String roleName = "ROLE_" + user.getUserRole().getRole();
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getActivityStatus() == ActivityStatus.ACTIVE,  // enabled
+                true,  // enabled
                 true,  // accountNonExpired
                 true,  // credentialsNonExpired
                 true,  // accountNonLocked

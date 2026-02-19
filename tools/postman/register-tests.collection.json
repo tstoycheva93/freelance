@@ -105,6 +105,78 @@
           "raw": "{\n  \"username\": \"testclient\",\n  \"password\": \"WrongPassword123!\"\n}"
         }
       },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401\", function () {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Response has error code INVALID_CREDENTIALS\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.code).to.eql(\"INVALID_CREDENTIALS\");",
+              "});",
+              "",
+              "pm.test(\"Response has suggestion\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.suggestion).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Login - Success (Check Full Response)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": {
+          "raw": "http://localhost:8080/auth/login",
+          "host": [ "http://localhost:8080" ],
+          "path": [ "auth", "login" ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testclient\",\n  \"password\": \"TestPass123!\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has token\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.token).to.exist;",
+              "    pm.expect(jsonData.token).to.not.be.empty;",
+              "});",
+              "",
+              "pm.test(\"Response has user details\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.username).to.eql(\"testclient\");",
+              "    pm.expect(jsonData.email).to.exist;",
+              "    pm.expect(jsonData.role).to.exist;",
+              "    pm.expect(jsonData.fullName).to.exist;",
+              "});",
+              "",
+              "pm.test(\"Message is 'Login successful'\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.eql(\"Login successful\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "response": []
     }
   ]

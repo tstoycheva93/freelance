@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -68,6 +69,55 @@ public class GlobalExceptionHandler {
         );
         
         return new ResponseEntity<>(errorResponse, ex.getStatus());
+    }
+
+    // Handle account disabled exception specifically
+    @ExceptionHandler(AccountDisabledException.class)
+    public ResponseEntity<Map<String, Object>> handleAccountDisabledException(
+            AccountDisabledException ex, HttpServletRequest request) {
+        
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.FORBIDDEN,
+            "ACCOUNT_DISABLED",
+            ex.getMessage(),
+            "Please contact support to reactivate your account",
+            request,
+            ex
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    // Handle InternalAuthenticationServiceException (Spring Security wrapper)
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<Map<String, Object>> handleInternalAuthException(
+            InternalAuthenticationServiceException ex, HttpServletRequest request) {
+        
+        // Check if the cause is AccountDisabledException
+        if (ex.getCause() instanceof AccountDisabledException) {
+            AccountDisabledException cause = (AccountDisabledException) ex.getCause();
+            Map<String, Object> errorResponse = createErrorResponse(
+                HttpStatus.FORBIDDEN,
+                "ACCOUNT_DISABLED",
+                cause.getMessage(),
+                "Please contact support to reactivate your account",
+                request,
+                ex
+            );
+            return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        }
+        
+        // Otherwise treat as generic authentication failure
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.UNAUTHORIZED,
+            "AUTHENTICATION_FAILED",
+            "Authentication failed: " + ex.getMessage(),
+            "Please check your credentials and try again",
+            request,
+            ex
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     // Handle authentication exceptions

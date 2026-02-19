@@ -38,7 +38,7 @@ public class LoginService {
 
             // Check if account is active
             if (user.getActivityStatus() != ActivityStatus.ACTIVE) {
-                throw new AccountDisabledException();
+                throw new AccountDisabledException("Account is deactivated");
             }
 
             String token = jwtTokenProvider.generateToken(authentication);

@@ -76,6 +76,18 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Alternative: Create AuthenticationManager manually to ensure it uses our provider.
+     * This ensures the UserDetailsService (with activity status check) is properly integrated.
+     */
+    /*
+    @Bean
+    public AuthenticationManager authenticationManager() {
+        ProviderManager providerManager = new ProviderManager(authenticationProvider());
+        return providerManager;
+    }
+    */
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
