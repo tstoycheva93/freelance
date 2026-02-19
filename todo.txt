@@ -3,3 +3,18 @@ certifications - dont store isExpired - expiration < today in service/DTO
 add email verification
 add password reset
 
+
+Plan for Password Reset & Account Activation
+Password Reset Flow:
+User clicks "Forgot Password" on frontend
+Enters email → POST /auth/forgot-password
+System generates OTP (6-digit code)
+Sends email with OTP
+User enters OTP + new password → POST /auth/reset-password
+System validates OTP, updates password
+Email activation flow???
+----
+Email Integration Questions:
+Do you have an email service provider (Gmail, SendGrid, AWS SES) or should I configure it to work with any SMTP?
+Should OTPs expire? (e.g., 15 minutes)
+Do you want rate limiting? (e.g., max 3 reset attempts per hour)

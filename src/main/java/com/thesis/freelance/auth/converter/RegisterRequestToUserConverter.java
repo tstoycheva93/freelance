@@ -1,6 +1,7 @@
 package com.thesis.freelance.auth.converter;
 
 import com.thesis.freelance.auth.dto.RegisterRequest;
+import com.thesis.freelance.common.exception.RoleNotFoundException;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.entity.UserRole;
 import com.thesis.freelance.features.user.repository.UserRoleRepository;
@@ -18,7 +19,7 @@ public class RegisterRequestToUserConverter {
     public User convertToUser(RegisterRequest request) {
 
         UserRole role = userRoleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid roleId: " + request.getRoleId()));
+                .orElseThrow(() -> new RoleNotFoundException(request.getRoleId()));
 
         return User.builder()
                 .name(request.getName())

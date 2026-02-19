@@ -1,7 +1,11 @@
 package com.thesis.freelance.common.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -14,34 +18,106 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("error", ex.getClass().getSimpleName());
-        errorResponse.put("message", ex.getMessage());
-        
-        // Include full stack trace for debugging
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        errorResponse.put("stackTrace", sw.toString());
-        
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    @Value("${spring.profiles.active:default}")
+    private String activeProfile;
+
+    private boolean isProduction() {
+        return "prod".equals(activeProfile) || "production".equals(activeProfile);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("error", "Validation Error");
-        errorResponse.put("message", ex.getMessage());
+    private Map<String, Object> createErrorResponse(
+            HttpStatus status,
+            String errorCode,
+            String message,
+            String suggestion,
+            HttpServletRequest request,
+            Exception ex) {
         
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        errorResponse.put("stackTrace", sw.toString());
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now().toString());
+        errorResponse.put("status", status.value());
+        errorResponse.put("error", status.getReasonPhrase());
+        errorResponse.put("code", errorCode);
+        errorResponse.put("message", message);
+        errorResponse.put("suggestion", suggestion);
+        errorResponse.put("path", request.getRequestURI());
+        
+        // Include stack trace only in non-production environments
+        if (!isProduction()) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            errorResponse.put("stackTrace", sw.toString());
+        }
+        
+        return errorResponse;
+    }
+
+    // Handle custom API exceptions
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Map<String, Object>> handleApiException(
+            ApiException ex, HttpServletRequest request) {
+        
+        Map<String, Object> errorResponse = createErrorResponse(
+            ex.getStatus(),
+            ex.getErrorCode(),
+            ex.getMessage(),
+            ex.getSuggestion(),
+            request,
+            ex
+        );
+        
+        return new ResponseEntity<>(errorResponse, ex.getStatus());
+    }
+
+    // Handle authentication exceptions
+    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
+    public ResponseEntity<Map<String, Object>> handleAuthenticationException(
+            Exception ex, HttpServletRequest request) {
+        
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.UNAUTHORIZED,
+            "AUTHENTICATION_FAILED",
+            "Invalid username or password",
+            "Please check your credentials and try again",
+            request,
+            ex
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Handle validation exceptions
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(
+            IllegalArgumentException ex, HttpServletRequest request) {
+        
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            "VALIDATION_ERROR",
+            ex.getMessage(),
+            "Please check your input and try again",
+            request,
+            ex
+        );
         
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    // Handle all other exceptions
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleAllExceptions(
+            Exception ex, HttpServletRequest request) {
+        
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "INTERNAL_ERROR",
+            "An unexpected error occurred",
+            "Please try again later or contact support if the problem persists",
+            request,
+            ex
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -2,6 +2,7 @@ package com.thesis.freelance.auth.service;
 
 import com.thesis.freelance.auth.converter.RegisterRequestToUserConverter;
 import com.thesis.freelance.auth.dto.RegisterRequest;
+import com.thesis.freelance.common.exception.*;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
@@ -29,11 +30,21 @@ public class RegisterService {
     @Transactional //both operations succeed or fail together
     public void registerUser(@Valid RegisterRequest request) {
         validateAge(request.getBirthDate());
+        checkUsernameAndEmailUniqueness(request.getUsername(), request.getEmail());
         
         User user = converter.convertToUser(request);
         User savedUser = userRepository.save(user);
         
         createProfileBasedOnRole(savedUser);
+    }
+    
+    private void checkUsernameAndEmailUniqueness(String username, String email) {
+        userRepository.findByUsername(username).ifPresent(u -> {
+            throw new UsernameAlreadyExistsException(username);
+        });
+        userRepository.findByEmail(email).ifPresent(u -> {
+            throw new EmailAlreadyExistsException(email);
+        });
     }
 
     private void createProfileBasedOnRole(User user) {
@@ -50,7 +61,7 @@ public class RegisterService {
             case "ADMIN": //TODO REMOVE LATER
                 break;
             default:
-                throw new IllegalArgumentException("Invalid role for profile creation: " + roleName);
+                throw new InvalidRoleException(roleName);
         }
     }
 
@@ -71,7 +82,7 @@ public class RegisterService {
     private void validateAge(LocalDate birthDate) {
         int age = Period.between(birthDate, LocalDate.now()).getYears();
         if (age < 16) {
-            throw new IllegalArgumentException("User must be at least 16 years old");
+            throw new UnderageException(age);
         }
     }
 }

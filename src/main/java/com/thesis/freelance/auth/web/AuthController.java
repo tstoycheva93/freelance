@@ -1,6 +1,7 @@
 package com.thesis.freelance.auth.web;
 
 import com.thesis.freelance.auth.dto.LoginRequest;
+import com.thesis.freelance.auth.dto.LoginResponse;
 import com.thesis.freelance.auth.dto.RegisterRequest;
 import com.thesis.freelance.auth.service.LoginService;
 import com.thesis.freelance.auth.service.RegisterService;
@@ -11,9 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,11 +27,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginRequest loginRequest){
-        String token = loginService.login(loginRequest);
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-        response.put("message", "Login successful");
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest){
+        LoginResponse response = loginService.login(loginRequest);
         return ResponseEntity.ok(response);
     }
 
