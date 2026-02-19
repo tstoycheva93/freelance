@@ -1,0 +1,33 @@
+# Maven/Java build outputs
+/target/
+/.mvn/
+!/.mvn/wrapper/maven-wrapper.properties
+
+# IDE and editor folders
+/.idea/
+*.iml
+*.ipr
+*.iws
+/.settings/
+/.classpath
+/.project
+/.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and runtime artifacts
+*.log
+*.class
+*.jar
+*.war
+*.ear
+
+# Misc
+coverage/
+*.coveragedata
+
+# Local config with sensitive data
+application-local.properties
+*.local.properties

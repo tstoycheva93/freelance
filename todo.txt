@@ -1,0 +1,5 @@
+certifications - dont store isExpired - expiration < today in service/DTO
+
+add email verification
+add password reset
+
