@@ -33,9 +33,9 @@ public class RegisterService {
         checkUsernameAndEmailUniqueness(request.getUsername(), request.getEmail());
         
         User user = converter.convertToUser(request);
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
         
-        createProfileBasedOnRole(savedUser);
+        createProfileBasedOnRole(user);
     }
     
     private void checkUsernameAndEmailUniqueness(String username, String email) {
@@ -61,7 +61,7 @@ public class RegisterService {
             case "ADMIN": //TODO REMOVE LATER
                 break;
             default:
-                throw new InvalidRoleException(roleName);
+                throw new InvalidRoleException(roleName); //sreshtu sql injection mai
         }
     }
 

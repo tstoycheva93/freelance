@@ -2,7 +2,7 @@ certifications - dont store isExpired - expiration < today in service/DTO
 
 add email verification
 add password reset
-
+handle hard cascade deletion of user by self or admin
 
 Plan for Password Reset & Account Activation
 Password Reset Flow:
@@ -18,3 +18,8 @@ Email Integration Questions:
 Do you have an email service provider (Gmail, SendGrid, AWS SES) or should I configure it to work with any SMTP?
 Should OTPs expire? (e.g., 15 minutes)
 Do you want rate limiting? (e.g., max 3 reset attempts per hour)
+
+keep features locked behind profile completeness
+
+register response with steps message
+

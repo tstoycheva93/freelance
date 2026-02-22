@@ -25,7 +25,7 @@ public class RegisterRequest {
     private String surname;
 
     @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Username can only contain letters and numbers")
     private String username;
 

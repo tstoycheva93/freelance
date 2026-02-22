@@ -1,7 +1,6 @@
 package com.thesis.freelance.features.client.entity;
 
 import com.thesis.freelance.common.entity.BaseEntity;
-import com.thesis.freelance.features.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

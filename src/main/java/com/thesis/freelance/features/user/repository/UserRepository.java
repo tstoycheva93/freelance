@@ -13,8 +13,4 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
-
-    //to avoid LazyInitializationException in LoadUserByUsername method of CustomUserDetailsService
-    @Query("SELECT u FROM User u JOIN FETCH u.userRole WHERE u.username = :username")
-    Optional<User> findByUsernameWithRole(@Param("username") String username);
 }

@@ -19,10 +19,15 @@ public class JwtTokenProvider {
     @Value("${jwt.secret.key}")
     private String jwtSecret;
 
-    private final long jwtExpirationInMs = 86400000; // 24 hours
+    @Value("${jwt.expiration}")
+    private long jwtExpirationInMs;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public long getJwtExpirationInMs() {
+        return jwtExpirationInMs;
     }
 
     public String generateToken(Authentication authentication) {
@@ -77,5 +82,24 @@ public class JwtTokenProvider {
             log.error("JWT claims string is empty");
         }
         return false;
+    }
+
+    public String generateVerificationToken(String userId, long expiryMillis) {
+        Date expiryDate = new Date(System.currentTimeMillis() + expiryMillis);
+
+        return Jwts.builder()
+                .subject(userId)
+                .issuedAt(new Date())
+                .expiration(expiryDate)
+                .signWith(getSigningKey(), Jwts.SIG.HS512)
+                .compact();
+    }
+
+    public Claims validateAndGetClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

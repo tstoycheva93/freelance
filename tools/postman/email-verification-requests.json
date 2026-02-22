@@ -1,0 +1,50 @@
+{
+  "info": {
+    "name": "Freelance API - Email Verification",
+    "description": "Requests for email verification functionality",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Send Verification Email",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/send-verification",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"mielonyni\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Verify Email",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/verify",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"<paste_token_here>\"\n}"
+        }
+      }
+    }
+  ]
+}

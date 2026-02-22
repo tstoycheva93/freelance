@@ -31,7 +31,7 @@ public class LoginService {
             );
 
             User user = userRepository.findByUsername(loginRequest.getUsername())
-                    .orElseThrow(() -> new InvalidCredentialsException());
+                    .orElseThrow(() -> new InvalidCredentialsException()); //tuk ne e UsernameNotFound za da nqma security breach
 
             String token = jwtTokenProvider.generateToken(authentication);
 
@@ -43,9 +43,10 @@ public class LoginService {
                     .role(user.getRoleName())
                     .fullName(user.getFullName())
                     .photoUrl(user.getPhotoUrl())
+                    .userId(user.getId())
                     .build();
 
-        } catch (BadCredentialsException e) {
+        } catch (BadCredentialsException e) { //tova e sistemnoto
             throw new InvalidCredentialsException();
         }
     }

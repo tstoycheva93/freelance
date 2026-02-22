@@ -56,6 +56,10 @@ public class User extends BaseEntity {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
+    @Column(name = "is_verified", nullable = false)
+    @Builder.Default
+    private Boolean isVerified = false;
+
     /* ---------- Domain helpers ---------- */
 
     @Transient
