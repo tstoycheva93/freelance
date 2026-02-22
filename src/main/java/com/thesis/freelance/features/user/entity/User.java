@@ -13,11 +13,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(
-        name = "user",
+        name = "`user`",
         indexes = {
                 @Index(name = "idx_user_email", columnList = "email"),
                 @Index(name = "idx_user_username", columnList = "username"),
-                @Index(name = "idx_user_status", columnList = "user_status"),
+                @Index(name = "idx_user_status", columnList = "activity_status"),
                 @Index(name = "idx_user_role", columnList = "user_role")
         }
 )
@@ -50,6 +50,7 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(name = "photo_url", length = 500)
+    @Builder.Default
     private String photoUrl = "";
 
     @Column(name = "birth_date", nullable = false)
@@ -75,6 +76,8 @@ public class User extends BaseEntity {
 
     @Transient
     public String getFullName() {
-        return (name != null ? name : "") + " " + (surname != null ? surname : "");
+        if (name == null || name.isBlank()) return surname;
+        if (surname == null || surname.isBlank()) return name;
+        return name + " " + surname;
     }
 }

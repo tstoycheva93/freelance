@@ -67,15 +67,15 @@ public class RegisterService {
 
     private void createClientProfile(User user) {
         Client client = Client.builder()
-                .userId(user)
+                .userId(user.getId())
                 .build();
         clientRepository.save(client);
     }
 
     private void createFreelancerProfile(User user) {
-        Freelancer freelancer = new Freelancer();
-        freelancer.setUserId(user.getId());
-        freelancer.setAvailable();
+        Freelancer freelancer = Freelancer.builder()
+                .userId(user.getId())
+                .build();
         freelancerRepository.save(freelancer);
     }
 

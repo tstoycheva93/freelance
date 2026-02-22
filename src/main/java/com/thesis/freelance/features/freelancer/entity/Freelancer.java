@@ -4,8 +4,7 @@ import com.thesis.freelance.common.entity.BaseEntity;
 import com.thesis.freelance.common.enums.Availability;
 import com.thesis.freelance.common.enums.ExperienceLevel;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +27,9 @@ import java.util.UUID;
 )
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Freelancer extends BaseEntity {
 
     @Column(name = "user_id", columnDefinition = "BINARY(16)", nullable = false)
@@ -45,21 +47,26 @@ public class Freelancer extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "availability",nullable = true)
-    private Availability availability;
+    @Builder.Default
+    private Availability availability = Availability.AVAILABLE;
 
     @Column(name = "offers_count")
+    @Builder.Default
     private Long offersCount = 0L;
 
     @Column(name = "reviews_count")
+    @Builder.Default
     private Long reviewsCount = 0L;
 
     @Column(name = "rating", precision = 8, scale = 2)
+    @Builder.Default
     private BigDecimal rating = BigDecimal.ZERO;
 
     @Column(name = "last_active_at",nullable = true)
     private LocalDateTime lastActiveAt;
 
     @Column(name = "completeness", nullable = false)
+    @Builder.Default
     private Integer completeness = 0;
 
     @Column(name = "website")

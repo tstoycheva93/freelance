@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, UUID> {
 
-    Optional<Client> findByUserIdId(UUID userId);
+    Optional<Client> findByUserId(UUID userId);
 
    /* @Query("SELECT COUNT(p) FROM Posting p WHERE p.client.id = :clientId")
     int countPostingsByClientId(@Param("clientId") UUID clientId);

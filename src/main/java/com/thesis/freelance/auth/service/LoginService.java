@@ -2,8 +2,6 @@ package com.thesis.freelance.auth.service;
 
 import com.thesis.freelance.auth.dto.LoginRequest;
 import com.thesis.freelance.auth.dto.LoginResponse;
-import com.thesis.freelance.common.enums.ActivityStatus;
-import com.thesis.freelance.common.exception.AccountDisabledException;
 import com.thesis.freelance.common.exception.InvalidCredentialsException;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
@@ -32,14 +30,8 @@ public class LoginService {
                     )
             );
 
-            // Get user details from database
             User user = userRepository.findByUsername(loginRequest.getUsername())
                     .orElseThrow(() -> new InvalidCredentialsException());
-
-            // Check if account is active
-            if (user.getActivityStatus() != ActivityStatus.ACTIVE) {
-                throw new AccountDisabledException("Account is deactivated");
-            }
 
             String token = jwtTokenProvider.generateToken(authentication);
 
