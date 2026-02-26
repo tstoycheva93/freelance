@@ -23,6 +23,7 @@ import java.time.Period;
 public class RegisterService {
 
     private final UserRepository userRepository;
+    private final VerificationService verificationService;
     private final RegisterRequestToUserConverter converter;
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
@@ -34,6 +35,7 @@ public class RegisterService {
         
         User user = converter.convertToUser(request);
         userRepository.save(user);
+        verificationService.sendVerificationEmail(user.getUsername());
         
         createProfileBasedOnRole(user);
     }

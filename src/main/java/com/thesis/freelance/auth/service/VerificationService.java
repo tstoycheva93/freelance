@@ -59,6 +59,9 @@ public class VerificationService {
         user.setIsVerified(true);
         userRepository.save(user);
 
+        // Send email after successful verification
+        emailService.sendCongratulationsEmail(user.getEmail());
+
         log.info("Email verified for user: {}", user.getUsername());
     }
 

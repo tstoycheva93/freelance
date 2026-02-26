@@ -74,7 +74,7 @@
             <version>0.13.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
+<dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>0.13.0</version>
