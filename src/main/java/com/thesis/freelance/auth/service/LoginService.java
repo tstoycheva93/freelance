@@ -40,6 +40,7 @@ public class LoginService {
                     .message("Login successful")
                     .username(user.getUsername())
                     .email(user.getEmail())
+
                     .role(user.getRoleName())
                     .fullName(user.getFullName())
                     .photoUrl(user.getPhotoUrl())

@@ -13,3 +13,11 @@ register response instead of successful registration in AuthController
  frontend handles /verify?token=xxx route →
  extracts token → shows "Verify Email" button or auto-submits → POSTs to /verify → backend verifies
 
+
+isPublic, readReceiptsOn - in User table
+
+newsletterOn, systemAlertsOn, messagesOn, offersOn - email
+
+messagesPush, offersPush - push notifications
+
+posting - add location and experience
