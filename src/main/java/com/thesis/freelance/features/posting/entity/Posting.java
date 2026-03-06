@@ -38,9 +38,6 @@ public class Posting extends BaseEntity {
     @Column(name = "budget", nullable = false)
     private Integer budget;
 
-    @Column(name = "currency_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID currencyId;
-
     @Column(name = "deadline", nullable = false)
     private LocalDate deadline;
 

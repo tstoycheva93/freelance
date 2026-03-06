@@ -20,6 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     List<Category> findByIsActiveTrueOrderByDisplayOrderAsc();
 
-    @Query("SELECT c FROM Category c WHERE c.parent IS NULL AND c.isActive = true ORDER BY c.displayOrder ASC")
-    List<Category> findActiveRootCategories();
+    @Query("SELECT c FROM Category c WHERE c.isActive = true ORDER BY c.displayOrder ASC")
+    List<Category> findAllActive();
 }

@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/listings/**").permitAll()   // browsing jobs without login
                         .requestMatchers("/freelancers/**").permitAll()
                         .requestMatchers("/roles").permitAll()
+                        .requestMatchers("/locations/**").authenticated()
 
                         // Role restricted
                         .requestMatchers("/admin/**").hasRole("ADMIN")

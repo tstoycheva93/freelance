@@ -3,16 +3,16 @@ package com.thesis.freelance.auth.web;
 import com.thesis.freelance.auth.dto.LoginRequest;
 import com.thesis.freelance.auth.dto.LoginResponse;
 import com.thesis.freelance.auth.dto.RegisterRequest;
+import com.thesis.freelance.auth.service.AuthMeService;
 import com.thesis.freelance.auth.service.LoginService;
 import com.thesis.freelance.auth.service.RegisterService;
 import com.thesis.freelance.auth.service.VerificationService;
+import com.thesis.freelance.features.user.dto.UserDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -23,6 +23,7 @@ public class AuthController {
     private final RegisterService registerService;
     private final LoginService loginService;
     private final VerificationService verificationService;
+    private final AuthMeService authMeService;
 
 
     @PostMapping("/register")
@@ -54,5 +55,11 @@ public class AuthController {
                 "message", "Email verified successfully"
         ));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> me(Authentication authentication) {
+        return ResponseEntity.ok(authMeService.getMe(authentication));
+    }
+
 
 }

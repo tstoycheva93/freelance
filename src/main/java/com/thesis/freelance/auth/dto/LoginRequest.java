@@ -1,5 +1,6 @@
 package com.thesis.freelance.auth.dto;
 
+import com.thesis.freelance.common.util.ValidPassword;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -16,6 +17,8 @@ public class LoginRequest {
     private String username;
 
     @NotBlank(message = "Password is required")
+    @Size(min = 8, max = 100)
+    @ValidPassword(min = 8, max = 100)
     private String password;
 
 }

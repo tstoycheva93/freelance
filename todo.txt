@@ -21,3 +21,6 @@ newsletterOn, systemAlertsOn, messagesOn, offersOn - email
 messagesPush, offersPush - push notifications
 
 posting - add location and experience
+
+
+add location table and fields

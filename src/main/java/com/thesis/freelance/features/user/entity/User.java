@@ -1,6 +1,7 @@
 package com.thesis.freelance.features.user.entity;
 
 import com.thesis.freelance.common.entity.BaseEntity;
+import com.thesis.freelance.features.location.entity.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,8 @@ import java.time.LocalDate;
                 @Index(name = "idx_user_email", columnList = "email"),
                 @Index(name = "idx_user_username", columnList = "username"),
                 @Index(name = "idx_user_status", columnList = "activity_status"),
-                @Index(name = "idx_user_role", columnList = "user_role")
+                @Index(name = "idx_user_role", columnList = "user_role"),
+                @Index(name = "idx_user_location", columnList = "location_id")
         }
 )
 public class User extends BaseEntity {
@@ -59,6 +61,13 @@ public class User extends BaseEntity {
     @Column(name = "is_verified", nullable = false)
     @Builder.Default
     private Boolean isVerified = false;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "location_id",
+            foreignKey = @ForeignKey(name = "fk_user_location")
+    )
+    private Location location;
 
     /* ---------- Domain helpers ---------- */
 
