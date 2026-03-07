@@ -1,7 +1,10 @@
 package com.thesis.freelance.features.posting.entity;
 
 import com.thesis.freelance.common.entity.BaseEntity;
+import com.thesis.freelance.common.enums.ExperienceLevel;
 import com.thesis.freelance.common.enums.PostingStatus;
+import com.thesis.freelance.features.client.entity.Client;
+import com.thesis.freelance.features.location.entity.Location;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +29,12 @@ import java.util.UUID;
 @Setter
 public class Posting extends BaseEntity {
 
-    @Column(name = "client_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID clientId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "client_id",
+            foreignKey = @ForeignKey(name = "fk_posting_client")
+    )
+    private Client client;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -50,6 +57,18 @@ public class Posting extends BaseEntity {
 
     @Column(name = "views_count", nullable = false)
     private Long viewsCount = 0L;
+
+        @ManyToOne(fetch = FetchType.EAGER)
+        @JoinColumn(
+                name = "location_id",
+                foreignKey = @ForeignKey(name = "fk_posting_location")
+        )
+        private Location location;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "experience_level", nullable = false)
+    private ExperienceLevel experienceLevel;
+
 
     // Helper methods
 

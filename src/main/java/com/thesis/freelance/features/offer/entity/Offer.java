@@ -2,6 +2,9 @@ package com.thesis.freelance.features.offer.entity;
 
 import com.thesis.freelance.common.entity.BaseEntity;
 import com.thesis.freelance.common.enums.OfferStatus;
+import com.thesis.freelance.features.freelancer.entity.Freelancer;
+import com.thesis.freelance.features.location.entity.Location;
+import com.thesis.freelance.features.posting.entity.Posting;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,11 +34,19 @@ import java.util.UUID;
 @Setter
 public class Offer extends BaseEntity {
 
-    @Column(name = "posting_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID postingId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "posting_id",
+            foreignKey = @ForeignKey(name = "fk_offer_posting")
+    )
+    private Posting posting;
 
-    @Column(name = "freelancer_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID freelancerId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "freelancer_id",
+            foreignKey = @ForeignKey(name = "fk_offer_freelancer")
+    )
+    private Freelancer freelancer;
 
     @Column(name = "submitted_at", nullable = false)
     private LocalDateTime submittedAt;
@@ -46,9 +57,6 @@ public class Offer extends BaseEntity {
     @Column(name = "price", precision = 8, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @Column(name = "currency_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID currencyId;
-
     @Column(name = "cover_letter", columnDefinition = "TEXT", nullable = false)
     private String coverLetter;
 
@@ -58,6 +66,9 @@ public class Offer extends BaseEntity {
 
     @Column(name = "delivery_time", nullable = false)
     private LocalDate deliveryTime;
+
+    @Column(name = "message", columnDefinition = "TEXT",nullable = true)
+    private String message;
 
 
     // Helper methods

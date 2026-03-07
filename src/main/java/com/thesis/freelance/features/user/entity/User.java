@@ -62,6 +62,22 @@ public class User extends BaseEntity {
     @Builder.Default
     private Boolean isVerified = false;
 
+    @Column(name = "is_public", nullable = false)
+    @Builder.Default
+    private Boolean isPublic = true;
+
+    @Column(name = "readOn", nullable = false)
+    @Builder.Default
+    private Boolean readOn = true;
+
+    @Column(name = "emailsOn", nullable = false)
+    @Builder.Default
+    private Boolean emailsOn = true;
+
+    @Column(name = "pushOn", nullable = false)
+    @Builder.Default
+    private Boolean pushOn = true;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "location_id",

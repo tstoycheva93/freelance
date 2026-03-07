@@ -12,11 +12,4 @@ import java.util.UUID;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, UUID> {
 
-    Optional<Client> findByUserId(UUID userId);
-
-   /* @Query("SELECT COUNT(p) FROM Posting p WHERE p.client.id = :clientId")
-    int countPostingsByClientId(@Param("clientId") UUID clientId);
-
-    @Query("SELECT COUNT(r) FROM Review r WHERE r.reviewee.id = :userId")
-    int countReviewsByUserId(@Param("userId") UUID userId);*/
 }

@@ -14,4 +14,9 @@ public class UserRole extends BaseEntity {
 
     @Column(name = "role", nullable = false, unique = true, length = 50)
     private String role;
+
+    @Transient
+    public String getRole() {
+    return role;
+    }
 }

@@ -23,9 +23,4 @@ public class FreelancerSkills extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(nullable = false)
     private Skill skill;
-
-    @Column(nullable = false)
-    @Min(1)
-    @Max(5)
-    private Integer level;
 }
