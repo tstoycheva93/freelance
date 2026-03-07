@@ -32,6 +32,10 @@ public class Client extends BaseEntity {
 
     @Size(max = 255)
     @Column(length = 255)
+    private String occupation;
+
+    @Size(max = 255)
+    @Column(length = 255)
     private String companyName;
 
     @Column(columnDefinition = "TEXT")
