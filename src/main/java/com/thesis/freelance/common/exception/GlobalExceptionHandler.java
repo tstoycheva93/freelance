@@ -91,6 +91,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    // Handle phone already exists exception
+    @ExceptionHandler(PhoneAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handlePhoneAlreadyExistsException(
+            PhoneAlreadyExistsException ex, HttpServletRequest request) {
+        
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.CONFLICT,
+            "PHONE_ALREADY_EXISTS",
+            ex.getMessage(),
+            "Please use a different phone number",
+            request,
+            ex
+        );
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

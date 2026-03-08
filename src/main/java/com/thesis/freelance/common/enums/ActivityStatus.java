@@ -4,7 +4,9 @@ public enum ActivityStatus {
 
     ACTIVE("active"),
 
-    INACTIVE("inactive");
+    INACTIVE("inactive"),
+
+    DELETED("deleted");
 
     private final String value;
 

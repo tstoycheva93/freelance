@@ -26,8 +26,13 @@ public class CustomUserDetailsService implements UserDetailsService {
                         new UsernameNotFoundException("User not found with username: " + username)
                 );
 
-        // Check if account is active before creating UserDetails
-        if (user.getActivityStatus() != ActivityStatus.ACTIVE) {
+        // Check if account is DELETED - return user not found for security
+        if (user.getActivityStatus() == ActivityStatus.DELETED) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+
+        // Check if account is INACTIVE (admin disabled)
+        if (user.getActivityStatus() == ActivityStatus.INACTIVE) {
             throw new AccountDisabledException("Account is deactivated for user: " + username);
         }
 

@@ -19,4 +19,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.freelancer.id = :freelancerId AND t.status = 'COMPLETED'")
     BigDecimal getTotalEarnedByFreelancer(@Param("freelancerId") UUID freelancerId);
+
+    @Query("SELECT t FROM Transaction t WHERE t.client.id = :userId OR t.freelancer.id = :userId")
+    List<Transaction> findAllByUserId(@Param("userId") UUID userId);
 }

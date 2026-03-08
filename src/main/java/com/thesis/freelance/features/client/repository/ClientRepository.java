@@ -14,4 +14,6 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
 
     Optional<Client> findByUserId(UUID userId);
 
+    void deleteByUserId(UUID userId);
+
 }

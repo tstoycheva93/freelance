@@ -2,6 +2,7 @@ package com.thesis.freelance.auth.service;
 
 import com.thesis.freelance.auth.converter.RegisterRequestToUserConverter;
 import com.thesis.freelance.auth.dto.RegisterRequest;
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.exception.*;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
@@ -28,12 +29,37 @@ public class RegisterService {
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
 
-    @Transactional //both operations succeed or fail together
+    @Transactional
     public void registerUser(@Valid RegisterRequest request) {
         validateAge(request.getBirthDate());
         checkUsernameAndEmailUniqueness(request.getUsername(), request.getEmail());
         
         User user = converter.convertToUser(request);
+        
+        // Check if user was previously deleted - reactivate if so
+        User existingUser = userRepository.findByEmail(request.getEmail()).orElse(null);
+        if (existingUser != null && existingUser.getActivityStatus() == ActivityStatus.DELETED) {
+            // Reactivate user with fresh data
+            existingUser.setActivityStatus(ActivityStatus.ACTIVE);
+            existingUser.setName(user.getName());
+            existingUser.setSurname(user.getSurname());
+            existingUser.setPassword(user.getPassword());
+            existingUser.setBirthDate(user.getBirthDate());
+            existingUser.setPhone(user.getPhone());
+            // Clear these fields for fresh start
+            existingUser.setPhotoUrl("");
+            existingUser.setLocation(null);
+            existingUser.setIsVerified(false);
+            existingUser.setEmailsOn(true);
+            existingUser.setReadOn(true);
+            existingUser.setPushOn(true);
+            userRepository.save(existingUser);
+            
+            // Create new Freelancer/Client (old one is INACTIVE)
+            createProfileBasedOnRole(existingUser);
+            return;
+        }
+        
         userRepository.save(user);
         verificationService.sendVerificationEmail(user.getUsername());
         
@@ -44,8 +70,12 @@ public class RegisterService {
         userRepository.findByUsername(username).ifPresent(u -> {
             throw new UsernameAlreadyExistsException(username);
         });
+        
+        // Allow registration if user with email is DELETED
         userRepository.findByEmail(email).ifPresent(u -> {
-            throw new EmailAlreadyExistsException(email);
+            if (u.getActivityStatus() != ActivityStatus.DELETED) {
+                throw new EmailAlreadyExistsException(email);
+            }
         });
     }
 
@@ -63,7 +93,7 @@ public class RegisterService {
             case "ADMIN": //TODO REMOVE LATER
                 break;
             default:
-                throw new InvalidRoleException(roleName); //sreshtu sql injection mai
+                throw new InvalidRoleException(roleName);
         }
     }
 

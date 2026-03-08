@@ -2,6 +2,8 @@ package com.thesis.freelance.features.message.repository;
 
 import com.thesis.freelance.features.message.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,4 +33,7 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
             LocalDateTime from,
             LocalDateTime to
     );
+
+    @Query("SELECT m FROM Message m WHERE m.sender.id = :userId OR m.receiver.id = :userId")
+    List<Message> findAllByUserId(@Param("userId") UUID userId);
 }

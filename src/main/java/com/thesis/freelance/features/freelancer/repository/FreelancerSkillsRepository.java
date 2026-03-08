@@ -23,4 +23,7 @@ public interface FreelancerSkillsRepository extends JpaRepository<FreelancerSkil
     where fs.freelancer.id = :freelancerId
 """)
     List<FreelancerSkills> findByFreelancerIdWithSkill(@Param("freelancerId") UUID freelancerId);
+
+    @Query("SELECT fs FROM FreelancerSkills fs WHERE fs.freelancer.userId = :userId")
+    List<FreelancerSkills> findAllByFreelancerUserId(@Param("userId") UUID userId);
 }

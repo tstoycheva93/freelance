@@ -20,10 +20,9 @@ public class VerificationService {
     private final EmailService emailService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Value("${app.base-url:http://localhost:8080}")
+    @Value("${app.base-url-front}")
     private String baseUrl;
 
-    private static final String VERIFICATION_TYPE = "email_verification";
     private static final long VERIFICATION_EXPIRY_MINUTES = 10;
 
     @Transactional
@@ -36,7 +35,7 @@ public class VerificationService {
         }
 
         String token = createVerificationToken(user.getId().toString());
-        String verificationLink = baseUrl + "/verify?token=" + token;
+        String verificationLink = baseUrl + "/verify-email?token=" + token;
 
         emailService.sendVerificationEmail(user.getEmail(), verificationLink);
         log.info("Verification email sent to: {}", user.getEmail());

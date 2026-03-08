@@ -31,3 +31,11 @@ coverage/
 # Local config with sensitive data
 application-local.properties
 *.local.properties
+/src/main/resources/data/categories.sql
+/src/main/resources/data/freelancer_certification.sql
+/src/main/resources/data/freelancer_education.sql
+/src/main/resources/data/freelancer_skills.sql
+/src/main/resources/data/freelancer_work.sql
+/package.json
+/package-lock.json
+/src/main/resources/data/skills.sql

@@ -2,6 +2,8 @@ package com.thesis.freelance.features.conversation.repository;
 
 import com.thesis.freelance.features.conversation.entity.Conversation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +25,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, UUID
 
     // Optional: if you want to fetch the conversation by both participants (either side)
     List<Conversation> findAllByClient_IdAndFreelancer_IdOrderByLastMsgAtDesc(UUID clientId, UUID freelancerId);
+
+    @Query("SELECT c FROM Conversation c WHERE c.client.userId = :userId OR c.freelancer.userId = :userId")
+    List<Conversation> findAllByUserId(@Param("userId") UUID userId);
 }
