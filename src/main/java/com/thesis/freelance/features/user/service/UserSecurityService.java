@@ -1,5 +1,7 @@
 package com.thesis.freelance.features.user.service;
 
+import com.thesis.freelance.auth.entity.TrustedDevice;
+import com.thesis.freelance.auth.repository.TrustedDeviceRepository;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.certification.repository.CertificationRepository;
 import com.thesis.freelance.features.client.repository.ClientRepository;
@@ -25,7 +27,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +53,7 @@ public class UserSecurityService {
     private final MessageRepository messageRepository;
     private final TransactionRepository transactionRepository;
     private final ReviewRepository reviewRepository;
+    private final TrustedDeviceRepository trustedDeviceRepository;
 
     @Transactional
     public void changePassword(UUID userId, ChangePasswordDto dto) {
@@ -88,6 +93,31 @@ public class UserSecurityService {
         // Set user to DELETED
         user.setActivityStatus(ActivityStatus.DELETED);
         userRepository.save(user);
+    }
+
+    public boolean get2FAStatus(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return user.getIs2faEnabled() != null && user.getIs2faEnabled();
+    }
+
+    @Transactional
+    public void set2FAStatus(UUID userId, Boolean enabled) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setIs2faEnabled(enabled);
+        userRepository.save(user);
+    }
+
+    public List<?> getTrustedDevices(UUID userId) {
+        return trustedDeviceRepository.findByUserId(userId).stream()
+                .map(device -> java.util.Map.of(
+                        "id", device.getId().toString(),
+                        "deviceId", device.getDeviceId(),
+                        "deviceName", device.getDeviceName() != null ? device.getDeviceName() : "Unknown Device",
+                        "createdAt", device.getCreatedAt() != null ? device.getCreatedAt().toString() : ""
+                ))
+                .collect(Collectors.toList());
     }
 
     private void deactivateFreelancerLinkedData(UUID userId) {

@@ -78,6 +78,10 @@ public class User extends BaseEntity {
     @Builder.Default
     private Boolean pushOn = true;
 
+    @Column(name = "is_2fa_enabled", nullable = false)
+    @Builder.Default
+    private Boolean is2faEnabled = false;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "location_id",

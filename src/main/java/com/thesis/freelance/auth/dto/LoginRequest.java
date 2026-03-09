@@ -21,4 +21,8 @@ public class LoginRequest {
     @ValidPassword(min = 8, max = 100)
     private String password;
 
+    private String deviceId;
+
+    private String deviceName;
+
 }

@@ -114,6 +114,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleValidation(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
+        if ("/api/auth/login".equals(request.getRequestURI())) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("timestamp", LocalDateTime.now().toString());
+            errorResponse.put("status", 401);
+            errorResponse.put("error", "Unauthorized");
+            errorResponse.put("message", "Invalid username or password");
+            errorResponse.put("suggestion", "Please check your credentials and try again");
+            errorResponse.put("path", request.getRequestURI());
+            return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);} //zashtoto login requesta pak ima field validation i za da e po-secure
+
         Map<String, String> fieldErrors = new LinkedHashMap<>();
         ex.getBindingResult().getFieldErrors()
                 .forEach(fe -> fieldErrors.putIfAbsent(fe.getField(), fe.getDefaultMessage()));

@@ -18,4 +18,5 @@ public class LoginResponse {
     private String fullName;
     private String photoUrl;
     private UUID userId;
+    private boolean requires2fa;
 }

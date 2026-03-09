@@ -81,7 +81,7 @@ public class EmailService {
             context.setVariable("resetLink", resetLink);
             context.setVariable("appUrl", appUrl);
             
-            String html = templateEngine.process("email/password-reset", context);
+            String html = templateEngine.process("email/forgot-password", context);
             sendHtmlEmail(to, "Reset Your Password - TalentFlow", html);
         } catch (Exception e) {
             log.error("Failed to load password reset template: {}", e.getMessage());
@@ -101,6 +101,22 @@ public class EmailService {
             log.error("Failed to load congratulations template: {}", e.getMessage());
             String fallback = "Congratulations! Your email has been verified. Welcome to TalentFlow!";
             sendEmail(to, "Welcome aboard! Your email is verified", fallback);
+        }
+    }
+
+    public void sendTwoFactorAuthEmail(String to, String code, String deviceName) {
+        try {
+            Context context = new Context();
+            context.setVariable("code", code);
+            context.setVariable("deviceName", deviceName);
+            context.setVariable("appUrl", appUrl);
+            
+            String html = templateEngine.process("email/two-factor-auth", context);
+            sendHtmlEmail(to, "Your verification code - TalentFlow", html);
+        } catch (Exception e) {
+            log.error("Failed to load 2FA template: {}", e.getMessage());
+            String fallback = "Your verification code is: " + code + " (expires in 5 minutes)";
+            sendEmail(to, "Your verification code - TalentFlow", fallback);
         }
     }
 }
