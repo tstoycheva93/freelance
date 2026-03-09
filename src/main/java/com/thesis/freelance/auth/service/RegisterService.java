@@ -36,17 +36,18 @@ public class RegisterService {
         
         User user = converter.convertToUser(request);
         
-        // Check if user was previously deleted - reactivate if so
+        // Check if a user was previously deleted - reactivate if so
         User existingUser = userRepository.findByEmail(request.getEmail()).orElse(null);
         if (existingUser != null && existingUser.getActivityStatus() == ActivityStatus.DELETED) {
-            // Reactivate user with fresh data
+            // Populate user with fresh data
             existingUser.setActivityStatus(ActivityStatus.ACTIVE);
+            existingUser.setUsername(user.getUsername());
             existingUser.setName(user.getName());
             existingUser.setSurname(user.getSurname());
             existingUser.setPassword(user.getPassword());
             existingUser.setBirthDate(user.getBirthDate());
             existingUser.setPhone(user.getPhone());
-            // Clear these fields for fresh start
+            // Clear fields for a fresh start
             existingUser.setPhotoUrl("");
             existingUser.setLocation(null);
             existingUser.setIsVerified(false);

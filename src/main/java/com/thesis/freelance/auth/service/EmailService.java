@@ -4,16 +4,14 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
     @Value("${spring.mail.username:no-reply@example.com}")
     private String fromEmail;
@@ -61,45 +60,46 @@ public class EmailService {
         }
     }
 
-    private String loadTemplate(String templateName) throws IOException {
-        ClassPathResource resource = new ClassPathResource("templates/email/" + templateName + ".html");
-        return new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-    }
-
     public void sendVerificationEmail(String to, String verificationLink) {
         try {
-            String html = loadTemplate("verification")
-                    .replace("{{verificationLink}}", verificationLink)
-                    .replace("{{appUrl}}", appUrl);
-            sendHtmlEmail(to, "Verify your email - Freelance Platform", html);
-        } catch (IOException e) {
+            Context context = new Context();
+            context.setVariable("verificationLink", verificationLink);
+            context.setVariable("appUrl", appUrl);
+            
+            String html = templateEngine.process("email/verification", context);
+            sendHtmlEmail(to, "Welcome to TalentFlow - Verify Your Email", html);
+        } catch (Exception e) {
             log.error("Failed to load verification template: {}", e.getMessage());
             String fallback = "Verify your email: " + verificationLink;
-            sendEmail(to, "Verify your email - Freelance Platform", fallback);
+            sendEmail(to, "Verify your email - TalentFlow", fallback);
         }
     }
 
     public void sendPasswordResetEmail(String to, String resetLink) {
         try {
-            String html = loadTemplate("password-reset")
-                    .replace("{{resetLink}}", resetLink)
-                    .replace("{{appUrl}}", appUrl);
-            sendHtmlEmail(to, "Password Reset - Freelance Platform", html);
-        } catch (IOException e) {
+            Context context = new Context();
+            context.setVariable("resetLink", resetLink);
+            context.setVariable("appUrl", appUrl);
+            
+            String html = templateEngine.process("email/password-reset", context);
+            sendHtmlEmail(to, "Reset Your Password - TalentFlow", html);
+        } catch (Exception e) {
             log.error("Failed to load password reset template: {}", e.getMessage());
             String fallback = "Reset your password: " + resetLink;
-            sendEmail(to, "Password Reset - Freelance Platform", fallback);
+            sendEmail(to, "Password Reset - TalentFlow", fallback);
         }
     }
 
     public void sendCongratulationsEmail(String to) {
         try {
-            String html = loadTemplate("congratulations")
-                    .replace("{{appUrl}}", appUrl);
+            Context context = new Context();
+            context.setVariable("appUrl", appUrl);
+            
+            String html = templateEngine.process("email/congratulations", context);
             sendHtmlEmail(to, "Welcome aboard! Your email is verified", html);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to load congratulations template: {}", e.getMessage());
-            String fallback = "Congratulations! Your email has been verified. Welcome to Freelance Platform!";
+            String fallback = "Congratulations! Your email has been verified. Welcome to TalentFlow!";
             sendEmail(to, "Welcome aboard! Your email is verified", fallback);
         }
     }

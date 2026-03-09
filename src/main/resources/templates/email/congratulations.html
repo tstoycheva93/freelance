@@ -1,73 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Verified</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff;">
-        <tr>
-            <td align="center" style="padding: 40px 20px;">
-                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                    <!-- Header -->
-                    <tr>
-                        <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.5px;">Freelance Platform</h1>
-                        </td>
-                    </tr>
-                    <!-- Success Icon -->
-                    <tr>
-                        <td style="padding: 40px 30px 20px 30px; text-align: center;">
-                            <div style="width: 72px; height: 72px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- Content -->
-                    <tr>
-                        <td style="padding: 0 30px 40px 30px;">
-                            <h2 style="color: #111827; margin: 0 0 16px 0; font-size: 24px; font-weight: 600; text-align: center;">Email Verified!</h2>
-                            <p style="color: #4b5563; margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; text-align: center;">
-                                Congratulations! Your email has been verified and your account is now fully active.
-                            </p>
-                            <p style="color: #4b5563; margin: 0 0 24px 0; font-size: 16px; text-align: center;">
-                                You can now:
-                            </p>
-                            <ul style="color: #4b5563; margin: 0 0 24px 0; font-size: 15px; line-height: 2; text-align: left; display: inline-block; padding-left: 20px;">
-                                <li>Browse and apply for jobs</li>
-                                <li>Create your profile</li>
-                                <li>Connect with clients and freelancers</li>
-                                <li>Start your journey!</li>
-                            </ul>
-                            <!-- CTA Button -->
-                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                                <tr>
-                                    <td align="center">
-                                        <a href="{{appUrl}}" target="_blank" style="font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                                            Go to Dashboard
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color: #f9fafb; padding: 20px 30px; border-radius: 0 0 12px 12px; text-align: center; border-top: 1px solid #e5e7eb;">
-                            <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-                                Need help? Contact our support team.
-                            </p>
-                            <p style="color: #d1d5db; margin: 8px 0 0 0; font-size: 11px;">
-                                © 2026 Freelance Platform
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+<body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #f7f6f3;">
+    <div style="padding: 40px 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e8e6e1;">
+            <!-- Header -->
+            <div style="padding: 36px 48px 0; text-align: center;">
+                <div style="font-size: 22px; font-weight: 700; color: #1a1f36; letter-spacing: -0.5px;">
+                    ✦ Talent<span style="font-weight: 700;">Flow</span>
+                </div>
+            </div>
+
+            <!-- Success Icon -->
+            <div style="text-align: center; padding: 32px 48px 0;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background-color: #ecfdf5; border: 2px solid #d1fae5;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 24px 48px 40px;">
+                <h1 style="font-size: 26px; font-weight: 800; color: #1a1f36; margin: 0 0 8px; text-align: center; line-height: 1.3; letter-spacing: -0.5px;">
+                    You're All Set!
+                </h1>
+                <p style="font-size: 15px; color: #6b7280; line-height: 1.7; margin: 0 0 28px; text-align: center;">
+                    Your email has been verified. Welcome to the TalentFlow community — here's how to make the most of it:
+                </p>
+
+                <!-- Steps -->
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;">
+                    <!-- Step 1 -->
+                    <div style="display: flex; gap: 14px; padding: 16px 18px; background-color: #f7f6f3; border-radius: 12px; border: 1px solid #e8e6e1;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background-color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #e8e6e1;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1f36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #1a1f36; margin-bottom: 2px;">Post a Project</div>
+                            <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">Describe your needs and get matched with top talent.</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div style="display: flex; gap: 14px; padding: 16px 18px; background-color: #f7f6f3; border-radius: 12px; border: 1px solid #e8e6e1;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background-color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #e8e6e1;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1f36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #1a1f36; margin-bottom: 2px;">Browse Talent</div>
+                            <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">Explore verified professionals across 50+ categories.</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div style="display: flex; gap: 14px; padding: 16px 18px; background-color: #f7f6f3; border-radius: 12px; border: 1px solid #e8e6e1;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background-color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #e8e6e1;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1f36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: #1a1f36; margin-bottom: 2px;">Start a Conversation</div>
+                            <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">Message freelancers directly and discuss your project.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div style="text-align: center;">
+                    <a th:href="${appUrl}"
+                       style="display: inline-block; background-color: #1a1f36; color: #ffffff; font-size: 14px; font-weight: 600; padding: 13px 36px; border-radius: 50px; text-decoration: none;">
+                        Go to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div style="height: 1px; background-color: #e8e6e1; margin: 0 48px;"></div>
+
+            <!-- Footer -->
+            <div style="padding: 24px 48px 32px; text-align: center;">
+                <p style="font-size: 12px; color: #b5b3ae; margin: 0;">
+                    © 2026 TalentFlow. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
