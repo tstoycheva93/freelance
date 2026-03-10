@@ -1,13 +1,14 @@
 ideas:
 keep features locked behind profile completeness
-users can req from admin to edit offer, email
+users can req from admin to edit offer, email, username?
+pagination to be only scrollable
+add newsletter email field subscription to footer
+make the browse postings glassmorphic
+if no personal details added, dont display the fields in ME
+to ME - add website bubble, add edit and share profile btns
 
-
-
-tips:
 
 
 
 plans:
-Verification resolve - frontend handles /verify?token=xxx route → extracts token → shows "Verify Email" button or auto-submits → POSTs to /verify → backend verifies
 add the new User fields to the converter and builder to be initialized after registration

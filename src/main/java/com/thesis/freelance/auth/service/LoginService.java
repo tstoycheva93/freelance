@@ -37,7 +37,7 @@ public class LoginService {
             String deviceId = loginRequest.getDeviceId();
             String deviceName = loginRequest.getDeviceName();
 
-            if (user.getIs2faEnabled()) {
+            if (Boolean.TRUE.equals(user.getIs2faEnabled())) {
                 // Reject outright if the client didn't supply a device ID
                 if (deviceId == null || deviceId.isBlank()) {
                     return LoginResponse.builder()
