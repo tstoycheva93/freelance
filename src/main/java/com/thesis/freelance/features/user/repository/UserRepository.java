@@ -23,6 +23,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "LEFT JOIN FETCH u.userRole ur " +
             "LEFT JOIN FETCH u.location " +
             "WHERE u.activityStatus = 'ACTIVE' " +
+            "AND u.isPublic = true " +
             "AND (:search IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%'))) " +
@@ -31,16 +32,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                                       @Param("role") String role,
                                       Sort sort);
 
-    @Query("SELECT u FROM User u " +
-            "LEFT JOIN u.userRole ur " +
-            "WHERE u.activityStatus = 'ACTIVE' " +
-            "AND (:search IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "   OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "AND (:role IS NULL OR ur.role = :role)")
-    Page<User> findBySearchAndRole(@Param("search") String search,
-                                   @Param("role") String role,
-                                   Pageable pageable);
+
+
 
 
 }

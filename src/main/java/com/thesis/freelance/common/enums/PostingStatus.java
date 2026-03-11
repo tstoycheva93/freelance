@@ -7,8 +7,6 @@ public enum PostingStatus {
 
     ACTIVE("active"),
     IN_PROGRESS("in_progress"),
-    COMPLETED("completed"),
-    CANCELLED("cancelled"),
     CLOSED("closed");
 
     private final String value;

@@ -1,17 +1,27 @@
-keep features locked behind profile completeness
-validate certificate expiration on input
-converteri v profileService.java
-sort by distance - sus nqkakvi smetki
-flag buton za user (moje i posle za review kato se slaga inactive i se proverqva v service)
-review the flattening in profileService.ts
+locked behind profile completeness - freelancer[creating an offer]
+flagging user, review
+message na posting li da e ili na offer? mai offer
+add location, exp level, photo to posting
 
+stranici za posting:
+-create posting
+-view posting (s butoni za edit i delete i view offers ako e clienta, s butoni za like i apply ako freelancer, bez butoni ako e dr client)
+-browse postings
+-edit posting
+
+stranici za offer:
+-create offer
+-offers (za freelancer - vsichki offers koito e napravil v spisuk, za client - vsichki offers koito e poluchil)
+-view offer (s buton za cancel i message ako e freelancera, s butoni za accept i reject ako e client)
+-posting offers - s tiles kato offers i na vsqka na freelancer ima message,cancel (sprqmo statusa) a na client msg accept reject shortlist
+
+drugi stranici:
+-izvestiq - samo overlay
+- inbox - design
 
 admin:
 da slaga inactive na useri, review, posting
 da preglejda flags
-da pozvolqva na useri da redaktirat offer, username, birth date
+da pozvolqva na useri da redaktirat username, birth date
 da prashtat sistemen email na vsichki active - newsletter, system
 crud za location, category, skill
-
-
-people page da se sortira po rating i po distance

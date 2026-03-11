@@ -54,16 +54,6 @@ public class Freelancer extends BaseEntity {
     @Builder.Default
     private Long offersCount = 0L;
 
-    @Deprecated
-    @Column(name = "reviews_count")
-    @Builder.Default
-    private Long reviewsCount = 0L;
-
-    @Deprecated
-    @Column(name = "rating", precision = 8, scale = 2)
-    @Builder.Default
-    private BigDecimal rating = BigDecimal.ZERO;
-
     @Column(name = "last_active_at",nullable = true)
     private LocalDateTime lastActiveAt;
 
@@ -90,16 +80,6 @@ public class Freelancer extends BaseEntity {
 
     public void incrementOffers() {
         this.offersCount++;
-    }
-
-    @Deprecated
-    public void incrementReviews() {
-        this.reviewsCount++;
-    }
-
-    @Deprecated
-    public void updateRating(BigDecimal newRating) {
-        this.rating = newRating;
     }
 
     public void updateLastActive() {
