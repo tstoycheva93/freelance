@@ -57,9 +57,10 @@ public class ProfileController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String role,
             @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortOrder) {
+            @RequestParam(defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) UUID currentUserId) {
         
-        Page<PeopleDto> peoplePage = profileService.getPeople(page, size, search, role, sortBy, sortOrder);
+        Page<PeopleDto> peoplePage = profileService.getPeople(page, size, search, role, sortBy, sortOrder, currentUserId);
         
         PeopleResponseDto response = PeopleResponseDto.builder()
                 .content(peoplePage.getContent())

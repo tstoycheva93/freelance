@@ -80,7 +80,7 @@ public class UserAccountService {
     private UserAccountDto toDto(User user) {
         LocationDto locationDto = null;
         if (user.getLocation() != null) {
-            locationDto = new LocationDto(user.getLocation().getId(), user.getLocation().getName());
+            locationDto = new LocationDto(user.getLocation().getId(), user.getLocation().getName(),user.getLocation().getLatitude(), user.getLocation().getLongitude());
         }
 
         return new UserAccountDto(

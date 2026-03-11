@@ -28,16 +28,10 @@ public class Location extends BaseEntity {
     @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
 
-    @Transient
-    public boolean hasCoordinates() {
-        return latitude != null && longitude != null;
-    }
-
     public record Coordinates(BigDecimal lat, BigDecimal lng) {}
 
     @Transient
     public Coordinates getCoordinates() {
-        if (!hasCoordinates()) return null;
         return new Coordinates(latitude, longitude);
     }
 

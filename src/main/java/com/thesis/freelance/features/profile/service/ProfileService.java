@@ -15,6 +15,7 @@ import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.freelancer.entity.FreelancerSkills;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerSkillsRepository;
+import com.thesis.freelance.features.location.entity.Location;
 import com.thesis.freelance.features.profile.converter.PostingToProfileDtoConverter;
 import com.thesis.freelance.features.profile.converter.ReviewToProfileDtoConverter;
 import com.thesis.freelance.features.profile.dto.PeopleDto;
@@ -36,10 +37,7 @@ import com.thesis.freelance.features.certification.entity.Certification;
 import com.thesis.freelance.features.certification.repository.CertificationRepository;
 import com.thesis.freelance.features.location.dto.LocationDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -198,13 +196,80 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PeopleDto> getPeople(int page, int size, String search, String role, String sortBy, String sortOrder) {
-        Sort sort = buildSort(sortBy, sortOrder);
-        Pageable pageable = PageRequest.of(page, size, sort);
+    public Page<PeopleDto> getPeople(int page, int size, String search, String role, String sortBy, String sortOrder, UUID currentUserId) {
+        boolean sortByDistance = "distance".equalsIgnoreCase(sortBy);
+        boolean sortByRating = "rating".equalsIgnoreCase(sortBy);
+        
+        Sort sort;
+        if (sortByDistance) {
+            sort = Sort.unsorted();
+        } else if (sortByRating) {
+            sort = "desc".equalsIgnoreCase(sortOrder) ? Sort.by(Sort.Direction.DESC, "rating") : Sort.by(Sort.Direction.ASC, "rating");
+        } else {
+            sort = buildSort(sortBy, sortOrder);
+        }
+        
+        // Fetch ALL users first, then sort and paginate in memory
+        List<User> allUsers = userRepository.findAllBySearchAndRole(search, role, sort);
+        
+        // Map to DTOs
+        List<PeopleDto> peopleDtos = allUsers.stream()
+                .map(this::mapUserToPeopleDto)
+                .collect(Collectors.toList());
 
-        Page<User> usersPage = userRepository.findBySearchAndRole(search, role, pageable);
+        // If sorting by distance and current user has location, calculate and sort
+        if (sortByDistance && currentUserId != null) {
+            User currentUser = userRepository.findById(currentUserId).orElse(null);
+            if (currentUser != null && currentUser.getLocation() != null) {
+                Location currentLocation = currentUser.getLocation();
+                final double currentLat = currentLocation.getLatitude().doubleValue();
+                final double currentLon = currentLocation.getLongitude().doubleValue();
+                
+                final boolean descending = "desc".equalsIgnoreCase(sortOrder);
+                
+                peopleDtos.sort((a, b) -> {
+                    Double distA = a.getLocation() != null && a.getLocation().latitude() != null ? 
+                        calculateDistanceKm(currentLat, currentLon, 
+                            a.getLocation().latitude().doubleValue(),
+                            a.getLocation().longitude().doubleValue()) : null;
+                    Double distB = b.getLocation() != null && b.getLocation().latitude() != null ? 
+                        calculateDistanceKm(currentLat, currentLon,
+                            b.getLocation().latitude().doubleValue(),
+                            b.getLocation().longitude().doubleValue()) : null;
+                    
+                    // Users without location go at the end
+                    if (distA == null && distB == null) return 0;
+                    if (distA == null) return 1;
+                    if (distB == null) return -1;
+                    
+                    return descending ? Double.compare(distB, distA) : Double.compare(distA, distB);
+                });
+            }
+        }
 
-        return usersPage.map(this::mapUserToPeopleDto);
+        // Manual pagination
+        int start = page * size;
+        int end = Math.min(start + size, peopleDtos.size());
+        List<PeopleDto> pagedContent = start < peopleDtos.size() 
+            ? peopleDtos.subList(start, end) 
+            : List.of();
+        
+        return new PageImpl<>(pagedContent, PageRequest.of(page, size), peopleDtos.size());
+    }
+
+    private double calculateDistanceKm(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Earth's radius in kilometers
+        
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        
+        return R * c;
     }
 
     private Sort buildSort(String sortBy, String sortOrder) {
@@ -245,7 +310,12 @@ public class ProfileService {
 
         LocationDto locationDto = null;
         if (user.getLocation() != null) {
-            locationDto = new LocationDto(user.getLocation().getId(), user.getLocation().getName());
+            locationDto = new LocationDto(
+                user.getLocation().getId(), 
+                user.getLocation().getName(),
+                user.getLocation().getLatitude(),
+                user.getLocation().getLongitude()
+            );
         }
 
         return PeopleDto.builder()
@@ -267,7 +337,12 @@ public class ProfileService {
     private UserDto mapUserToDto(User user) {
         LocationDto locationDto = null;
         if (user.getLocation() != null) {
-            locationDto = new LocationDto(user.getLocation().getId(), user.getLocation().getName());
+            locationDto = new LocationDto(
+                user.getLocation().getId(), 
+                user.getLocation().getName(),
+                user.getLocation().getLatitude(),
+                user.getLocation().getLongitude()
+            );
         }
         return new UserDto(
                 user.getId(),

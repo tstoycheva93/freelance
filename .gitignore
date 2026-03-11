@@ -39,3 +39,7 @@ application-local.properties
 /package.json
 /package-lock.json
 /src/main/resources/data/skills.sql
+/src/main/resources/data/posting_attachments.sql
+/src/main/resources/data/posting_skills.sql
+/src/main/resources/data/postings.sql
+/src/main/resources/data/reviews.sql
