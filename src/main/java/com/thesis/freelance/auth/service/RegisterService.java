@@ -36,10 +36,10 @@ public class RegisterService {
         
         User user = converter.convertToUser(request);
         
-        // Check if a user was previously deleted - reactivate if so
+        //ako predi e bil DELETED samo da se reaktivira
         User existingUser = userRepository.findByEmail(request.getEmail()).orElse(null);
         if (existingUser != null && existingUser.getActivityStatus() == ActivityStatus.DELETED) {
-            // Populate user with fresh data
+            //dannite ot formata
             existingUser.setActivityStatus(ActivityStatus.ACTIVE);
             existingUser.setUsername(user.getUsername());
             existingUser.setName(user.getName());
@@ -47,8 +47,8 @@ public class RegisterService {
             existingUser.setPassword(user.getPassword());
             existingUser.setBirthDate(user.getBirthDate());
             existingUser.setPhone(user.getPhone());
-            // Clear fields for a fresh start
-            existingUser.setPhotoUrl("");
+            //drugite da stanat prazni/default
+            existingUser.setPhotoUrl("https://ucarecdn.com/62bc7c9e-8dc0-47e7-9b60-c691b813d388/-/preview/750x1000/");
             existingUser.setLocation(null);
             existingUser.setIsVerified(false);
             existingUser.setEmailsOn(true);
@@ -56,7 +56,7 @@ public class RegisterService {
             existingUser.setPushOn(true);
             userRepository.save(existingUser);
             
-            // Create new Freelancer/Client (old one is INACTIVE)
+            //nov role profil poneje stariq e inactive
             createProfileBasedOnRole(existingUser);
             return;
         }

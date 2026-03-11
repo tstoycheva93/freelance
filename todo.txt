@@ -1,14 +1,17 @@
-ideas:
 keep features locked behind profile completeness
-users can req from admin to edit offer, email, username?
-pagination to be only scrollable
-add newsletter email field subscription to footer
-make the browse postings glassmorphic
-if no personal details added, dont display the fields in ME
-to ME - add website bubble, add edit and share profile btns
+validate certificate expiration on input
+converteri v profileService.java
+sort by distance - sus nqkakvi smetki
+flag buton za user (moje i posle za review kato se slaga inactive i se proverqva v service)
+review the flattening in profileService.ts
 
 
+admin:
+da slaga inactive na useri, review, posting
+da preglejda flags
+da pozvolqva na useri da redaktirat offer, username, birth date
+da prashtat sistemen email na vsichki active - newsletter, system
+crud za location, category, skill
 
 
-plans:
-add the new User fields to the converter and builder to be initialized after registration
+people page da se sortira po rating i po distance

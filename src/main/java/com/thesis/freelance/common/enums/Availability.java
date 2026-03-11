@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Availability {
 
-    AVAILABLE("available"),
-    BUSY("busy"),
-    NOT_AVAILABLE("not_available");
+    AVAILABLE("Available"),
+    BUSY("Busy"),
+    NOT_AVAILABLE("Not_available");
 
     private final String value;
 

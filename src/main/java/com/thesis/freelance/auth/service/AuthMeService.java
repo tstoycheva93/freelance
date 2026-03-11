@@ -2,6 +2,7 @@ package com.thesis.freelance.auth.service;
 
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
+import com.thesis.freelance.features.location.dto.LocationDto;
 import com.thesis.freelance.features.user.dto.UserDto;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
@@ -33,6 +34,10 @@ public class AuthMeService {
                 .map(f -> f.getId())
                 .orElse(null);
 
+        LocationDto locationDto = null;
+        if (user.getLocation() != null) {
+            locationDto = new LocationDto(user.getLocation().getId(), user.getLocation().getName());
+        }
 
         return new UserDto(
                 user.getId(),
@@ -43,7 +48,7 @@ public class AuthMeService {
                 user.getRoleName(),
                 user.getPhone(),
                 user.getBirthDate(),
-                user.getLocation(),
+                locationDto,
                 user.getPhotoUrl(),
                 freelancerId,
                 clientId

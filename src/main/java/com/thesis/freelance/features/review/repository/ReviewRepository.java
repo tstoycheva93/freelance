@@ -9,10 +9,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
     List<Review> findByRevieweeId(UUID revieweeId);
+
+    Page<Review> findByRevieweeId(UUID revieweeId, Pageable pageable);
 
     @Query("SELECT AVG(r.overallRating) FROM Review r WHERE r.reviewee.id = :userId")
     Double getAverageRatingByUserId(@Param("userId") UUID userId);

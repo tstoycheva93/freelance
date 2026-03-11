@@ -1,10 +1,7 @@
 package com.thesis.freelance.features.user.dto;
-
-import com.thesis.freelance.features.location.entity.Location;
-
+import com.thesis.freelance.features.location.dto.LocationDto;
 import java.time.LocalDate;
 import java.util.UUID;
-
 public record UserDto(
         UUID id,
         String username,
@@ -14,7 +11,7 @@ public record UserDto(
         String role,
         String phoneNumber,
         LocalDate dateOfBirth,
-        Location location,
+        LocationDto location,
         String profilePhoto,
         UUID freelancerId,
         UUID clientId

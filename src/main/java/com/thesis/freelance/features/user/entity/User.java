@@ -5,6 +5,7 @@ import com.thesis.freelance.features.location.entity.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -20,7 +21,8 @@ import java.time.LocalDate;
                 @Index(name = "idx_user_username", columnList = "username"),
                 @Index(name = "idx_user_status", columnList = "activity_status"),
                 @Index(name = "idx_user_role", columnList = "user_role"),
-                @Index(name = "idx_user_location", columnList = "location_id")
+                @Index(name = "idx_user_location", columnList = "location_id"),
+                @Index(name = "idx_user_rating", columnList = "rating")
         }
 )
 public class User extends BaseEntity {
@@ -82,6 +84,14 @@ public class User extends BaseEntity {
     @Builder.Default
     private Boolean is2faEnabled = false;
 
+    @Column(name = "rating", precision = 8, scale = 2)
+    @Builder.Default
+    private BigDecimal rating = BigDecimal.ZERO;
+
+    @Column(name = "reviews_count")
+    @Builder.Default
+    private Long reviewsCount = 0L;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "location_id",
@@ -112,5 +122,13 @@ public class User extends BaseEntity {
         if (name == null || name.isBlank()) return surname;
         if (surname == null || surname.isBlank()) return name;
         return name + " " + surname;
+    }
+
+    public void updateRating(BigDecimal newRating) {
+        this.rating = newRating;
+    }
+
+    public void incrementReviews() {
+        this.reviewsCount++;
     }
 }
