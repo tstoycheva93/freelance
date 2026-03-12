@@ -14,5 +14,6 @@ public record UserDto(
         LocationDto location,
         String profilePhoto,
         UUID freelancerId,
-        UUID clientId
+        UUID clientId,
+        Boolean isVerified
 ) {}

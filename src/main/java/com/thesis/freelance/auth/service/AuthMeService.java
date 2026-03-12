@@ -51,7 +51,8 @@ public class AuthMeService {
                 locationDto,
                 user.getPhotoUrl(),
                 freelancerId,
-                clientId
+                clientId,
+                user.getIsVerified()
         );
     }
 }

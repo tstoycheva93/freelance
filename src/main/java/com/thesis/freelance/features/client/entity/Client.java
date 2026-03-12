@@ -14,7 +14,6 @@ import java.util.UUID;
         name = "client",
         indexes = {
                 @Index(name = "idx_client_user_id", columnList = "user_id"),
-                @Index(name = "idx_client_rating", columnList = "rating")
         },
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_client_user_id", columnNames = {"user_id"})
@@ -48,18 +47,6 @@ public class Client extends BaseEntity {
     @Builder.Default
     private Long postingsCount = 0L;
 
-    @Deprecated
-    @Column(name = "reviews_count", nullable = false)
-    @Builder.Default
-    private Long reviewsCount = 0L;
-
-    @Deprecated
-    @Column(nullable = false, precision = 3, scale = 2)
-    @Min(0)
-    @Max(5)
-    @Builder.Default
-    private BigDecimal rating = BigDecimal.ZERO;
-
     @Column(name = "completeness", nullable = false)
     @Builder.Default
     private Integer completeness = 0;
@@ -68,16 +55,6 @@ public class Client extends BaseEntity {
 
     public void incrementPostings() {
         this.postingsCount++;
-    }
-
-    @Deprecated
-    public void incrementReviews() {
-        this.reviewsCount++;
-    }
-
-    @Deprecated
-    public void updateRating(BigDecimal newRating) {
-        this.rating = newRating;
     }
 
     public void updateCompleteness(Integer percentage) {

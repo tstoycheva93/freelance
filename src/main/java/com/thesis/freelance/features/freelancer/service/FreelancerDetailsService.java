@@ -1,5 +1,7 @@
 package com.thesis.freelance.features.freelancer.service;
 
+import com.thesis.freelance.features.category.dto.CategoryWithSkillsDto;
+import com.thesis.freelance.features.category.service.CategoryService;
 import com.thesis.freelance.features.certification.entity.Certification;
 import com.thesis.freelance.features.certification.repository.CertificationRepository;
 import com.thesis.freelance.features.category.entity.Category;
@@ -11,6 +13,7 @@ import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.freelancer.entity.FreelancerSkills;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerSkillsRepository;
+import com.thesis.freelance.features.skill.dto.SkillDto;
 import com.thesis.freelance.features.skill.entity.Skill;
 import com.thesis.freelance.features.skill.repository.SkillRepository;
 import com.thesis.freelance.features.uploadedCV.entity.UploadedCV;
@@ -37,25 +40,6 @@ public class FreelancerDetailsService {
     private final CertificationRepository certificationRepository;
     private final UploadedCVRepository uploadedCVRepository;
     private final SkillRepository skillRepository;
-    private final CategoryRepository categoryRepository;
-
-    public List<CategoryWithSkillsDto> getSkillCategoriesWithSkills() {
-        List<Category> categories = categoryRepository.findAll();
-        return categories.stream()
-                .map(category -> {
-                    List<SkillDto> skills = skillRepository.findByCategory_Id(category.getId())
-                            .stream()
-                            .map(skill -> new SkillDto(
-                                    skill.getId(),
-                                    skill.getSkill(),
-                                    category.getId(),
-                                    category.getName()
-                            ))
-                            .collect(Collectors.toList());
-                    return new CategoryWithSkillsDto(category.getId(), category.getName(), skills);
-                })
-                .collect(Collectors.toList());
-    }
 
     @Transactional(readOnly = true)
     public FreelancerDetailsDto getFreelancerDetails(UUID freelancerId) {

@@ -1,4 +1,4 @@
-package com.thesis.freelance.features.freelancer.dto;
+package com.thesis.freelance.features.skill.dto;
 
 import java.util.UUID;
 

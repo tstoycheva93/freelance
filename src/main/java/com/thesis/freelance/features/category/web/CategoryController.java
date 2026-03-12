@@ -21,4 +21,9 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
+
+    @GetMapping("/skills")
+    public ResponseEntity<?> getSkillCategories() {
+        return ResponseEntity.ok(categoryService.getSkillCategoriesWithSkills());
+    }
 }

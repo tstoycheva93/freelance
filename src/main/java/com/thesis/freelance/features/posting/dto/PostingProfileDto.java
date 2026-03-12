@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -19,5 +20,7 @@ public class PostingProfileDto {
     private String type;
     private String budget;
     private String views;
-    private String imageUrl;
+    private String photoUrl;
+    private LocalDate deadline;
+    private String location;
 }

@@ -6,7 +6,10 @@ import com.thesis.freelance.common.enums.PostingStatus;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.location.entity.Location;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -27,6 +30,9 @@ import java.util.UUID;
 )
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Posting extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -41,6 +47,9 @@ public class Posting extends BaseEntity {
 
     @Column(name = "category_id", columnDefinition = "BINARY(16)", nullable = false)
     private UUID categoryId;
+
+    @Column(name = "photo_url", length = 500)
+    private String photoUrl = "";
 
     @Column(name = "budget", nullable = false)
     private Integer budget;

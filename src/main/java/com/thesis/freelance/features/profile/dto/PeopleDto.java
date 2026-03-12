@@ -26,4 +26,5 @@ public class PeopleDto {
     private Long reviewCount;
     private String website;
     private String profilePhoto;
+    private Boolean isVerified;
 }

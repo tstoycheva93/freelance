@@ -209,10 +209,8 @@ public class ProfileService {
             sort = buildSort(sortBy, sortOrder);
         }
         
-        // Fetch ALL users first, then sort and paginate in memory
         List<User> allUsers = userRepository.findAllBySearchAndRole(search, role, sort);
         
-        // Map to DTOs
         List<PeopleDto> peopleDtos = allUsers.stream()
                 .map(this::mapUserToPeopleDto)
                 .collect(Collectors.toList());
@@ -247,7 +245,6 @@ public class ProfileService {
             }
         }
 
-        // Manual pagination
         int start = page * size;
         int end = Math.min(start + size, peopleDtos.size());
         List<PeopleDto> pagedContent = start < peopleDtos.size() 
@@ -258,7 +255,7 @@ public class ProfileService {
     }
 
     private double calculateDistanceKm(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Earth's radius in kilometers
+        final int R = 6371; //radiusa na zemqta
         
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
@@ -331,6 +328,7 @@ public class ProfileService {
                 .reviewCount(reviewCount)
                 .website(website)
                 .profilePhoto(user.getPhotoUrl())
+                .isVerified(user.getIsVerified())
                 .build();
     }
 
@@ -356,7 +354,8 @@ public class ProfileService {
                 locationDto,
                 user.getPhotoUrl(),
                 null,
-                null
+                null,
+                user.getIsVerified()
         );
     }
 

@@ -17,9 +17,7 @@ import java.util.UUID;
                 @Index(name = "idx_freelancer_user_id", columnList = "user_id"),
                 @Index(name = "idx_freelancer_availability", columnList = "availability"),
                 @Index(name = "idx_freelancer_experience", columnList = "experience"),
-                @Index(name = "idx_freelancer_rating", columnList = "rating"),
                 @Index(name = "idx_freelancer_last_active", columnList = "last_active_at"),
-                @Index(name = "idx_freelancer_availability_rating", columnList = "availability, rating")
         },
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_freelancer_user_id", columnNames = {"user_id"})

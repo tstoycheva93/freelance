@@ -33,8 +33,9 @@ public class PostingToProfileDtoConverter {
                 .type(type)
                 .budget(budget)
                 .views(views)
-                .imageUrl(posting.getAttachmentUrls() != null && !posting.getAttachmentUrls().isEmpty()
-                        ? posting.getAttachmentUrls().getFirst() : null)
+                .photoUrl(posting.getPhotoUrl())
+                .location(posting.getLocation() != null ? posting.getLocation().getName() : null)
+                .deadline(posting.getDeadline())
                 .build();
     }
 

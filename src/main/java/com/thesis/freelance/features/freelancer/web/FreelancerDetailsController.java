@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.freelancer.web;
 
+import com.thesis.freelance.features.category.service.CategoryService;
 import com.thesis.freelance.features.freelancer.dto.*;
 import com.thesis.freelance.features.freelancer.service.FreelancerDetailsService;
 import jakarta.validation.Valid;
@@ -15,11 +16,6 @@ import java.util.UUID;
 public class FreelancerDetailsController {
 
     private final FreelancerDetailsService freelancerDetailsService;
-
-    @GetMapping("/categories")
-    public ResponseEntity<?> getSkillCategories() {
-        return ResponseEntity.ok(freelancerDetailsService.getSkillCategoriesWithSkills());
-    }
 
     @GetMapping
     public ResponseEntity<?> getFreelancerDetails(@RequestParam UUID freelancerId) {
