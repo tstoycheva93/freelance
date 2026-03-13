@@ -6,6 +6,9 @@ import com.thesis.freelance.features.posting.dto.PostingDetailDto;
 import com.thesis.freelance.features.posting.dto.PostingTileDto;
 import com.thesis.freelance.features.posting.dto.UpdatePostingDto;
 import com.thesis.freelance.features.posting.service.PostingService;
+import com.thesis.freelance.features.posting.service.SavedPostingService;
+import com.thesis.freelance.features.user.entity.User;
+import com.thesis.freelance.features.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +29,8 @@ import java.util.UUID;
 public class PostingController {
     
     private final PostingService postingService;
+    private final SavedPostingService savedPostingService;
+    private final UserRepository userRepository;
     
     @GetMapping
     public ResponseEntity<Page<PostingTileDto>> getAllPostings(
@@ -91,12 +96,43 @@ public class PostingController {
         postingService.incrementViews(id);
         return ResponseEntity.ok().build();
     }
-    
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<PostingDetailDto> updateStatus(
             @PathVariable UUID id,
-            @RequestParam PostingStatus status,
+            @RequestParam String status,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(postingService.updateStatus(id, status, userDetails.getUsername()));
+        return ResponseEntity.ok(postingService.updateStatus(id, PostingStatus.fromValue(status), userDetails.getUsername()));
     }
+
+    @GetMapping("/{id}/saved")
+    public ResponseEntity<Boolean> isPostingSaved(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        boolean isSaved = savedPostingService.isSavedByFreelancer(user.getId(), id);
+        return ResponseEntity.ok(isSaved);
+    }
+
+    @PostMapping("/{id}/save")
+    public ResponseEntity<Void> savePosting(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        savedPostingService.savePosting(user.getId(), id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/save")
+    public ResponseEntity<Void> unsavePosting(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        savedPostingService.unsavePosting(user.getId(), id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

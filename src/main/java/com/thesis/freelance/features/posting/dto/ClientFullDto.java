@@ -24,4 +24,5 @@ public class ClientFullDto {
     private String bio;
     private String website;
     private Long postingsCount;
+    private UUID userId;
 }

@@ -49,7 +49,7 @@ public class Posting extends BaseEntity {
     private UUID categoryId;
 
     @Column(name = "photo_url", length = 500)
-    private String photoUrl = "";
+    private String photoUrl = "https://img.pikbest.com/backgrounds/20190904/complex-digital-work-background-v_1546977jpg!w700wp";
 
     @Column(name = "budget", nullable = false)
     private Integer budget;

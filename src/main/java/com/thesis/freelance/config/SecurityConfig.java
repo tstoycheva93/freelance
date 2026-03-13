@@ -54,15 +54,24 @@ public class SecurityConfig {
                         .requestMatchers("/listings/**").permitAll()   // browsing jobs without login
                         .requestMatchers("/freelancers/**").permitAll()
                         .requestMatchers("/roles").permitAll()
-                        .requestMatchers("/locations/**").authenticated()
 
                         // Role restricted
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/client/**").hasRole("CLIENT")
-                        .requestMatchers("/freelancer/**").hasRole("FREELANCER")
 
                         // Any logged in user
                         .requestMatchers("/user/**").authenticated()
+                        .requestMatchers("/locations/**").authenticated()
+                        .requestMatchers("/profile/**").authenticated()
+                        .requestMatchers("/postings/**").authenticated()
+                        .requestMatchers("/skills/**").authenticated()
+                        .requestMatchers("/client/**").authenticated()
+                        .requestMatchers("/freelancer/**").authenticated()
+                        .requestMatchers("/education/**").authenticated()
+                        .requestMatchers("/work/**").authenticated()
+                        .requestMatchers("/certifications/**").authenticated()
+                        .requestMatchers("/cv/**").authenticated()
+
+
 
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
@@ -110,7 +119,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 

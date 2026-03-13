@@ -91,6 +91,7 @@ public class PostingToDetailDtoConverter {
                 .bio(client.getBio())
                 .website(client.getWebsite())
                 .postingsCount(client.getPostingsCount())
+                .userId(client.getUserId())
                 .build();
     }
 }

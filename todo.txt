@@ -1,15 +1,12 @@
 locked behind profile completeness - freelancer[creating an offer]
 flagging user, review
 message na posting li da e ili na offer? mai offer
-zashto kato izteche tokena ne izliza avtomatichno do landing?????
 browse postings - da ima samo koito sa active/in_progress, active(a ne inactive/deleted). a closed postings da se vijdat samo v usera i da ne mogat da budat edited
 
 stranici za posting:
 -saved postings - tab v ME za freelancer
--create posting
 -view posting (s butoni za edit i delete i view offers ako e clienta, s butoni za like i apply ako freelancer, bez butoni ako e dr client)
 -browse postings
--edit posting
 
 stranici za offer:
 -create offer
@@ -19,7 +16,6 @@ stranici za offer:
 
 drugi stranici:
 -izvestiq - samo overlay
-- inbox - design
 
 admin:
 da slaga inactive na useri, review, posting
