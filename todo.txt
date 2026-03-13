@@ -1,6 +1,3 @@
-stranici za posting:
--browse postings - da se podava posting.activity_status za vsichki dto i tipove, i sprqmo nego da e navsqkude
-
 stranici za offer:
 -create offer
 -offers (za freelancer - vsichki offers koito e napravil v spisuk, za client - vsichki offers koito e poluchil)

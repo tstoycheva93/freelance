@@ -62,6 +62,43 @@ public class PostingService {
         Page<Posting> postings = postingRepository.findAllByCategoryId(ActivityStatus.ACTIVE, categoryId, pageable);
         return postings.map(postingToTileDtoConverter::convert);
     }
+
+    @Transactional(readOnly = true)
+    public Page<PostingTileDto> getPostings(PostingStatus status, String search, UUID categoryId, UUID locationId, Pageable pageable) {
+        boolean hasStatus = status != null;
+        boolean hasSearch = search != null && !search.isBlank();
+        boolean hasCategory = categoryId != null;
+        boolean hasLocation = locationId != null;
+
+        Page<Posting> postings;
+
+        if (hasStatus) {
+            postings = postingRepository.findAllByStatusAndSearchAndCategoryAndLocation(
+                    ActivityStatus.ACTIVE, status, search, categoryId, locationId, pageable);
+        } else if (hasSearch && hasCategory && hasLocation) {
+            postings = postingRepository.findAllBySearchAndCategoryAndLocation(
+                    ActivityStatus.ACTIVE, search, categoryId, locationId, pageable);
+        } else if (hasSearch && hasCategory) {
+            postings = postingRepository.findAllBySearchAndCategoryAndLocation(
+                    ActivityStatus.ACTIVE, search, categoryId, null, pageable);
+        } else if (hasSearch && hasLocation) {
+            postings = postingRepository.findAllBySearchAndLocation(
+                    ActivityStatus.ACTIVE, search, locationId, pageable);
+        } else if (hasCategory && hasLocation) {
+            postings = postingRepository.findAllByCategoryAndLocation(
+                    ActivityStatus.ACTIVE, categoryId, locationId, pageable);
+        } else if (hasSearch) {
+            postings = postingRepository.findAllBySearch(ActivityStatus.ACTIVE, search, pageable);
+        } else if (hasCategory) {
+            postings = postingRepository.findAllByCategoryId(ActivityStatus.ACTIVE, categoryId, pageable);
+        } else if (hasLocation) {
+            postings = postingRepository.findAllByLocationId(ActivityStatus.ACTIVE, locationId, pageable);
+        } else {
+            postings = postingRepository.findAllWithClientAndLocation(ActivityStatus.ACTIVE, pageable);
+        }
+
+        return postings.map(postingToTileDtoConverter::convert);
+    }
     
     @Transactional(readOnly = true)
     public PostingDetailDto getPostingById(UUID id) {

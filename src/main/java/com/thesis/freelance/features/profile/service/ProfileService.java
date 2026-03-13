@@ -218,14 +218,14 @@ public class ProfileService {
             sort = buildSort(sortBy, sortOrder);
         }
         
-        List<User> allUsers = userRepository.findAllBySearchAndRole(search, role, sort);
+        List<PeopleDto> peopleDtos;
         
-        List<PeopleDto> peopleDtos = allUsers.stream()
-                .map(this::mapUserToPeopleDto)
-                .collect(Collectors.toList());
-
-        // If sorting by distance and current user has location, calculate and sort
         if (sortByDistance && currentUserId != null) {
+            List<User> allUsers = userRepository.findAllBySearchAndRole(search, role, sort);
+            peopleDtos = allUsers.stream()
+                    .map(this::mapUserToPeopleDto)
+                    .collect(Collectors.toList());
+            
             User currentUser = userRepository.findById(currentUserId).orElse(null);
             if (currentUser != null && currentUser.getLocation() != null) {
                 Location currentLocation = currentUser.getLocation();
@@ -244,7 +244,6 @@ public class ProfileService {
                             b.getLocation().latitude().doubleValue(),
                             b.getLocation().longitude().doubleValue()) : null;
                     
-                    // Users without location go at the end
                     if (distA == null && distB == null) return 0;
                     if (distA == null) return 1;
                     if (distB == null) return -1;
@@ -252,15 +251,22 @@ public class ProfileService {
                     return descending ? Double.compare(distB, distA) : Double.compare(distA, distB);
                 });
             }
+            
+            int start = page * size;
+            int end = Math.min(start + size, peopleDtos.size());
+            List<PeopleDto> pagedContent = start < peopleDtos.size() 
+                ? peopleDtos.subList(start, end) 
+                : List.of();
+            
+            return new PageImpl<>(pagedContent, PageRequest.of(page, size), peopleDtos.size());
+        } else {
+            Page<User> usersPage = userRepository.findAllBySearchAndRole(search, role, PageRequest.of(page, size, sort));
+            List<PeopleDto> peopleDtoList = usersPage.getContent().stream()
+                    .map(this::mapUserToPeopleDto)
+                    .collect(Collectors.toList());
+            
+            return new PageImpl<>(peopleDtoList, PageRequest.of(page, size), usersPage.getTotalElements());
         }
-
-        int start = page * size;
-        int end = Math.min(start + size, peopleDtos.size());
-        List<PeopleDto> pagedContent = start < peopleDtos.size() 
-            ? peopleDtos.subList(start, end) 
-            : List.of();
-        
-        return new PageImpl<>(pagedContent, PageRequest.of(page, size), peopleDtos.size());
     }
 
     private double calculateDistanceKm(double lat1, double lon1, double lat2, double lon2) {

@@ -39,22 +39,17 @@ public class PostingController {
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortOrder,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) UUID categoryId) {
+            @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) UUID locationId,
+            @RequestParam(required = false) String search) {
         
         Sort sort = sortOrder.equalsIgnoreCase("asc") 
                 ? Sort.by(sortBy).ascending() 
                 : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         
-        Page<PostingTileDto> postings;
         PostingStatus postingStatus = status != null ? PostingStatus.fromValue(status) : null;
-        if (postingStatus != null) {
-            postings = postingService.getPostingsByStatus(postingStatus, pageable);
-        } else if (categoryId != null) {
-            postings = postingService.getPostingsByCategory(categoryId, pageable);
-        } else {
-            postings = postingService.getAllPostings(pageable);
-        }
+        Page<PostingTileDto> postings = postingService.getPostings(postingStatus, search, categoryId, locationId, pageable);
         
         return ResponseEntity.ok(postings);
     }
