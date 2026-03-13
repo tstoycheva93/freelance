@@ -1,23 +1,113 @@
 -view offer da se dostupva samo ako 1) klient - e ownera na postinga, 2) freelancer - e ownera na offera
--apply butona na POSTING za freelancer trqbva da e disabled ako veche ima offer!=canceled
+-apply butona na POSTING za freelancer trqbva da e disabled ako veche ima offer!=canceled ILI ako freelancer.availavility=not available
 -create offer ne trqbva da se otvarq ako posting e closed, ako completeness<100, ako veche ima offer!=canceled
 -kato izteche datata na posting avtomatichno da stava CLOSED, a offerite mu ako ne sa accepted/rejected da stavat CANCELED
+-add experience level to profile and offer
 
 
+ALLOFFERS:
 
-offer{
-id
-postingid
-freelancerdto
-userdto
-submittedat
-price
-coverletter
-attachment
-status
-message
-}
+-current user role (from auth)
 
+1) freelancer:
+- all offers where offer.freelancerId==currentUser.findfreelancerbyuserId
+
+2) client:
+- all offers where
+offer.postingId.clientId=currentuser.findClientbyuserid
+
+OFFERWITHPOSTINGTILE:
+
+--posting:
+-status
+-photoUrl
+-category
+-deadline
+-budget
+-title
+
+--freelancer
+-userId
+-skills
+-experience level
+
+--user
+-photoUrl
+-rating
+-reviews_count
+-firstName
+-lastName
+
+--offer
+-message
+-status
+-proposed price
+-proposed deadline
+
+OFFERTILE:
+
+--freelancer
+-userId
+-skills
+-experiencelevel
+
+--user
+-photoUrl
+-rating
+-reviews_count
+-firstName
+-lastName
+
+--offer
+-message
+-status
+-proposed price
+-proposed deadline
+
+
+VIEWOFFERDETAILS:
+
+--freelancer:
+-userId
+-occupation
+-experiencelvl
+-availability
+-website
+-cv
+
+--user:
+-rating
+-reviews_count
+-email
+-location
+
+--offer
+-proposed budget
+-proposed deadline
+-message
+-attachments
+
+
+CREATEOFFER:
+
+--freelancer
+-userId
+-cv
+-availability
+
+--user
+-firstName
+-lastName
+-rating
+-reviews_count
+-email
+-location
+
+--offer
+-proposed budget
+-message
+-proposed deadline
+-attachments
 
 
 
