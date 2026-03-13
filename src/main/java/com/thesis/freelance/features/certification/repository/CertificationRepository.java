@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.certification.repository;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.certification.entity.Certification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,8 +11,12 @@ import java.util.UUID;
 
 public interface CertificationRepository extends JpaRepository<Certification, UUID> {
 
-    List<Certification> findAllByFreelancer_IdOrderByDateDesc(UUID freelancerId);
+    @Query("SELECT c FROM Certification c WHERE c.freelancer.id = :freelancerId AND c.activityStatus = :activityStatus ORDER BY c.date DESC")
+    List<Certification> findAllByFreelancer_IdOrderByDateDesc(@Param("freelancerId") UUID freelancerId, @Param("activityStatus") ActivityStatus activityStatus);
+
+    @Query("SELECT c FROM Certification c WHERE c.freelancer.userId = :userId AND c.activityStatus = :activityStatus")
+    List<Certification> findAllByFreelancerUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
 
     @Query("SELECT c FROM Certification c WHERE c.freelancer.userId = :userId")
-    List<Certification> findAllByFreelancerUserId(@Param("userId") UUID userId);
+    List<Certification> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
 }

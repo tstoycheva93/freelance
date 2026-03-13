@@ -63,6 +63,7 @@ public class ProfileService {
     private final PostingToProfileDtoConverter postingToProfileDtoConverter;
     private final ReviewToProfileDtoConverter reviewToProfileDtoConverter;
 
+
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfileById(UUID userId) {
         User user = userRepository.findById(userId)
@@ -127,22 +128,22 @@ public class ProfileService {
             );
         }
 
-        List<FreelancerWorkDto> workExperience = workRepository.findAllByFreelancerUserId(user.getId())
+        List<FreelancerWorkDto> workExperience = workRepository.findAllByFreelancerUserId(user.getId(), ActivityStatus.ACTIVE)
                 .stream()
                 .map(this::mapWorkToDto)
                 .collect(Collectors.toList());
 
-        List<FreelancerEducationDto> education = educationRepository.findAllByFreelancerUserId(user.getId())
+        List<FreelancerEducationDto> education = educationRepository.findAllByFreelancerUserId(user.getId(), ActivityStatus.ACTIVE)
                 .stream()
                 .map(this::mapEducationToDto)
                 .collect(Collectors.toList());
 
-        List<FreelancerCertificationDto> certifications = certificationRepository.findAllByFreelancerUserId(user.getId())
+        List<FreelancerCertificationDto> certifications = certificationRepository.findAllByFreelancerUserId(user.getId(), ActivityStatus.ACTIVE)
                 .stream()
                 .map(this::mapCertificationToDto)
                 .collect(Collectors.toList());
 
-        List<FreelancerSkillDto> skills = freelancerSkillsRepository.findAllByFreelancerUserId(user.getId())
+        List<FreelancerSkillDto> skills = freelancerSkillsRepository.findAllByFreelancerUserId(user.getId(), ActivityStatus.ACTIVE)
                 .stream()
                 .map(this::mapSkillToDto)
                 .collect(Collectors.toList());
@@ -187,19 +188,19 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public Page<ReviewProfileDto> getUserReviews(UUID userId, Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findByRevieweeId(userId, pageable);
+        Page<Review> reviews = reviewRepository.findByRevieweeId(userId, ActivityStatus.ACTIVE, pageable);
         return reviews.map(review -> reviewToProfileDtoConverter.mapReviewToDto(review));
     }
 
     @Transactional(readOnly = true)
     public Page<PostingProfileDto> getUserPostings(UUID userId, Pageable pageable) {
-        Page<Posting> postings = postingRepository.findAllByClientUserId(userId, pageable);
+        Page<Posting> postings = postingRepository.findAllByClientUserId(userId, ActivityStatus.ACTIVE, pageable);
         return postings.map(posting -> postingToProfileDtoConverter.mapPostingToDto(posting));
     }
 
     @Transactional(readOnly = true)
     public Page<PostingProfileDto> getSavedPostings(UUID userId, Pageable pageable) {
-        Page<Posting> postings = savedPostingRepository.findSavedPostingsByUserId(userId, pageable);
+        Page<Posting> postings = savedPostingRepository.findSavedPostingsByUserId(userId, ActivityStatus.ACTIVE, pageable);
         return postings.map(posting -> postingToProfileDtoConverter.mapPostingToDto(posting));
     }
 

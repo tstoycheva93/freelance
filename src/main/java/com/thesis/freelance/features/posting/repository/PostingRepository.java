@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.posting.repository;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.enums.PostingStatus;
 import com.thesis.freelance.features.posting.entity.Posting;
 import org.springframework.data.domain.Page;
@@ -16,21 +17,27 @@ import java.util.UUID;
 public interface PostingRepository extends JpaRepository<Posting, UUID> {
     List<Posting> findAllByClient_Id(UUID clientId);
 
-    @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId")
-    List<Posting> findAllByClientUserId(@Param("userId") UUID userId);
+    @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId AND p.activityStatus = :activityStatus")
+    List<Posting> findAllByClientUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
+
+    @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId AND p.activityStatus = :activityStatus")
+    Page<Posting> findAllByClientUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
 
     @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId")
-    Page<Posting> findAllByClientUserId(@Param("userId") UUID userId, Pageable pageable);
+    List<Posting> findAllByClientUserIdNoFilter(@Param("userId") UUID userId);
 
-    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.status = :status")
-    Page<Posting> findAllByStatus(@Param("status") PostingStatus status, Pageable pageable);
+    @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId")
+    Page<Posting> findAllByClientUserIdNoFilter(@Param("userId") UUID userId, Pageable pageable);
 
-    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.categoryId = :categoryId")
-    Page<Posting> findAllByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
+    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.activityStatus = :activityStatus AND p.status = :status")
+    Page<Posting> findAllByStatus(@Param("activityStatus") ActivityStatus activityStatus, @Param("status") PostingStatus status, Pageable pageable);
 
-    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location")
-    Page<Posting> findAllWithClientAndLocation(Pageable pageable);
+    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.activityStatus = :activityStatus AND p.categoryId = :categoryId")
+    Page<Posting> findAllByCategoryId(@Param("activityStatus") ActivityStatus activityStatus, @Param("categoryId") UUID categoryId, Pageable pageable);
 
-    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location LEFT JOIN FETCH p.attachmentUrls WHERE p.id = :id")
-    Posting findByIdWithClientAndLocation(@Param("id") UUID id);
+    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.activityStatus = :activityStatus")
+    Page<Posting> findAllWithClientAndLocation(@Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
+
+    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location LEFT JOIN FETCH p.attachmentUrls WHERE p.activityStatus = :activityStatus AND p.id = :id")
+    Posting findByIdWithClientAndLocation(@Param("activityStatus") ActivityStatus activityStatus, @Param("id") UUID id);
 }

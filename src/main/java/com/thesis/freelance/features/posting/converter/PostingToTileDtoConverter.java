@@ -69,7 +69,7 @@ public class PostingToTileDtoConverter {
         if (user == null) return null;
         
         return ClientMiniDto.builder()
-                .id(client.getId())
+                .id(client.getUserId())
                 .name(user.getFullName())
                 .role(client.getOccupation())
                 .companyName(client.getCompanyName())

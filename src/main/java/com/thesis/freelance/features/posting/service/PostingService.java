@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.posting.service;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.enums.PostingStatus;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
@@ -46,25 +47,25 @@ public class PostingService {
     
     @Transactional(readOnly = true)
     public Page<PostingTileDto> getAllPostings(Pageable pageable) {
-        Page<Posting> postings = postingRepository.findAllWithClientAndLocation(pageable);
+        Page<Posting> postings = postingRepository.findAllWithClientAndLocation(ActivityStatus.ACTIVE, pageable);
         return postings.map(postingToTileDtoConverter::convert);
     }
     
     @Transactional(readOnly = true)
     public Page<PostingTileDto> getPostingsByStatus(PostingStatus status, Pageable pageable) {
-        Page<Posting> postings = postingRepository.findAllByStatus(status, pageable);
+        Page<Posting> postings = postingRepository.findAllByStatus(ActivityStatus.ACTIVE, status, pageable);
         return postings.map(postingToTileDtoConverter::convert);
     }
     
     @Transactional(readOnly = true)
     public Page<PostingTileDto> getPostingsByCategory(UUID categoryId, Pageable pageable) {
-        Page<Posting> postings = postingRepository.findAllByCategoryId(categoryId, pageable);
+        Page<Posting> postings = postingRepository.findAllByCategoryId(ActivityStatus.ACTIVE, categoryId, pageable);
         return postings.map(postingToTileDtoConverter::convert);
     }
     
     @Transactional(readOnly = true)
     public PostingDetailDto getPostingById(UUID id) {
-        Posting posting = postingRepository.findByIdWithClientAndLocation(id);
+        Posting posting = postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, id);
         if (posting == null) {
             throw new PostingNotFoundException(id);
         }
@@ -106,7 +107,7 @@ public class PostingService {
         }
 
         return postingToDetailDtoConverter.convert(
-                postingRepository.findByIdWithClientAndLocation(savedPosting.getId())
+                postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, savedPosting.getId())
         );
     }
     
@@ -115,7 +116,7 @@ public class PostingService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         
-        Posting posting = postingRepository.findByIdWithClientAndLocation(id);
+        Posting posting = postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, id);
         if (posting == null) {
             throw new PostingNotFoundException(id);
         }
@@ -132,6 +133,9 @@ public class PostingService {
         }
         if (dto.photoUrl() != null) {
             posting.setPhotoUrl(dto.photoUrl());
+        }
+        else {
+            posting.setPhotoUrl("https://img.pikbest.com/backgrounds/20190904/complex-digital-work-background-v_1546977jpg!w700wp");
         }
         if (dto.budget() != null) {
             posting.setBudget(dto.budget());
@@ -166,7 +170,7 @@ public class PostingService {
         }
         
         return postingToDetailDtoConverter.convert(
-                postingRepository.findByIdWithClientAndLocation(savedPosting.getId())
+                postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, savedPosting.getId())
         );
     }
     
@@ -210,7 +214,7 @@ public class PostingService {
         Posting savedPosting = postingRepository.save(posting);
         
         return postingToDetailDtoConverter.convert(
-                postingRepository.findByIdWithClientAndLocation(savedPosting.getId())
+                postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, savedPosting.getId())
         );
     }
     

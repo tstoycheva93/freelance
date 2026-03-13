@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.offer.repository;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.offer.entity.ShortlistedOffer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +16,10 @@ public interface ShortlistedOfferRepository extends JpaRepository<ShortlistedOff
     boolean existsByClientIdAndOfferId(UUID clientId, UUID offerId);
     void deleteByClientIdAndOfferId(UUID clientId, UUID offerId);
 
+    @Query("SELECT s FROM ShortlistedOffer s WHERE s.client.userId = :userId AND s.activityStatus = :activityStatus")
+    List<ShortlistedOffer> findAllByClientUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
+
     @Query("SELECT s FROM ShortlistedOffer s WHERE s.client.userId = :userId")
-    List<ShortlistedOffer> findAllByClientUserId(@Param("userId") UUID userId);
+    List<ShortlistedOffer> findAllByClientUserIdNoFilter(@Param("userId") UUID userId);
 }
 

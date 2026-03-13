@@ -1,6 +1,5 @@
 stranici za posting:
--browse postings - da ima samo koito sa active/in_progress, active(a ne inactive/deleted). a closed postings da se vijdat samo v usera i da ne mogat da budat edited
-
+-browse postings - da se podava posting.activity_status za vsichki dto i tipove, i sprqmo nego da e navsqkude
 
 stranici za offer:
 -create offer

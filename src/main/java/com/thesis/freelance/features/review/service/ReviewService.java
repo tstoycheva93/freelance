@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.review.service;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.exception.RevieweeNotFoundException;
 import com.thesis.freelance.common.exception.UserNotFoundException;
 import com.thesis.freelance.features.client.entity.Client;
@@ -54,7 +55,7 @@ public class ReviewService {
     }
 
     private void updateRevieweeRating(User reviewee) {
-        List<Review> reviews = reviewRepository.findByRevieweeId(reviewee.getId());
+        List<Review> reviews = reviewRepository     .findByRevieweeId(reviewee.getId(), ActivityStatus.ACTIVE);
 
         if (reviews.isEmpty()) {
             return;

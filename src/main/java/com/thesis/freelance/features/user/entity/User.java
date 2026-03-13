@@ -55,7 +55,7 @@ public class User extends BaseEntity {
 
     @Column(name = "photo_url", length = 500)
     @Builder.Default
-    private String photoUrl = "";
+    private String photoUrl = "https://ucarecdn.com/d34a1825-07de-4826-bc6d-0291c28b963c/-/scale_crop/300x300/";
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;

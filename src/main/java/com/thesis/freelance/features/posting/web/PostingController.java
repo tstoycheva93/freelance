@@ -38,7 +38,7 @@ public class PostingController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortOrder,
-            @RequestParam(required = false) PostingStatus status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) UUID categoryId) {
         
         Sort sort = sortOrder.equalsIgnoreCase("asc") 
@@ -47,8 +47,9 @@ public class PostingController {
         Pageable pageable = PageRequest.of(page, size, sort);
         
         Page<PostingTileDto> postings;
-        if (status != null) {
-            postings = postingService.getPostingsByStatus(status, pageable);
+        PostingStatus postingStatus = status != null ? PostingStatus.fromValue(status) : null;
+        if (postingStatus != null) {
+            postings = postingService.getPostingsByStatus(postingStatus, pageable);
         } else if (categoryId != null) {
             postings = postingService.getPostingsByCategory(categoryId, pageable);
         } else {

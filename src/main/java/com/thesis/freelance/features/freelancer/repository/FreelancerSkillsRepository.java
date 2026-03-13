@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.freelancer.repository;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.freelancer.entity.FreelancerSkills;
 import com.thesis.freelance.features.skill.entity.Skill;
@@ -21,9 +22,13 @@ public interface FreelancerSkillsRepository extends JpaRepository<FreelancerSkil
     from FreelancerSkills fs
     join fetch fs.skill
     where fs.freelancer.id = :freelancerId
-""")
-    List<FreelancerSkills> findByFreelancerIdWithSkill(@Param("freelancerId") UUID freelancerId);
+    and fs.activityStatus = :activityStatus
+    """)
+    List<FreelancerSkills> findByFreelancerIdWithSkill(@Param("freelancerId") UUID freelancerId, @Param("activityStatus") ActivityStatus activityStatus);
+
+    @Query("SELECT fs FROM FreelancerSkills fs WHERE fs.freelancer.userId = :userId AND fs.activityStatus = :activityStatus")
+    List<FreelancerSkills> findAllByFreelancerUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
 
     @Query("SELECT fs FROM FreelancerSkills fs WHERE fs.freelancer.userId = :userId")
-    List<FreelancerSkills> findAllByFreelancerUserId(@Param("userId") UUID userId);
+    List<FreelancerSkills> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
 }

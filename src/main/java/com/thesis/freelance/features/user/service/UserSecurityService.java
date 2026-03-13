@@ -121,42 +121,42 @@ public class UserSecurityService {
     }
 
     private void deactivateFreelancerLinkedData(UUID userId) {
-        workRepository.findAllByFreelancerUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        educationRepository.findAllByFreelancerUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        certificationRepository.findAllByFreelancerUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        uploadedCVRepository.findAllByFreelancerUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        freelancerSkillsRepository.findAllByFreelancerUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        offerRepository.findAllByFreelancerUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        savedPostingRepository.findAllByFreelancerUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        workRepository.findAllByFreelancerUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        educationRepository.findAllByFreelancerUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        certificationRepository.findAllByFreelancerUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        uploadedCVRepository.findAllByFreelancerUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        freelancerSkillsRepository.findAllByFreelancerUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        offerRepository.findAllByFreelancerUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        savedPostingRepository.findAllByFreelancerUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
 
-        workRepository.saveAll(workRepository.findAllByFreelancerUserId(userId));
-        educationRepository.saveAll(educationRepository.findAllByFreelancerUserId(userId));
-        certificationRepository.saveAll(certificationRepository.findAllByFreelancerUserId(userId));
-        uploadedCVRepository.saveAll(uploadedCVRepository.findAllByFreelancerUserId(userId));
-        freelancerSkillsRepository.saveAll(freelancerSkillsRepository.findAllByFreelancerUserId(userId));
-        offerRepository.saveAll(offerRepository.findAllByFreelancerUserId(userId));
-        savedPostingRepository.saveAll(savedPostingRepository.findAllByFreelancerUserId(userId));
+        workRepository.saveAll(workRepository.findAllByFreelancerUserIdNoFilter(userId));
+        educationRepository.saveAll(educationRepository.findAllByFreelancerUserIdNoFilter(userId));
+        certificationRepository.saveAll(certificationRepository.findAllByFreelancerUserIdNoFilter(userId));
+        uploadedCVRepository.saveAll(uploadedCVRepository.findAllByFreelancerUserIdNoFilter(userId));
+        freelancerSkillsRepository.saveAll(freelancerSkillsRepository.findAllByFreelancerUserIdNoFilter(userId));
+        offerRepository.saveAll(offerRepository.findAllByFreelancerUserIdNoFilter(userId));
+        savedPostingRepository.saveAll(savedPostingRepository.findAllByFreelancerUserIdNoFilter(userId));
     }
 
     private void deactivateClientLinkedData(UUID userId) {
-        postingRepository.findAllByClientUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        shortlistedOfferRepository.findAllByClientUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        postingRepository.findAllByClientUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        shortlistedOfferRepository.findAllByClientUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
 
-        postingRepository.saveAll(postingRepository.findAllByClientUserId(userId));
-        shortlistedOfferRepository.saveAll(shortlistedOfferRepository.findAllByClientUserId(userId));
+        postingRepository.saveAll(postingRepository.findAllByClientUserIdNoFilter(userId));
+        shortlistedOfferRepository.saveAll(shortlistedOfferRepository.findAllByClientUserIdNoFilter(userId));
     }
 
     private void deactivateUserLinkedData(UUID userId) {
-        notificationRepository.findByUserIdOrderByCreatedAtDesc(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        conversationRepository.findAllByUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        messageRepository.findAllByUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        transactionRepository.findAllByUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        reviewRepository.findAllByUserId(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        notificationRepository.findByUserIdOrderByCreatedAtDescNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        conversationRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        messageRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        transactionRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
+        reviewRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
 
-        notificationRepository.saveAll(notificationRepository.findByUserIdOrderByCreatedAtDesc(userId));
-        conversationRepository.saveAll(conversationRepository.findAllByUserId(userId));
-        messageRepository.saveAll(messageRepository.findAllByUserId(userId));
-        transactionRepository.saveAll(transactionRepository.findAllByUserId(userId));
-        reviewRepository.saveAll(reviewRepository.findAllByUserId(userId));
+        notificationRepository.saveAll(notificationRepository.findByUserIdOrderByCreatedAtDescNoFilter(userId));
+        conversationRepository.saveAll(conversationRepository.findAllByUserIdNoFilter(userId));
+        messageRepository.saveAll(messageRepository.findAllByUserIdNoFilter(userId));
+        transactionRepository.saveAll(transactionRepository.findAllByUserIdNoFilter(userId));
+        reviewRepository.saveAll(reviewRepository.findAllByUserIdNoFilter(userId));
     }
 }

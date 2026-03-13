@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.freelancer.service;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.category.dto.CategoryWithSkillsDto;
 import com.thesis.freelance.features.category.service.CategoryService;
 import com.thesis.freelance.features.certification.entity.Certification;
@@ -46,7 +47,7 @@ public class FreelancerDetailsService {
         Freelancer freelancer = freelancerRepository.findById(freelancerId)
                 .orElseThrow(() -> new IllegalArgumentException("Freelancer not found"));
 
-        List<FreelancerSkillDto> skills = freelancerSkillsRepository.findByFreelancerIdWithSkill(freelancerId)
+        List<FreelancerSkillDto> skills = freelancerSkillsRepository.findByFreelancerIdWithSkill(freelancerId, ActivityStatus.ACTIVE)
                 .stream()
                 .map(fs -> new FreelancerSkillDto(
                         fs.getSkill().getId(),
@@ -54,22 +55,22 @@ public class FreelancerDetailsService {
                 ))
                 .toList();
 
-        List<FreelancerEducationDto> education = educationRepository.findAllByFreelancer_IdOrderByIsCurrentDescStartDateDesc(freelancerId)
+        List<FreelancerEducationDto> education = educationRepository.findAllByFreelancer_IdOrderByIsCurrentDescStartDateDesc(freelancerId, ActivityStatus.ACTIVE)
                 .stream()
                 .map(this::toEducationDto)
                 .collect(Collectors.toList());
 
-        List<FreelancerWorkDto> work = workRepository.findAllByFreelancer_IdOrderByIsCurrentDescStartDateDesc(freelancerId)
+        List<FreelancerWorkDto> work = workRepository.findAllByFreelancer_IdOrderByIsCurrentDescStartDateDesc(freelancerId, ActivityStatus.ACTIVE)
                 .stream()
                 .map(this::toWorkDto)
                 .collect(Collectors.toList());
 
-        List<FreelancerCertificationDto> certifications = certificationRepository.findAllByFreelancer_IdOrderByDateDesc(freelancerId)
+        List<FreelancerCertificationDto> certifications = certificationRepository.findAllByFreelancer_IdOrderByDateDesc(freelancerId, ActivityStatus.ACTIVE)
                 .stream()
                 .map(this::toCertificationDto)
                 .collect(Collectors.toList());
 
-        Optional<UploadedCV> cv = uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancerId);
+        Optional<UploadedCV> cv = uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancerId, ActivityStatus.ACTIVE);
         FreelancerCVDto cvDto = cv.map(this::toCVDto).orElse(null);
 
         return new FreelancerDetailsDto(
@@ -266,7 +267,7 @@ public class FreelancerDetailsService {
     // CV CRUD
     @Transactional(readOnly = true)
     public FreelancerCVDto getCV(UUID freelancerId) {
-        UploadedCV cv = uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancerId).orElse(null);
+        UploadedCV cv = uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancerId, ActivityStatus.ACTIVE).orElse(null);
         return cv == null ? null : toCVDto(cv);
     }
 
@@ -275,7 +276,7 @@ public class FreelancerDetailsService {
         Freelancer freelancer = freelancerRepository.findById(freelancerId)
                 .orElseThrow(() -> new IllegalArgumentException("Freelancer not found"));
 
-        uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancerId)
+        uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancerId, ActivityStatus.ACTIVE)
                 .ifPresent(existing -> uploadedCVRepository.deleteById(existing.getId()));
 
         UploadedCV cv = UploadedCV.builder()

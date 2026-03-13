@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.posting.repository;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.entity.SavedPosting;
 import org.springframework.data.domain.Page;
@@ -23,9 +24,12 @@ public interface SavedPostingRepository extends JpaRepository<SavedPosting, UUID
     @Transactional
     void deleteByFreelancerIdAndPostingId(UUID freelancerId, UUID postingId);
 
-    @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId")
-    List<SavedPosting> findAllByFreelancerUserId(@Param("userId") UUID userId);
+    @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId AND s.posting.activityStatus = :activityStatus")
+    List<SavedPosting> findAllByFreelancerUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
 
-    @Query("SELECT s.posting FROM SavedPosting s WHERE s.freelancer.userId = :userId")
-    Page<Posting> findSavedPostingsByUserId(@Param("userId") UUID userId, Pageable pageable);
+    @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId")
+    List<SavedPosting> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
+
+    @Query("SELECT s.posting FROM SavedPosting s WHERE s.freelancer.userId = :userId AND s.posting.activityStatus = :activityStatus")
+    Page<Posting> findSavedPostingsByUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
 }

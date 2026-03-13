@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,6 +22,14 @@ import java.util.UUID;
 public class ProfileController {
 
     private final ProfileService profileService;
+
+    public record PostingPageResponse(
+            List<PostingProfileDto> content,
+            boolean hasNext,
+            long totalElements,
+            int totalPages
+    ) {}
+
 
     @GetMapping("/user/{username}")
     public ResponseEntity<ProfileResponseDto> getProfileByUsername(@PathVariable String username) {
@@ -42,22 +51,38 @@ public class ProfileController {
     }
 
     @GetMapping("/{userId}/postings")
-    public ResponseEntity<Page<PostingProfileDto>> getUserPostings(
-            @PathVariable UUID userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(profileService.getUserPostings(userId, pageable));
-    }
-
-    @GetMapping("/{userId}/saved-postings")
-    public ResponseEntity<Page<PostingProfileDto>> getSavedPostings(
+    public ResponseEntity<PostingPageResponse> getUserPostings(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(profileService.getSavedPostings(userId, pageable));
+        Page<PostingProfileDto> result = profileService.getUserPostings(userId, pageable);
+
+        return ResponseEntity.ok(new PostingPageResponse(
+                result.getContent(),
+                result.hasNext(),
+                result.getTotalElements(),
+                result.getTotalPages()
+        ));
     }
+
+
+    @GetMapping("/{userId}/saved-postings")
+    public ResponseEntity<PostingPageResponse> getSavedPostings(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostingProfileDto> result = profileService.getSavedPostings(userId, pageable);
+
+        return ResponseEntity.ok(new PostingPageResponse(
+                result.getContent(),
+                result.hasNext(),
+                result.getTotalElements(),
+                result.getTotalPages()
+        ));
+    }
+
 
     @GetMapping("/people")
     public ResponseEntity<PeopleResponseDto> getPeople(

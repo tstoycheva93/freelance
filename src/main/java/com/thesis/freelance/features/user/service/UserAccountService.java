@@ -47,7 +47,7 @@ public class UserAccountService {
         if (dto.name() != null) user.setName(dto.name());
         if (dto.surname() != null) user.setSurname(dto.surname());
         if (dto.photoUrl() != null) {
-            user.setPhotoUrl(dto.photoUrl().isBlank() ? null : dto.photoUrl());
+            user.setPhotoUrl(dto.photoUrl().isBlank() ? "https://ucarecdn.com/d34a1825-07de-4826-bc6d-0291c28b963c/-/scale_crop/300x300/" : dto.photoUrl());
         }
         if (dto.isPublic() != null) user.setIsPublic(dto.isPublic());
 
