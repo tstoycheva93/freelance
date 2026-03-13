@@ -23,6 +23,7 @@ import com.thesis.freelance.features.profile.dto.ProfileResponseDto;
 import com.thesis.freelance.features.posting.dto.PostingProfileDto;
 import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
+import com.thesis.freelance.features.posting.repository.SavedPostingRepository;
 import com.thesis.freelance.features.review.dto.ReviewProfileDto;
 import com.thesis.freelance.features.review.entity.Review;
 import com.thesis.freelance.features.review.repository.ReviewRepository;
@@ -54,6 +55,7 @@ public class ProfileService {
     private final ClientRepository clientRepository;
     private final ReviewRepository reviewRepository;
     private final PostingRepository postingRepository;
+    private final SavedPostingRepository savedPostingRepository;
     private final WorkRepository workRepository;
     private final EducationRepository educationRepository;
     private final CertificationRepository certificationRepository;
@@ -192,6 +194,12 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public Page<PostingProfileDto> getUserPostings(UUID userId, Pageable pageable) {
         Page<Posting> postings = postingRepository.findAllByClientUserId(userId, pageable);
+        return postings.map(posting -> postingToProfileDtoConverter.mapPostingToDto(posting));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostingProfileDto> getSavedPostings(UUID userId, Pageable pageable) {
+        Page<Posting> postings = savedPostingRepository.findSavedPostingsByUserId(userId, pageable);
         return postings.map(posting -> postingToProfileDtoConverter.mapPostingToDto(posting));
     }
 

@@ -15,6 +15,7 @@ import java.util.UUID;
 public class ReviewProfileDto {
     private UUID id;
     private String reviewerName;
+    private String reviewerUsername;
     private String reviewerPhoto;
     private LocalDateTime createdAt;
     private Double rating;

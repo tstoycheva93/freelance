@@ -50,6 +50,15 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getUserPostings(userId, pageable));
     }
 
+    @GetMapping("/{userId}/saved-postings")
+    public ResponseEntity<Page<PostingProfileDto>> getSavedPostings(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(profileService.getSavedPostings(userId, pageable));
+    }
+
     @GetMapping("/people")
     public ResponseEntity<PeopleResponseDto> getPeople(
             @RequestParam(defaultValue = "0") int page,

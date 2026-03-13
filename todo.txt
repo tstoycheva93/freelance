@@ -1,9 +1,4 @@
-locked behind profile completeness - freelancer[creating an offer]
-message na posting li da e ili na offer? mai offer
-
-
 stranici za posting:
--saved postings - tab v ME za freelancer
 -browse postings - da ima samo koito sa active/in_progress, active(a ne inactive/deleted). a closed postings da se vijdat samo v usera i da ne mogat da budat edited
 
 

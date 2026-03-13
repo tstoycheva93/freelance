@@ -1,6 +1,9 @@
 package com.thesis.freelance.features.posting.repository;
 
+import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.entity.SavedPosting;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +25,7 @@ public interface SavedPostingRepository extends JpaRepository<SavedPosting, UUID
 
     @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId")
     List<SavedPosting> findAllByFreelancerUserId(@Param("userId") UUID userId);
+
+    @Query("SELECT s.posting FROM SavedPosting s WHERE s.freelancer.userId = :userId")
+    Page<Posting> findSavedPostingsByUserId(@Param("userId") UUID userId, Pageable pageable);
 }

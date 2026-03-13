@@ -23,4 +23,15 @@ public class PostingProfileDto {
     private String photoUrl;
     private LocalDate deadline;
     private String location;
+    private ClientDto client;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ClientDto {
+        private UUID id;
+        private String name;
+        private String photoUrl;
+    }
 }

@@ -64,31 +64,11 @@ public class Freelancer extends BaseEntity {
 
     // Helper methods
 
-    public void setAvailable() {
-        this.availability = Availability.AVAILABLE;
-    }
-
-    public void setBusy() {
-        this.availability = Availability.BUSY;
-    }
-
-    public void setNotAvailable() {
-        this.availability = Availability.NOT_AVAILABLE;
-    }
-
     public void incrementOffers() {
         this.offersCount++;
     }
 
     public void updateLastActive() {
         this.lastActiveAt = LocalDateTime.now();
-    }
-
-    public boolean isProfileComplete() {
-        return completeness >= 100;
-    }
-
-    public void updateCompleteness(Integer percentage) {
-        this.completeness = Math.min(100, Math.max(0, percentage));
     }
 }

@@ -51,24 +51,4 @@ public class Client extends BaseEntity {
     @Builder.Default
     private Integer completeness = 0;
 
-    // Helper methods
-
-    public void incrementPostings() {
-        this.postingsCount++;
-    }
-
-    public void updateCompleteness(Integer percentage) {
-        this.completeness = Math.min(100, Math.max(0, percentage));
-    }
-
-    @Transient
-    public boolean hasCompanyProfile() {
-        return this.companyName != null && !this.companyName.trim().isEmpty();
-    }
-
-    @Transient
-    public boolean isProfileComplete() {
-        return this.completeness >= 100;
-    }
-
 }
