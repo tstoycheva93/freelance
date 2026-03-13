@@ -1,8 +1,56 @@
 stranici za offer:
 -create offer
 -offers (za freelancer - vsichki offers koito e napravil v spisuk, za client - vsichki offers koito e poluchil)
--view offer (s buton za cancel i message ako e freelancera, s butoni za accept i reject ako e client)
+-view offer - da se dostupva samo ako 1) klient - e ownera na postinga, 2) freelancer - e ownera na offera
 -posting offers - s tiles kato offers i na vsqka na freelancer ima message,cancel (sprqmo statusa) a na client msg accept reject shortlist
+
+-apply butona na POSTING za freelancer trqbva da e disabled ako veche ima offer
+-kato izteche datata na posting avtomatichno da stava CLOSED, a offerite mu ako ne sa accepted/rejected da stavat CANCELED
+
+
+
+offer{
+id
+postingid
+freelancerdto
+userdto
+submittedat
+price
+coverletter
+attachment
+status
+message
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 drugi stranici:
 -izvestiq - samo overlay
