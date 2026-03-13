@@ -1,12 +1,11 @@
 locked behind profile completeness - freelancer[creating an offer]
-flagging user, review
 message na posting li da e ili na offer? mai offer
-browse postings - da ima samo koito sa active/in_progress, active(a ne inactive/deleted). a closed postings da se vijdat samo v usera i da ne mogat da budat edited
+
 
 stranici za posting:
 -saved postings - tab v ME za freelancer
--view posting (s butoni za edit i delete i view offers ako e clienta, s butoni za like i apply ako freelancer, bez butoni ako e dr client)
--browse postings
+-browse postings - da ima samo koito sa active/in_progress, active(a ne inactive/deleted). a closed postings da se vijdat samo v usera i da ne mogat da budat edited
+
 
 stranici za offer:
 -create offer
@@ -19,7 +18,7 @@ drugi stranici:
 
 admin:
 da slaga inactive na useri, review, posting
-da preglejda flags
+da preglejda flags na user, review
 da pozvolqva na useri da redaktirat username, birth date
 da prashtat sistemen email na vsichki active - newsletter, system
 crud za location, category, skill
