@@ -12,9 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface ShortlistedOfferRepository extends JpaRepository<ShortlistedOffer, UUID> {
-    List<ShortlistedOffer> findByClientId(UUID clientId);
-    boolean existsByClientIdAndOfferId(UUID clientId, UUID offerId);
-    void deleteByClientIdAndOfferId(UUID clientId, UUID offerId);
 
     @Query("SELECT s FROM ShortlistedOffer s WHERE s.client.userId = :userId AND s.activityStatus = :activityStatus")
     List<ShortlistedOffer> findAllByClientUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
