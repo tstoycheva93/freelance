@@ -3,6 +3,7 @@ package com.thesis.freelance.features.offer.web;
 import com.thesis.freelance.common.enums.OfferStatus;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
+import com.thesis.freelance.features.offer.dto.CreateOfferRequestDto;
 import com.thesis.freelance.features.offer.dto.OfferForPostingDto;
 import com.thesis.freelance.features.offer.dto.OfferWithPostingDto;
 import com.thesis.freelance.features.offer.service.OfferService;
@@ -97,5 +98,34 @@ public class OfferController {
                 offerId, newStatus, user.getId());
 
         return ResponseEntity.ok(updatedOffer);
+    }
+
+    @PostMapping("/posting/{postingId}/offers")
+    public ResponseEntity<OfferForPostingDto> createOffer(
+            @PathVariable UUID postingId,
+            @RequestBody CreateOfferRequestDto requestDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Validate user is freelancer
+        if (!user.isFreelancer()) {
+            throw new IllegalStateException("Only freelancers can create offers");
+        }
+
+        OfferForPostingDto createdOffer = offerService.createOffer(
+                postingId, user.getId(), requestDto);
+
+        return ResponseEntity.ok(createdOffer);
+    }
+
+    @GetMapping("/check-active-offer")
+    public ResponseEntity<java.util.Map<String, Object>> checkHasActiveOffer(
+            @RequestParam UUID postingId,
+            @RequestParam UUID freelancerUserId) {
+
+        java.util.Map<String, Object> result = offerService.checkActiveOfferForPosting(postingId, freelancerUserId);
+        return ResponseEntity.ok(result);
     }
 }

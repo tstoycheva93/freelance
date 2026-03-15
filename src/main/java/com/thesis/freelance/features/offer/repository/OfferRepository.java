@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -44,4 +45,12 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
 
     @Query("SELECT o FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus AND o.status = :status")
     Page<Offer> findByPostingIdAndActivityStatusAndStatus(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus, @Param("status") OfferStatus status, Pageable pageable);
+
+    // Check for existing active offer (pending/shortlisted/accepted)
+    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED)")
+    boolean hasActiveOfferByPostingAndFreelancer(@Param("postingId") UUID postingId, @Param("freelancerUserId") UUID freelancerUserId, @Param("activityStatus") com.thesis.freelance.common.enums.ActivityStatus activityStatus);
+
+    // Get active offer ID
+    @Query("SELECT o.id FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED) ORDER BY o.createdAt DESC")
+    Optional<UUID> findActiveOfferIdByPostingAndFreelancer(@Param("postingId") UUID postingId, @Param("freelancerUserId") UUID freelancerUserId, @Param("activityStatus") com.thesis.freelance.common.enums.ActivityStatus activityStatus);
 }

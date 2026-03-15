@@ -2,6 +2,7 @@ package com.thesis.freelance.common.entity;
 
 import com.thesis.freelance.common.enums.ActivityStatus;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

@@ -5,8 +5,7 @@ import com.thesis.freelance.common.enums.OfferStatus;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.posting.entity.Posting;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +27,9 @@ import java.util.List;
 )
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Offer extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)

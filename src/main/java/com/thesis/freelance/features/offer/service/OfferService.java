@@ -1,11 +1,12 @@
 package com.thesis.freelance.features.offer.service;
 
 import com.thesis.freelance.common.enums.ActivityStatus;
+import com.thesis.freelance.common.enums.Availability;
 import com.thesis.freelance.common.enums.OfferStatus;
+import com.thesis.freelance.common.enums.PostingStatus;
 import com.thesis.freelance.features.category.entity.Category;
 import com.thesis.freelance.features.category.repository.CategoryRepository;
 import com.thesis.freelance.features.client.entity.Client;
-import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.freelancer.entity.FreelancerSkills;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
@@ -13,6 +14,7 @@ import com.thesis.freelance.features.freelancer.repository.FreelancerSkillsRepos
 import com.thesis.freelance.features.offer.converter.OfferToOfferForPostingDtoConverter;
 import com.thesis.freelance.features.offer.converter.OfferToOfferWithPostingDtoConverter;
 import com.thesis.freelance.features.offer.converter.SkillListMapper;
+import com.thesis.freelance.features.offer.dto.CreateOfferRequestDto;
 import com.thesis.freelance.features.offer.dto.OfferForPostingDto;
 import com.thesis.freelance.features.offer.dto.OfferWithPostingDto;
 import com.thesis.freelance.features.offer.entity.Offer;
@@ -20,6 +22,8 @@ import com.thesis.freelance.features.offer.repository.OfferRepository;
 import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.skill.dto.SkillDto;
+import com.thesis.freelance.features.uploadedCV.entity.UploadedCV;
+import com.thesis.freelance.features.uploadedCV.repository.UploadedCVRepository;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +48,8 @@ public class OfferService {
     private final OfferToOfferWithPostingDtoConverter offerToOfferWithPostingDtoConverter;
     private final OfferToOfferForPostingDtoConverter offerToOfferForPostingDtoConverter;
     private final SkillListMapper skillListMapper;
+    private final FreelancerRepository freelancerRepository;
+    private final UploadedCVRepository uploadedCVRepository;
 
     @Transactional(readOnly = true)
     public Page<OfferWithPostingDto> getOffersForFreelancer(UUID freelancerUserId, OfferStatus status, Pageable pageable) {
@@ -179,5 +185,94 @@ public class OfferService {
             field.set(dto, categoryName);
         } catch (Exception e) {
         }
+    }
+
+    @Transactional
+    public OfferForPostingDto createOffer(UUID postingId, UUID freelancerUserId, CreateOfferRequestDto requestDto) {
+        // 1. Get posting and validate
+        Posting posting = postingRepository.findById(postingId)
+                .orElseThrow(() -> new IllegalArgumentException("Posting not found"));
+
+        if (posting.getStatus() == PostingStatus.CLOSED) {
+            throw new IllegalStateException("Cannot apply to closed posting");
+        }
+
+        // 2. Get freelancer and validate
+        Freelancer freelancer = freelancerRepository.findByUserId(freelancerUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Freelancer not found"));
+
+        if (freelancer.getAvailability() == Availability.NOT_AVAILABLE) {
+            throw new IllegalStateException("Freelancer is not available");
+        }
+
+        if (freelancer.getCompleteness() < 100) {
+            throw new IllegalStateException("Freelancer profile must be complete to apply");
+        }
+
+        // 3. Check for existing active offer
+        if (offerRepository.hasActiveOfferByPostingAndFreelancer(
+                postingId, freelancerUserId, ActivityStatus.ACTIVE)) {
+            throw new IllegalStateException("You already have an active offer for this posting");
+        }
+
+        // 4. Get CV from freelancer
+        UploadedCV cv = uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancer.getId(), ActivityStatus.ACTIVE)
+                .orElseThrow(() -> new IllegalStateException("Freelancer must have a CV uploaded"));
+
+        // 5. Create offer entity
+        Offer offer = Offer.builder()
+                .posting(posting)
+                .freelancer(freelancer)
+                .price(requestDto.getPrice())
+                .message(requestDto.getMessage())
+                .deliveryTime(requestDto.getDeliveryTime())
+                .status(OfferStatus.PENDING)
+                .build();
+
+        // 6. Add CV attachment
+        if (requestDto.getAttachmentUrls() != null && !requestDto.getAttachmentUrls().isEmpty()) {
+            offer.setAttachments(requestDto.getAttachmentUrls());
+        }
+        if (cv != null && cv.getAttachmentUrl() != null) {
+            offer.addAttachment(cv.getAttachmentUrl());
+        }
+
+        // 7. Save and return
+        Offer savedOffer = offerRepository.save(offer);
+        freelancer.incrementOffers();
+
+        // Prepare response DTO
+        User freelancerUser = userRepository.findById(freelancer.getUserId()).orElse(null);
+        List<SkillDto> skills = getFreelancerSkills(freelancer.getId());
+
+        OfferForPostingDto dto = offerToOfferForPostingDtoConverter.convert(savedOffer, freelancer, freelancerUser);
+        dto.setSkills(skills);
+
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasActiveOfferForPosting(UUID postingId, UUID freelancerUserId) {
+        return offerRepository.hasActiveOfferByPostingAndFreelancer(
+                postingId, freelancerUserId, ActivityStatus.ACTIVE);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> checkActiveOfferForPosting(UUID postingId, UUID freelancerUserId) {
+        boolean hasActiveOffer = offerRepository.hasActiveOfferByPostingAndFreelancer(
+                postingId, freelancerUserId, ActivityStatus.ACTIVE);
+        
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("hasActiveOffer", hasActiveOffer);
+        
+        if (hasActiveOffer) {
+            java.util.UUID offerId = offerRepository.findActiveOfferIdByPostingAndFreelancer(
+                    postingId, freelancerUserId, ActivityStatus.ACTIVE).orElse(null);
+            if (offerId != null) {
+                result.put("offerId", offerId.toString());
+            }
+        }
+        
+        return result;
     }
 }
