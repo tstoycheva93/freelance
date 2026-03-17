@@ -27,7 +27,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "AND (:search IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "AND (:role IS NULL OR ur.role = :role)")
+            "AND (:role IS NULL OR ur.role = :role) " +
+            "AND ur.role != 'ADMIN'")
     List<User> findAllBySearchAndRole(@Param("search") String search,
                                       @Param("role") String role,
                                       Sort sort);
@@ -40,7 +41,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "AND (:search IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "AND (:role IS NULL OR ur.role = :role)")
+            "AND (:role IS NULL OR ur.role = :role) " +
+            "AND ur.role != 'ADMIN'")
     Page<User> findAllBySearchAndRole(@Param("search") String search,
                                       @Param("role") String role,
                                       Pageable pageable);

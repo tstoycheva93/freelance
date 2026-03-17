@@ -14,7 +14,7 @@ public interface CertificationRepository extends JpaRepository<Certification, UU
     @Query("SELECT c FROM Certification c WHERE c.freelancer.id = :freelancerId AND c.activityStatus = :activityStatus ORDER BY c.date DESC")
     List<Certification> findAllByFreelancer_IdOrderByDateDesc(@Param("freelancerId") UUID freelancerId, @Param("activityStatus") ActivityStatus activityStatus);
 
-    @Query("SELECT c FROM Certification c WHERE c.freelancer.userId = :userId AND c.activityStatus = :activityStatus")
+    @Query("SELECT c FROM Certification c WHERE c.freelancer.userId = :userId AND c.activityStatus = :activityStatus AND (c.expiration IS NULL OR c.expiration > CURRENT_DATE)")
     List<Certification> findAllByFreelancerUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
 
     @Query("SELECT c FROM Certification c WHERE c.freelancer.userId = :userId")

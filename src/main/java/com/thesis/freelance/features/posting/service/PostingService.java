@@ -126,11 +126,15 @@ public class PostingService {
             location = locationRepository.findById(dto.location().id()).orElse(null);
         }
 
+        String photoUrl = dto.photoUrl() != null && !dto.photoUrl().isBlank()
+                ? dto.photoUrl()
+                : "https://img.pikbest.com/backgrounds/20190904/complex-digital-work-background-v_1546977jpg!w700wp";
+
         Posting posting = Posting.builder()
                 .client(client)
                 .title(dto.title())
                 .categoryId(dto.categoryId())
-                .photoUrl(dto.photoUrl())
+                .photoUrl(photoUrl)
                 .budget(dto.budget())
                 .deadline(dto.deadline())
                 .description(dto.description())
@@ -172,10 +176,9 @@ public class PostingService {
         if (dto.categoryId() != null) {
             posting.setCategoryId(dto.categoryId());
         }
-        if (dto.photoUrl() != null) {
+        if (dto.photoUrl() != null && !dto.photoUrl().isBlank()) {
             posting.setPhotoUrl(dto.photoUrl());
-        }
-        else {
+        } else {
             posting.setPhotoUrl("https://img.pikbest.com/backgrounds/20190904/complex-digital-work-background-v_1546977jpg!w700wp");
         }
         if (dto.budget() != null) {

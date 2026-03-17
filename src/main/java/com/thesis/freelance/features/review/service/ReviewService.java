@@ -5,6 +5,8 @@ import com.thesis.freelance.common.exception.RevieweeNotFoundException;
 import com.thesis.freelance.common.exception.UserNotFoundException;
 import com.thesis.freelance.features.review.dto.CreateReviewDto;
 import com.thesis.freelance.features.review.entity.Review;
+import com.thesis.freelance.features.review.exception.ReviewNotFoundException;
+import com.thesis.freelance.features.review.exception.UnauthorizedReviewAccessException;
 import com.thesis.freelance.features.review.repository.ReviewRepository;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
@@ -48,10 +50,28 @@ public class ReviewService {
         return savedReview;
     }
 
+    @Transactional
+    public void deleteReview(UUID reviewId, UUID reviewerId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException(reviewId));
+
+        if (!review.getReviewer().getId().equals(reviewerId)) {
+            throw new UnauthorizedReviewAccessException();
+        }
+
+        User reviewee = review.getReviewee();
+        reviewRepository.delete(review);
+
+        updateRevieweeRating(reviewee);
+    }
+
     private void updateRevieweeRating(User reviewee) {
         List<Review> reviews = reviewRepository     .findByRevieweeId(reviewee.getId(), ActivityStatus.ACTIVE);
 
         if (reviews.isEmpty()) {
+            reviewee.setRating(BigDecimal.ZERO);
+            reviewee.setReviewsCount(0L);
+            userRepository.save(reviewee);
             return;
         }
 

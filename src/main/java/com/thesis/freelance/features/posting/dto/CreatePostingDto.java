@@ -4,6 +4,7 @@ import com.thesis.freelance.common.enums.ExperienceLevel;
 import com.thesis.freelance.common.enums.PostingStatus;
 import com.thesis.freelance.features.location.dto.LocationDto;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.util.UUID;
 public record CreatePostingDto(
         @NotNull(message = "Cannot be empty.") String title,
         @NotNull UUID categoryId,
-        @NotNull(message = "Must upload photo.") String photoUrl,
+        String photoUrl,
         @NotNull(message = "Must set budget.") Integer budget,
         @NotNull(message = "Cannot be empty.") @Future(message = "Must be upcoming.") LocalDate deadline,
         @NotNull(message = "Cannot be empty.") String description,
@@ -22,5 +23,5 @@ public record CreatePostingDto(
         @NotNull(message = "Cannot be empty.") LocationDto location,
         @NotNull(message = "Cannot be empty.") ExperienceLevel experienceLevel,
         List<String> attachmentUrls,
-        List<UUID> skillIds) implements Serializable {
+        @NotEmpty(message = "At least one skill is required") List<UUID> skillIds) implements Serializable {
 }

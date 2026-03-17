@@ -33,4 +33,17 @@ public class ReviewController {
         Review review = reviewService.createReview(currentUser.getId(), dto);
         return ResponseEntity.ok(review);
     }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable UUID reviewId,
+            Authentication authentication) {
+        
+        String username = authentication.getName();
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        reviewService.deleteReview(reviewId, currentUser.getId());
+        return ResponseEntity.noContent().build();
+    }
 }
