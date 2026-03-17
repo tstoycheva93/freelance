@@ -3,10 +3,6 @@ package com.thesis.freelance.features.review.service;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.exception.RevieweeNotFoundException;
 import com.thesis.freelance.common.exception.UserNotFoundException;
-import com.thesis.freelance.features.client.entity.Client;
-import com.thesis.freelance.features.client.repository.ClientRepository;
-import com.thesis.freelance.features.freelancer.entity.Freelancer;
-import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
 import com.thesis.freelance.features.review.dto.CreateReviewDto;
 import com.thesis.freelance.features.review.entity.Review;
 import com.thesis.freelance.features.review.repository.ReviewRepository;
@@ -27,8 +23,6 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
-    private final FreelancerRepository freelancerRepository;
-    private final ClientRepository clientRepository;
 
     @Transactional
     public Review createReview(UUID reviewerId, CreateReviewDto dto) {

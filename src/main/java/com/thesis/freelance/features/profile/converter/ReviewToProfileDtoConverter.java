@@ -15,6 +15,7 @@ public class ReviewToProfileDtoConverter {
                 .id(review.getId())
                 .reviewerName(review.getReviewer().getFullName())
                 .reviewerUsername(review.getReviewer().getUsername())
+                .reviewerId(review.getReviewer().getId())
                 .reviewerPhoto(review.getReviewer().getPhotoUrl())
                 .createdAt(review.getCreatedAt())
                 .rating(review.getOverallRating() != null ? review.getOverallRating().doubleValue() : null)

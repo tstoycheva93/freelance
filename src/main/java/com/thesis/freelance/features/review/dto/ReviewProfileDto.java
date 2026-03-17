@@ -17,6 +17,7 @@ public class ReviewProfileDto {
     private String reviewerName;
     private String reviewerUsername;
     private String reviewerPhoto;
+    private UUID reviewerId;
     private LocalDateTime createdAt;
     private Double rating;
     private Double timeliness;

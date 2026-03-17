@@ -1,10 +1,13 @@
 -da ne se pokazvat profili na admini
+
 -po malki tiles za posting, profile, offer s po-malki kartinki i da sa po 4 na red, 12 na stranica - update v service/endpoint
+
 -validation na personal details i freelancer details - no ne sa required
+-posting v momenta nqma required skills, attachments, photo validation - photo ne trqbva da e required no ne raboti placeholdera
+
 -endpoint za delete offer - cascade delete attachments
 -endpoint za delete posting - dont delete offers, in view offer show "posting removed by client"
--delete reviews samo na sobstveniq si profil
--posting v momenta nqma required skills, attachments, photo validation - photo ne trqbva da e required no ne raboti placeholdera
+-endpoint za delete review - da se presmqta nanovo ratinga
 
 
 
