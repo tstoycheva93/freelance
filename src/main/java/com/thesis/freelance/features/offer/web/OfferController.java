@@ -4,6 +4,7 @@ import com.thesis.freelance.common.enums.OfferStatus;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
 import com.thesis.freelance.features.offer.dto.CreateOfferRequestDto;
+import com.thesis.freelance.features.offer.dto.OfferDetailDto;
 import com.thesis.freelance.features.offer.dto.OfferForPostingDto;
 import com.thesis.freelance.features.offer.dto.OfferWithPostingDto;
 import com.thesis.freelance.features.offer.service.OfferService;
@@ -118,6 +119,18 @@ public class OfferController {
                 postingId, user.getId(), requestDto);
 
         return ResponseEntity.ok(createdOffer);
+    }
+
+    @GetMapping("/{offerId}")
+    public ResponseEntity<OfferDetailDto> getOfferById(
+            @PathVariable UUID offerId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        OfferDetailDto offer = offerService.getOfferById(offerId, user.getId());
+        return ResponseEntity.ok(offer);
     }
 
     @GetMapping("/check-active-offer")

@@ -1,6 +1,12 @@
 -da ne se pokazvat profili na admini
--add section posting info in create offer and in view offer
--deadline i experience na view posting moje da sa pri budget
+-po malki tiles za posting, profile, offer s po-malki kartinki i da sa po 4 na red, 12 na stranica - update v service/endpoint
+-validation na personal details i freelancer details - no ne sa required
+-endpoint za delete offer - cascade delete attachments
+-endpoint za delete posting - dont delete offers, in view offer show "posting removed by client"
+-delete reviews samo na sobstveniq si profil
+-posting v momenta nqma required skills, attachments, photo validation - photo ne trqbva da e required no ne raboti placeholdera
+
+
 
 admin:
 da slaga inactive na useri, review, posting

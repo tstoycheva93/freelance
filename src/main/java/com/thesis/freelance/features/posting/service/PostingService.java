@@ -1,11 +1,14 @@
 package com.thesis.freelance.features.posting.service;
 
 import com.thesis.freelance.common.enums.ActivityStatus;
+import com.thesis.freelance.common.enums.OfferStatus;
 import com.thesis.freelance.common.enums.PostingStatus;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.location.entity.Location;
 import com.thesis.freelance.features.location.repository.LocationRepository;
+import com.thesis.freelance.features.offer.entity.Offer;
+import com.thesis.freelance.features.offer.repository.OfferRepository;
 import com.thesis.freelance.features.posting.converter.PostingToDetailDtoConverter;
 import com.thesis.freelance.features.posting.converter.PostingToTileDtoConverter;
 import com.thesis.freelance.features.posting.dto.CreatePostingDto;
@@ -42,6 +45,7 @@ public class PostingService {
     private final LocationRepository locationRepository;
     private final SkillRepository skillRepository;
     private final UserRepository userRepository;
+    private final OfferRepository offerRepository;
     private final PostingToTileDtoConverter postingToTileDtoConverter;
     private final PostingToDetailDtoConverter postingToDetailDtoConverter;
     
@@ -247,8 +251,17 @@ public class PostingService {
             throw new UnauthorizedPostingAccessException(id);
         }
         
+        boolean wasActive = posting.getStatus() == PostingStatus.ACTIVE;
         posting.setStatus(status);
         Posting savedPosting = postingRepository.save(posting);
+        
+        if (wasActive && status == PostingStatus.CLOSED) {
+            List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
+            for (Offer offer : activeOffers) {
+                offer.setStatus(OfferStatus.CANCELED);
+                offerRepository.save(offer);
+            }
+        }
         
         return postingToDetailDtoConverter.convert(
                 postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, savedPosting.getId())

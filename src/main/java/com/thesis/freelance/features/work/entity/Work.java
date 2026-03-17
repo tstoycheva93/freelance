@@ -37,7 +37,7 @@ public class Work extends BaseEntity {
     private String company;
 
     @Column(name = "type", length = 100)
-    private String type; // e.g. "full_time", "contract" etc (string is fine)
+    private String type;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;

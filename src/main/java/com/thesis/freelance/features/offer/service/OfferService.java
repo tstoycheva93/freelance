@@ -7,14 +7,17 @@ import com.thesis.freelance.common.enums.PostingStatus;
 import com.thesis.freelance.features.category.entity.Category;
 import com.thesis.freelance.features.category.repository.CategoryRepository;
 import com.thesis.freelance.features.client.entity.Client;
+import com.thesis.freelance.features.freelancer.dto.FreelancerCVDto;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.freelancer.entity.FreelancerSkills;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerSkillsRepository;
+import com.thesis.freelance.features.offer.converter.OfferToOfferDetailDtoConverter;
 import com.thesis.freelance.features.offer.converter.OfferToOfferForPostingDtoConverter;
 import com.thesis.freelance.features.offer.converter.OfferToOfferWithPostingDtoConverter;
 import com.thesis.freelance.features.offer.converter.SkillListMapper;
 import com.thesis.freelance.features.offer.dto.CreateOfferRequestDto;
+import com.thesis.freelance.features.offer.dto.OfferDetailDto;
 import com.thesis.freelance.features.offer.dto.OfferForPostingDto;
 import com.thesis.freelance.features.offer.dto.OfferWithPostingDto;
 import com.thesis.freelance.features.offer.entity.Offer;
@@ -47,6 +50,7 @@ public class OfferService {
 
     private final OfferToOfferWithPostingDtoConverter offerToOfferWithPostingDtoConverter;
     private final OfferToOfferForPostingDtoConverter offerToOfferForPostingDtoConverter;
+    private final OfferToOfferDetailDtoConverter offerToOfferDetailDtoConverter;
     private final SkillListMapper skillListMapper;
     private final FreelancerRepository freelancerRepository;
     private final UploadedCVRepository uploadedCVRepository;
@@ -145,8 +149,21 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerId)
                 .orElseThrow(() -> new IllegalArgumentException("Offer not found"));
 
-        if (!offer.getPosting().getClient().getUserId().equals(requestingUserId)) {
+        boolean isClientOwner = offer.getPosting().getClient().getUserId().equals(requestingUserId);
+        boolean isFreelancerOwner = offer.getFreelancer().getUserId() != null 
+                && offer.getFreelancer().getUserId().equals(requestingUserId);
+        
+        if (!isClientOwner && !isFreelancerOwner) {
             throw new SecurityException("Not authorized to update this offer");
+        }
+
+        if (isFreelancerOwner && !isClientOwner) {
+            if (newStatus != OfferStatus.CANCELED && newStatus != OfferStatus.PENDING) {
+                throw new IllegalStateException("Freelancers can only cancel or reactivate their offers");
+            }
+            if (newStatus == OfferStatus.PENDING && offer.getStatus() != OfferStatus.CANCELED) {
+                throw new IllegalStateException("Can only reactivate canceled offers");
+            }
         }
 
         offer.setStatus(newStatus);
@@ -233,9 +250,6 @@ public class OfferService {
         if (requestDto.getAttachmentUrls() != null && !requestDto.getAttachmentUrls().isEmpty()) {
             offer.setAttachments(requestDto.getAttachmentUrls());
         }
-        if (cv != null && cv.getAttachmentUrl() != null) {
-            offer.addAttachment(cv.getAttachmentUrl());
-        }
 
         // 7. Save and return
         Offer savedOffer = offerRepository.save(offer);
@@ -249,12 +263,6 @@ public class OfferService {
         dto.setSkills(skills);
 
         return dto;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean hasActiveOfferForPosting(UUID postingId, UUID freelancerUserId) {
-        return offerRepository.hasActiveOfferByPostingAndFreelancer(
-                postingId, freelancerUserId, ActivityStatus.ACTIVE);
     }
 
     @Transactional(readOnly = true)
@@ -274,5 +282,28 @@ public class OfferService {
         }
         
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public OfferDetailDto getOfferById(UUID offerId, UUID requestingUserId) {
+        Offer offer = offerRepository.findByIdWithAttachments(offerId)
+                .orElseThrow(() -> new IllegalArgumentException("Offer not found"));
+
+        Posting posting = offer.getPosting();
+        Freelancer freelancer = offer.getFreelancer();
+        UUID freelancerUserId = freelancer.getUserId();
+        User freelancerUser = userRepository.findById(freelancerUserId).orElse(null);
+        
+        boolean isClientOwner = posting.getClient().getUserId().equals(requestingUserId);
+        boolean isFreelancerOwner = freelancerUserId != null && freelancerUserId.equals(requestingUserId);
+        
+        if (!isClientOwner && !isFreelancerOwner) {
+            throw new SecurityException("Not authorized to view this offer");
+        }
+
+        UploadedCV cv = uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(
+                freelancer.getId(), ActivityStatus.ACTIVE).orElse(null);
+
+        return offerToOfferDetailDtoConverter.convert(offer, posting, freelancer, freelancerUser, cv);
     }
 }

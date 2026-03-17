@@ -20,11 +20,7 @@ import java.util.List;
                 @Index(name = "idx_offer_freelancer_id", columnList = "freelancer_id"),
                 @Index(name = "idx_offer_status", columnList = "status"),
                 @Index(name = "idx_offer_posting_status", columnList = "posting_id, status")
-        },
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_offer_posting_freelancer", columnNames = {"posting_id", "freelancer_id"})
-        }
-)
+        })
 @Getter
 @Setter
 @Builder
