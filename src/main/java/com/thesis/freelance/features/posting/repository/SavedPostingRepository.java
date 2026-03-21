@@ -27,7 +27,7 @@ public interface SavedPostingRepository extends JpaRepository<SavedPosting, UUID
     @Transactional
     void deleteByFreelancerIdAndPostingId(UUID freelancerId, UUID postingId);
 
-    @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId AND s.posting.activityStatus = :activityStatus")
+    @Query("SELECT s.posting FROM SavedPosting s WHERE s.freelancer.userId = :userId AND s.posting.activityStatus = :activityStatus")
     Page<Posting> findSavedPostingsByUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
 
     @Modifying

@@ -16,17 +16,11 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
-    @Query("SELECT r FROM Review r WHERE r.reviewee.id = :revieweeId AND r.activityStatus = :activityStatus")
+    @Query("SELECT r FROM Review r WHERE r.reviewee.id = :revieweeId AND r.activityStatus = :activityStatus ORDER BY r.createdAt DESC")
     List<Review> findByRevieweeId(@Param("revieweeId") UUID revieweeId, @Param("activityStatus") ActivityStatus activityStatus);
 
-    @Query("SELECT r FROM Review r WHERE r.reviewee.id = :revieweeId AND r.activityStatus = :activityStatus")
+    @Query("SELECT r FROM Review r WHERE r.reviewee.id = :revieweeId AND r.activityStatus = :activityStatus ORDER BY r.createdAt DESC")
     Page<Review> findByRevieweeId(@Param("revieweeId") UUID revieweeId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
-
-    @Query("SELECT AVG(r.overallRating) FROM Review r WHERE r.reviewee.id = :userId AND r.activityStatus = :activityStatus")
-    Double getAverageRatingByUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
-
-    @Query("SELECT r FROM Review r WHERE (r.reviewer.id = :userId OR r.reviewee.id = :userId) AND r.activityStatus = :activityStatus")
-    List<Review> findAllByUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
 
     @Query("SELECT r FROM Review r WHERE r.reviewer.id = :userId OR r.reviewee.id = :userId")
     List<Review> findAllByUserIdNoFilter(@Param("userId") UUID userId);

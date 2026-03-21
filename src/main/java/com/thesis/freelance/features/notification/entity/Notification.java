@@ -35,8 +35,7 @@ public class Notification extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String pageUrl;
 
-    @Transient
-    public boolean isUnread() {
-        return true; //TODO Implement read tracking if needed
-    }
+    @Column(nullable = false)
+    private boolean isRead = false;
+
 }

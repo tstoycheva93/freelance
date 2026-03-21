@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum NotificationType {
 
     NEW_OFFER("new_offer"),
-    NEW_MESSAGE("new_message"),
     OFFER_ACCEPTED("offer_accepted"),
     OFFER_REJECTED("offer_rejected"),
-    PROJECT_COMPLETED("project_completed"),
+    OFFER_CANCELLED("offer_cancelled"),
+    POSTING_COMPLETED("posting_completed"),
+    EXPIRED_CERTIFICATE("expired_certificate"),
+    EXPIRED_POSTING("expired_posting"),
     NEW_REVIEW("new_review");
 
     private final String value;

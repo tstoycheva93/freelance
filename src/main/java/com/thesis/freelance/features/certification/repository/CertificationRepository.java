@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,4 +20,7 @@ public interface CertificationRepository extends JpaRepository<Certification, UU
 
     @Query("SELECT c FROM Certification c WHERE c.freelancer.userId = :userId")
     List<Certification> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
+
+    @Query("SELECT c FROM Certification c WHERE c.activityStatus = :status AND c.expiration IS NOT NULL AND c.expiration < :today")
+    List<Certification> findExpiredActiveCertifications(@Param("status") ActivityStatus status, @Param("today") LocalDate today);
 }

@@ -3,19 +3,23 @@ package com.thesis.freelance.features.conversation.entity;
 import com.thesis.freelance.common.entity.BaseEntity;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
-import com.thesis.freelance.features.posting.entity.Posting;
+import com.thesis.freelance.features.offer.entity.Offer;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(
         name = "conversation",
         indexes = {
-                @Index(name = "idx_conversation_posting_id", columnList = "posting_id"),
                 @Index(name = "idx_conversation_client_id", columnList = "client_id"),
                 @Index(name = "idx_conversation_freelancer_id", columnList = "freelancer_id"),
                 @Index(name = "idx_conversation_last_msg_at", columnList = "last_msg_at")
@@ -23,8 +27,8 @@ import java.util.UUID;
         uniqueConstraints = {
                 // TODO decide if unique per posting or direct
                 @UniqueConstraint(
-                        name = "uk_conversation_posting_client_freelancer",
-                        columnNames = {"posting_id", "client_id", "freelancer_id"}
+                        name = "uk_conversation_offer_client_freelancer",
+                        columnNames = {"offer_id", "client_id", "freelancer_id"}
                 )
         }
 )
@@ -33,10 +37,10 @@ public class Conversation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "posting_id",
-            foreignKey = @ForeignKey(name = "fk_conversation_posting")
+            name = "offer_id",
+            foreignKey = @ForeignKey(name = "fk_conversation_offer")
     )
-    private Posting posting; // nullable = direct chat
+    private Offer offer; // nullable = direct chat
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
@@ -80,10 +84,6 @@ public class Conversation extends BaseEntity {
         }
     }
 
-    @Transient
-    public boolean isDirectChat() {
-        return posting == null;
-    }
 
 }
 

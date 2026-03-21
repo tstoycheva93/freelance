@@ -3,6 +3,7 @@ package com.thesis.freelance.features.message.repository;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.message.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -37,4 +38,10 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     @Query("SELECT m FROM Message m WHERE m.sender.id = :userId OR m.receiver.id = :userId")
     List<Message> findAllByUserIdNoFilter(@Param("userId") UUID userId);
+
+    boolean existsByClientMessageId(UUID clientMessageId);
+
+    @Modifying
+    @Query("UPDATE Message m SET m.isRead = true WHERE m.conversation.id = :convId AND m.receiver.id = :userId AND m.isRead = false")
+    int markAsReadByConversationAndReceiver(@Param("convId") UUID conversationId, @Param("userId") UUID userId);
 }

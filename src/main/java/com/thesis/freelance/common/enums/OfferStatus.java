@@ -9,6 +9,7 @@ public enum OfferStatus {
     SHORTLISTED("shortlisted"),
     ACCEPTED("accepted"),
     REJECTED("rejected"),
+    COMPLETED("completed"),
     CANCELED("canceled");
 
     private final String value;

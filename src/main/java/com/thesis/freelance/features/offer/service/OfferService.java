@@ -24,6 +24,7 @@ import com.thesis.freelance.features.offer.entity.Offer;
 import com.thesis.freelance.features.offer.exception.OfferNotFoundException;
 import com.thesis.freelance.features.offer.exception.UnauthorizedOfferAccessException;
 import com.thesis.freelance.features.offer.repository.OfferRepository;
+import com.thesis.freelance.features.notification.service.NotificationService;
 import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.skill.dto.SkillDto;
@@ -57,6 +58,7 @@ public class OfferService {
     private final SkillListMapper skillListMapper;
     private final FreelancerRepository freelancerRepository;
     private final UploadedCVRepository uploadedCVRepository;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public Page<OfferWithPostingDto> getOffersForFreelancer(UUID freelancerUserId, OfferStatus status, Pageable pageable) {
@@ -174,6 +176,33 @@ public class OfferService {
 
         Freelancer freelancer = savedOffer.getFreelancer();
         UUID freelancerUserId = freelancer.getUserId();
+        UUID clientUserId = offer.getPosting().getClient().getUserId();
+
+        if (newStatus == OfferStatus.ACCEPTED || newStatus == OfferStatus.REJECTED || newStatus == OfferStatus.CANCELED) {
+            if (freelancerUserId != null) {
+                if (newStatus == OfferStatus.ACCEPTED) {
+                    notificationService.notifyOfferAccepted(
+                            freelancerUserId,
+                            savedOffer.getId(),
+                            savedOffer.getPosting().getTitle()
+                    );
+                } else if (newStatus == OfferStatus.REJECTED){
+                    notificationService.notifyOfferRejected(
+                            freelancerUserId,
+                            savedOffer.getId(),
+                            savedOffer.getPosting().getTitle()
+                    );
+                }
+                else {
+                    notificationService.notifyOfferCanceled(
+                            clientUserId,
+                            savedOffer.getId(),
+                            savedOffer.getPosting().getTitle()
+                    );
+                }
+            }
+        }
+
         User freelancerUser = freelancerUserId != null ? userRepository.findById(freelancerUserId).orElse(null) : null;
 
         List<SkillDto> skills = getFreelancerSkills(freelancer.getId());
@@ -257,6 +286,16 @@ public class OfferService {
         // 7. Save and return
         Offer savedOffer = offerRepository.save(offer);
         freelancer.incrementOffers();
+
+        // 8. Notify client about new offer
+        UUID clientUserId = posting.getClient().getUserId();
+        if (clientUserId != null) {
+            notificationService.notifyNewOffer(
+                    clientUserId,
+                    savedOffer.getId(),
+                    posting.getTitle()
+            );
+        }
 
         // Prepare response DTO
         User freelancerUser = userRepository.findById(freelancer.getUserId()).orElse(null);

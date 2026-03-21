@@ -4,12 +4,19 @@ import com.thesis.freelance.common.entity.BaseEntity;
 import com.thesis.freelance.features.conversation.entity.Conversation;
 import com.thesis.freelance.features.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(
         name = "message",
         indexes = {
@@ -53,6 +60,12 @@ public class Message extends BaseEntity {
 
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;
+
+    @Column(nullable = false)
+    private boolean isRead = false;
+
+    @Column(name = "client_message_id", unique = true)
+    private UUID clientMessageId;
 
     @PrePersist
     protected void onCreate() {

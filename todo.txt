@@ -1,4 +1,12 @@
 -delete posting - cascade za offers??
+-add completed status to offer and posting
+-add filtering and sorting for offers - price, date, rating, match???
+-search people by skills and category
+-to freelancer profile add stats for count completed postings
+-download offer
+-after marking completed prompt to review the freelancer in the notification
+-skill endorsement, quick stats badges
+
 
 admin:
 da slaga inactive na useri, review, posting
@@ -7,12 +15,5 @@ da pozvolqva na useri da redaktirat username, birth date
 da prashtat sistemen email na vsichki active - newsletter, system
 crud za location, category, skill
 
-izvestiq:
--iztekla obqva
--iztekul srok na offer
--expired certification
--iztrito offer/posting
--polucheno review
--poluchen offer
 
 

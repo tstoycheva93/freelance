@@ -3,6 +3,7 @@ package com.thesis.freelance.features.review.service;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.exception.RevieweeNotFoundException;
 import com.thesis.freelance.common.exception.UserNotFoundException;
+import com.thesis.freelance.features.notification.service.NotificationService;
 import com.thesis.freelance.features.review.dto.CreateReviewDto;
 import com.thesis.freelance.features.review.entity.Review;
 import com.thesis.freelance.features.review.exception.ReviewNotFoundException;
@@ -25,6 +26,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public Review createReview(UUID reviewerId, CreateReviewDto dto) {
@@ -44,6 +46,10 @@ public class ReviewService {
                 .build();
 
         Review savedReview = reviewRepository.save(review);
+
+            notificationService.notifyNewReview(
+                    reviewee.getId()
+            );
 
         updateRevieweeRating(reviewee);
 

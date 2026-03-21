@@ -68,15 +68,15 @@ public class User extends BaseEntity {
     @Builder.Default
     private Boolean isPublic = true;
 
-    @Column(name = "readOn", nullable = false)
+    @Column(name = "read_on", nullable = false)
     @Builder.Default
     private Boolean readOn = true;
 
-    @Column(name = "emailsOn", nullable = false)
+    @Column(name = "emails_on", nullable = false)
     @Builder.Default
     private Boolean emailsOn = true;
 
-    @Column(name = "pushOn", nullable = false)
+    @Column(name = "push_on", nullable = false)
     @Builder.Default
     private Boolean pushOn = true;
 
