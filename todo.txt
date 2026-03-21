@@ -1,6 +1,4 @@
--endpoint za delete offer - cascade delete attachments
--endpoint za delete posting - dont delete offers, in view offer show "posting removed by client"
-
+-delete posting - cascade za offers??
 
 admin:
 da slaga inactive na useri, review, posting

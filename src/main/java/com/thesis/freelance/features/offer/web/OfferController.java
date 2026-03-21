@@ -141,4 +141,16 @@ public class OfferController {
         java.util.Map<String, Object> result = offerService.checkActiveOfferForPosting(postingId, freelancerUserId);
         return ResponseEntity.ok(result);
     }
+
+    @DeleteMapping("/{offerId}")
+    public ResponseEntity<Void> deleteOffer(
+            @PathVariable UUID offerId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        offerService.deleteOffer(offerId, user.getId());
+        return ResponseEntity.noContent().build();
+    }
 }

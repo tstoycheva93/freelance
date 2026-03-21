@@ -19,17 +19,18 @@ import java.util.UUID;
 public interface SavedPostingRepository extends JpaRepository<SavedPosting, UUID> {
     List<SavedPosting> findByFreelancerId(UUID freelancerId);
     boolean existsByFreelancerIdAndPostingId(UUID freelancerId, UUID postingId);
-    
+
+    @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId")
+    List<SavedPosting> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
+
     @Modifying
     @Transactional
     void deleteByFreelancerIdAndPostingId(UUID freelancerId, UUID postingId);
 
     @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId AND s.posting.activityStatus = :activityStatus")
-    List<SavedPosting> findAllByFreelancerUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
-
-    @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId")
-    List<SavedPosting> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
-
-    @Query("SELECT s.posting FROM SavedPosting s WHERE s.freelancer.userId = :userId AND s.posting.activityStatus = :activityStatus")
     Page<Posting> findSavedPostingsByUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
+
+    @Modifying
+    @Transactional
+    void deleteByPostingId(UUID postingId);
 }

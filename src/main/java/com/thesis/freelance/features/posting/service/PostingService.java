@@ -21,6 +21,7 @@ import com.thesis.freelance.features.posting.exception.PostingNotFoundException;
 import com.thesis.freelance.features.posting.exception.UnauthorizedPostingAccessException;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.posting.repository.PostingSkillsRepository;
+import com.thesis.freelance.features.posting.repository.SavedPostingRepository;
 import com.thesis.freelance.features.skill.entity.Skill;
 import com.thesis.freelance.features.skill.repository.SkillRepository;
 import com.thesis.freelance.features.user.entity.User;
@@ -41,6 +42,7 @@ public class PostingService {
     
     private final PostingRepository postingRepository;
     private final PostingSkillsRepository postingSkillsRepository;
+    private final SavedPostingRepository savedPostingRepository;
     private final ClientRepository clientRepository;
     private final LocationRepository locationRepository;
     private final SkillRepository skillRepository;
@@ -230,7 +232,9 @@ public class PostingService {
             throw new UnauthorizedPostingAccessException(id);
         }
         
+        savedPostingRepository.deleteByPostingId(id);
         postingSkillsRepository.deleteByPostingId(id);
+        posting.setAttachmentUrls(new ArrayList<>());
         postingRepository.delete(posting);
     }
     

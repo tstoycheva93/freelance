@@ -21,6 +21,8 @@ import com.thesis.freelance.features.offer.dto.OfferDetailDto;
 import com.thesis.freelance.features.offer.dto.OfferForPostingDto;
 import com.thesis.freelance.features.offer.dto.OfferWithPostingDto;
 import com.thesis.freelance.features.offer.entity.Offer;
+import com.thesis.freelance.features.offer.exception.OfferNotFoundException;
+import com.thesis.freelance.features.offer.exception.UnauthorizedOfferAccessException;
 import com.thesis.freelance.features.offer.repository.OfferRepository;
 import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
@@ -35,6 +37,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -305,5 +308,24 @@ public class OfferService {
                 freelancer.getId(), ActivityStatus.ACTIVE).orElse(null);
 
         return offerToOfferDetailDtoConverter.convert(offer, posting, freelancer, freelancerUser, cv);
+    }
+
+    @Transactional
+    public void deleteOffer(UUID offerId, UUID requestingUserId) {
+        Offer offer = offerRepository.findByIdWithAttachments(offerId)
+                .orElseThrow(() -> new OfferNotFoundException(offerId));
+
+        UUID freelancerUserId = offer.getFreelancer().getUserId();
+        UUID clientUserId = offer.getPosting().getClient().getUserId();
+        
+        boolean isFreelancerOwner = freelancerUserId != null && freelancerUserId.equals(requestingUserId);
+        boolean isClientOwner = clientUserId != null && clientUserId.equals(requestingUserId);
+        
+        if (!isFreelancerOwner && !isClientOwner) {
+            throw new UnauthorizedOfferAccessException();
+        }
+
+        offer.setAttachments(new ArrayList<>());
+        offerRepository.delete(offer);
     }
 }
