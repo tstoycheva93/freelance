@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +25,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -36,11 +36,22 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /*@Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers("/ws/**");
+    }*/
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self'; connect-src 'self' ws://localhost:8080 wss://localhost:8080 http://localhost:5173")
+                        )
+                )
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
@@ -48,17 +59,17 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Public - no login required
+                        //publichni
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/home/**").permitAll()
-                        .requestMatchers("/listings/**").permitAll()   // browsing jobs without login
-                        .requestMatchers("/freelancers/**").permitAll()
                         .requestMatchers("/roles").permitAll()
+                        .requestMatchers("/error").permitAll()
 
-                        // Role restricted
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        //za admin
+                        .requestMatchers("/office/**").hasRole("ADMIN")
 
-                        // Any logged in user
+                        //za useri
                         .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/locations/**").authenticated()
                         .requestMatchers("/profile/**").authenticated()
@@ -70,12 +81,13 @@ public class SecurityConfig {
                         .requestMatchers("/work/**").authenticated()
                         .requestMatchers("/certifications/**").authenticated()
                         .requestMatchers("/cv/**").authenticated()
-
-
+                        .requestMatchers("/conversations/**").authenticated()
+                        .requestMatchers("/notifications/**").authenticated()
 
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/index.html").permitAll()
+
 
                         .anyRequest().authenticated()
                 )
@@ -118,10 +130,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+        configuration.addAllowedHeader("Sec-WebSocket-Version");
+        configuration.addAllowedHeader("Sec-WebSocket-Key");
+        configuration.addAllowedHeader("Sec-WebSocket-Extensions");
+        configuration.addAllowedHeader("Sec-WebSocket-Protocol");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

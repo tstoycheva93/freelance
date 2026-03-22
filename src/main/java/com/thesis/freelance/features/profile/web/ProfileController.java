@@ -30,6 +30,13 @@ public class ProfileController {
             int totalPages
     ) {}
 
+    public record ReviewPageResponse(
+            List<ReviewProfileDto> content,
+            boolean hasNext,
+            long totalElements,
+            int totalPages
+    ) {}
+
 
     @GetMapping("/user/{username}")
     public ResponseEntity<ProfileResponseDto> getProfileByUsername(@PathVariable String username) {
@@ -42,12 +49,19 @@ public class ProfileController {
     }
 
     @GetMapping("/{userId}/reviews")
-    public ResponseEntity<Page<ReviewProfileDto>> getUserReviews(
+    public ResponseEntity<ReviewPageResponse> getUserReviews(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size) {
+            @RequestParam(defaultValue = "6") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(profileService.getUserReviews(userId, pageable));
+        Page<ReviewProfileDto> result = profileService.getUserReviews(userId, pageable);
+        
+        return ResponseEntity.ok(new ReviewPageResponse(
+                result.getContent(),
+                result.hasNext(),
+                result.getTotalElements(),
+                result.getTotalPages()
+        ));
     }
 
     @GetMapping("/{userId}/postings")

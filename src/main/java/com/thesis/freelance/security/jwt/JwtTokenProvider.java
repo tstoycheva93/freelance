@@ -26,10 +26,6 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public long getJwtExpirationInMs() {
-        return jwtExpirationInMs;
-    }
-
     public String generateToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
         Date expiryDate = new Date(System.currentTimeMillis() + jwtExpirationInMs);
