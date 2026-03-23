@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.notification.service;
 
+import com.thesis.freelance.auth.service.EmailService;
 import com.thesis.freelance.features.notification.dto.NotificationWsDto;
 import com.thesis.freelance.common.enums.NotificationType;
 import com.thesis.freelance.features.message.service.WebSocketService;
@@ -28,6 +29,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final WebSocketService webSocketService;
+    private final EmailService emailService;
 
     @Transactional(readOnly = true)
     public Page<NotificationDto> getNotificationsForUser(UUID userId, Pageable pageable) {
@@ -96,6 +98,16 @@ public class NotificationService {
                 .build();
 
         Notification saved = notificationRepository.save(notification);
+
+        if (Boolean.TRUE.equals(user.getEmailsOn())) {
+            emailService.sendNotificationEmail(
+                    user.getEmail(),
+                    title,
+                    content,
+                    "View Details",
+                    pageUrl
+            );
+        }
 
         NotificationWsDto wsDto = new NotificationWsDto(
                 saved.getId(),

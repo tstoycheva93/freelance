@@ -119,4 +119,20 @@ public class EmailService {
             sendEmail(to, "Your verification code - TalentFlow", fallback);
         }
     }
+
+    public void sendNotificationEmail(String to, String title, String content, String ctaText, String ctaLink) {
+        try {
+            Context context = new Context();
+            context.setVariable("title", title);
+            context.setVariable("content", content);
+            context.setVariable("ctaText", ctaText);
+            context.setVariable("ctaLink", appUrl + ctaLink);
+            context.setVariable("appUrl", appUrl);
+            
+            String html = templateEngine.process("email/notification", context);
+            sendHtmlEmail(to, title + " - TalentFlow", html);
+        } catch (Exception e) {
+            log.error("Failed to load notification template: {}", e.getMessage());
+        }
+    }
 }

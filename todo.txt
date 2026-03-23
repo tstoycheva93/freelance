@@ -3,6 +3,7 @@
 -search people by skills and category
 -to freelancer profile add stats for count completed postings
 -skill endorsement, quick stats badges
+-emaili
 
 -validation to websocket???
 
@@ -14,6 +15,12 @@ da prashtat sistemen email na vsichki active - newsletter, system
 crud za location, category, skill
 
 --------------------------------------------------------
+
+netstat -ano | findstr :8080
+taskkill /PID <PID> /F
+
+net stop winnat
+net start winnat
 
 logging.level.org.springframework.web.socket=DEBUG
 logging.level.org.springframework.messaging=TRACE
