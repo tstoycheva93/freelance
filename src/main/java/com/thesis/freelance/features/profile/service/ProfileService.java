@@ -302,6 +302,8 @@ public class ProfileService {
         
         String bio = null;
         String website = null;
+        String title = null;
+        String occupation = null;
         
         Double rating = user.getRating() != null ? user.getRating().doubleValue() : null;
         Long reviewCount = user.getReviewsCount() != null ? user.getReviewsCount() : 0L;
@@ -311,12 +313,14 @@ public class ProfileService {
             if (freelancer != null) {
                 bio = freelancer.getBio();
                 website = freelancer.getWebsite();
+                title = freelancer.getTitle();
             }
         } else if ("CLIENT".equals(role)) {
             Client client = clientRepository.findByUserId(user.getId()).orElse(null);
             if (client != null) {
                 bio = client.getBio();
                 website = client.getWebsite();
+                occupation = client.getOccupation();
             }
         }
 
@@ -344,6 +348,8 @@ public class ProfileService {
                 .website(website)
                 .profilePhoto(user.getPhotoUrl())
                 .isVerified(user.getIsVerified())
+                .title(title)
+                .occupation(occupation)
                 .build();
     }
 

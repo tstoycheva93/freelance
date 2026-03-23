@@ -1,9 +1,6 @@
 -delete posting - cascade za offers??
 -add filtering and sorting for offers - price, date, rating, match???
--search people by skills and category
 -to freelancer profile add stats for count completed postings
--skill endorsement, quick stats badges
--emaili
 
 -validation to websocket???
 

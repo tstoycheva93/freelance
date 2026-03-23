@@ -1,5 +1,9 @@
 package com.thesis.freelance.features.user.repository;
 
+import com.thesis.freelance.features.client.entity.Client;
+import com.thesis.freelance.features.freelancer.entity.Freelancer;
+import com.thesis.freelance.features.freelancer.entity.FreelancerSkills;
+import com.thesis.freelance.features.skill.entity.Skill;
 import com.thesis.freelance.features.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,34 +23,49 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByUsername(String username);
     Optional<User> findByPhone(String phone);
 
-    @Query("SELECT u FROM User u " +
-            "LEFT JOIN FETCH u.userRole ur " +
-            "LEFT JOIN FETCH u.location " +
+    @Query("SELECT DISTINCT u FROM User u " +
+            "LEFT JOIN u.userRole ur " +
+            "LEFT JOIN u.location " +
+            "LEFT JOIN Client c ON c.userId = u.id " +
+            "LEFT JOIN Freelancer f ON f.userId = u.id " +
+            "LEFT JOIN FreelancerSkills fs ON fs.freelancer.id = f.id " +
+            "LEFT JOIN fs.skill s " +
             "WHERE u.activityStatus = 'ACTIVE' " +
             "AND u.isPublic = true " +
-            "AND (:search IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "AND ur.role != 'ADMIN' " +
+            "AND (:search IS NULL OR " +
+            "   LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "AND (:role IS NULL OR ur.role = :role) " +
-            "AND ur.role != 'ADMIN'")
+            "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(c.occupation) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(f.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(s.skill) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND (:role IS NULL OR ur.role = :role)")
     List<User> findAllBySearchAndRole(@Param("search") String search,
                                       @Param("role") String role,
                                       Sort sort);
 
-    @Query("SELECT u FROM User u " +
-            "LEFT JOIN FETCH u.userRole ur " +
-            "LEFT JOIN FETCH u.location " +
+    @Query("SELECT DISTINCT u FROM User u " +
+            "LEFT JOIN u.userRole ur " +
+            "LEFT JOIN u.location " +
+            "LEFT JOIN Client c ON c.userId = u.id " +
+            "LEFT JOIN Freelancer f ON f.userId = u.id " +
+            "LEFT JOIN FreelancerSkills fs ON fs.freelancer.id = f.id " +
+            "LEFT JOIN fs.skill s " +
             "WHERE u.activityStatus = 'ACTIVE' " +
             "AND u.isPublic = true " +
-            "AND (:search IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "AND ur.role != 'ADMIN' " +
+            "AND (:search IS NULL OR " +
+            "   LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-            "AND (:role IS NULL OR ur.role = :role) " +
-            "AND ur.role != 'ADMIN'")
+            "   OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(c.occupation) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(f.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(s.skill) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND (:role IS NULL OR ur.role = :role)")
     Page<User> findAllBySearchAndRole(@Param("search") String search,
                                       @Param("role") String role,
                                       Pageable pageable);
-
 
 
 

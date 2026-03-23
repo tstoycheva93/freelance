@@ -27,4 +27,6 @@ public class PeopleDto {
     private String website;
     private String profilePhoto;
     private Boolean isVerified;
+    private String title;
+    private String occupation;
 }
