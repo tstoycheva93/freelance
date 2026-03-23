@@ -70,4 +70,8 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
     // Find offer by ID with attachments eager fetched
     @Query("SELECT o FROM Offer o LEFT JOIN FETCH o.attachments WHERE o.id = :offerId")
     Optional<Offer> findByIdWithAttachments(@Param("offerId") UUID offerId);
+
+//za kato shte gi pravi completed
+@Query("SELECT o FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.ACCEPTED)")
+    List<Offer> findAcceptedOffersByPostingId(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus);
 }

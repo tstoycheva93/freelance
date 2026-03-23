@@ -1,8 +1,8 @@
 package com.thesis.freelance.features.message.service;
 
-import com.thesis.freelance.common.dto.websocket.MessageWsDto;
-import com.thesis.freelance.common.dto.websocket.NotificationWsDto;
-import com.thesis.freelance.common.dto.websocket.TypingIndicatorDto;
+import com.thesis.freelance.features.message.dto.MessageWsDto;
+import com.thesis.freelance.features.notification.dto.NotificationWsDto;
+import com.thesis.freelance.features.conversation.dto.TypingIndicatorDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

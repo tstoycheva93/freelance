@@ -1,4 +1,4 @@
-package com.thesis.freelance.common.dto.websocket;
+package com.thesis.freelance.features.conversation.dto;
 
 import java.util.UUID;
 

@@ -1,8 +1,8 @@
 package com.thesis.freelance.features.message.web;
 
-import com.thesis.freelance.common.dto.websocket.MessageWsDto;
-import com.thesis.freelance.common.dto.websocket.SendMessageDto;
-import com.thesis.freelance.common.dto.websocket.TypingIndicatorDto;
+import com.thesis.freelance.features.message.dto.MessageWsDto;
+import com.thesis.freelance.features.conversation.dto.SendMessageDto;
+import com.thesis.freelance.features.conversation.dto.TypingIndicatorDto;
 import com.thesis.freelance.features.conversation.entity.Conversation;
 import com.thesis.freelance.features.conversation.repository.ConversationRepository;
 import com.thesis.freelance.features.message.entity.Message;

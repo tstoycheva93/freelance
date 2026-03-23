@@ -1,4 +1,4 @@
-package com.thesis.freelance.common.dto.websocket;
+package com.thesis.freelance.features.message.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

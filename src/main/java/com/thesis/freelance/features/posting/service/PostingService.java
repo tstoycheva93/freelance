@@ -7,6 +7,7 @@ import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.location.entity.Location;
 import com.thesis.freelance.features.location.repository.LocationRepository;
+import com.thesis.freelance.features.notification.service.NotificationService;
 import com.thesis.freelance.features.offer.entity.Offer;
 import com.thesis.freelance.features.offer.repository.OfferRepository;
 import com.thesis.freelance.features.posting.converter.PostingToDetailDtoConverter;
@@ -50,6 +51,7 @@ public class PostingService {
     private final OfferRepository offerRepository;
     private final PostingToTileDtoConverter postingToTileDtoConverter;
     private final PostingToDetailDtoConverter postingToDetailDtoConverter;
+    private final NotificationService notificationService;
     
     @Transactional(readOnly = true)
     public Page<PostingTileDto> getAllPostings(Pageable pageable) {
@@ -259,16 +261,32 @@ public class PostingService {
         }
         
         boolean wasActive = posting.getStatus() == PostingStatus.ACTIVE;
+
         posting.setStatus(status);
         Posting savedPosting = postingRepository.save(posting);
         
-        if (wasActive && status == PostingStatus.CLOSED) {
+        if (wasActive && (status == PostingStatus.CLOSED || status == PostingStatus.COMPLETED)) {
             List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
             for (Offer offer : activeOffers) {
                 offer.setStatus(OfferStatus.CANCELED);
                 offerRepository.save(offer);
             }
         }
+
+        if (status == PostingStatus.COMPLETED) {
+            List<Offer> activeOffers = offerRepository.findAcceptedOffersByPostingId(id, ActivityStatus.ACTIVE);
+            for (Offer offer : activeOffers) {
+                offer.setStatus(OfferStatus.COMPLETED);
+                offerRepository.save(offer);
+                notificationService.notifyPostingCompleted(
+                        offer.getFreelancer().getUserId(),
+                        offer.getId(),
+                        offer.getPosting().getTitle()
+                );
+
+            }
+        }
+
         
         return postingToDetailDtoConverter.convert(
                 postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, savedPosting.getId())

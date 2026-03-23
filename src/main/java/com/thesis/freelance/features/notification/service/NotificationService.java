@@ -1,6 +1,6 @@
 package com.thesis.freelance.features.notification.service;
 
-import com.thesis.freelance.common.dto.websocket.NotificationWsDto;
+import com.thesis.freelance.features.notification.dto.NotificationWsDto;
 import com.thesis.freelance.common.enums.NotificationType;
 import com.thesis.freelance.features.message.service.WebSocketService;
 import com.thesis.freelance.features.notification.dto.NotificationDto;

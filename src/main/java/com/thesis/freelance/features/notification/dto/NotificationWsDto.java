@@ -1,4 +1,4 @@
-package com.thesis.freelance.common.dto.websocket;
+package com.thesis.freelance.features.notification.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thesis.freelance.common.enums.NotificationType;
