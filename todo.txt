@@ -1,6 +1,4 @@
 -delete posting - cascade za offers??
--add filtering and sorting for offers - price, date, rating, match???
--to freelancer profile add stats for count completed postings
 
 -validation to websocket???
 
