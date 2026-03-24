@@ -13,6 +13,7 @@ import com.thesis.freelance.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +36,8 @@ public class OfferController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         User user = userRepository.findByUsername(userDetails.getUsername())
@@ -47,7 +50,8 @@ public class OfferController {
         var freelancer = freelancerRepository.findByUserId(userId);
 
         OfferStatus offerStatus = status != null ? OfferStatus.fromValue(status) : null;
-        PageRequest pageable = PageRequest.of(page, size);
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<OfferWithPostingDto> offers;
 
@@ -70,13 +74,16 @@ public class OfferController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         OfferStatus offerStatus = status != null ? OfferStatus.fromValue(status) : null;
-        PageRequest pageable = PageRequest.of(page, size);
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<OfferForPostingDto> offers = offerService.getOffersForPosting(
                 postingId, user.getId(), offerStatus, pageable);
