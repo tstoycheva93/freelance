@@ -26,7 +26,7 @@ public class OfferScheduler {
     private final OfferRepository offerRepository;
     private final NotificationService notificationService;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     @Transactional
     public void cancelOffersForExpiredDeadlines() {
         log.info("Running scheduled task: cancelOffersForExpiredDeadlines");

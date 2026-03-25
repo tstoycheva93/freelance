@@ -21,7 +21,7 @@ public class CertificationScheduler {
     private final CertificationRepository certificationRepository;
     private final NotificationService notificationService;
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     @Transactional
     public void checkExpiredCertifications() {
         log.info("Running scheduled task: checkExpiredCertifications");
@@ -31,10 +31,16 @@ public class CertificationScheduler {
 
         for (Certification cert : expiredCerts) {
             var userId = cert.getFreelancer().getUserId();
-            if (userId != null) {
+
+              if (userId != null) {
+                log.info("Sending expired certificate notification to user: {}", userId);
                 notificationService.notifyExpiredCertificate(userId, cert.getTitle());
+                log.info("Notification sent successfully to user: {}", userId);
+            } else {
+                log.warn("Cannot send notification - userId is null for certification: {}", cert.getId());
             }
         }
+
 
         log.info("Expired certification check completed. Processed {} certifications", expiredCerts.size());
     }

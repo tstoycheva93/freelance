@@ -59,6 +59,15 @@ public class ConversationController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{conversationId}")
+    public ResponseEntity<Void> deleteConversation(
+            @PathVariable UUID conversationId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        UUID userId = getCurrentUserId(userDetails);
+        conversationService.deleteConversation(conversationId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
     private UUID getCurrentUserId(UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));

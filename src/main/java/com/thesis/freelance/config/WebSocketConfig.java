@@ -49,29 +49,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String authHeader = accessor.getFirstNativeHeader("Authorization");
-                    log.debug("STOMP CONNECT - Authorization header present: {}", authHeader != null);
 
-                    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                        String token = authHeader.substring(7);
-                        try {
-                            if (jwtTokenProvider.validateToken(token)) {
-                                String username = jwtTokenProvider.getUsernameFromToken(token);
-                                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                                accessor.setUser(auth);
-                                log.debug("STOMP CONNECT - Authenticated user: {}", username);
-                            } else {
-                                log.warn("STOMP CONNECT - Invalid token");
-                                // CHANGED: Don't throw exception, just log warning
-                            }
-                        } catch (Exception e) {
-                            log.error("STOMP CONNECT - Error validating token", e);
-                            // CHANGED: Don't throw exception, just log error
-                        }
-                    } else {
-                        log.warn("STOMP CONNECT - No Authorization header, allowing anonymous");
-                        // CHANGED: Allow anonymous connections for now
+                    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                        log.warn("STOMP CONNECT - Missing Authorization header");
+                        throw new org.springframework.security.access.AccessDeniedException("Authentication failed");
                     }
+
+                    String token = authHeader.substring(7);
+                    if (!jwtTokenProvider.validateToken(token)) {
+                        log.warn("STOMP CONNECT - Invalid token");
+                        throw new org.springframework.security.access.AccessDeniedException("Authentication failed");
+                    }
+
+                    String username = jwtTokenProvider.getUsernameFromToken(token);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    accessor.setUser(auth);
+                    log.debug("STOMP CONNECT - Authenticated user: {}", username);
                 }
                 return message;
             }

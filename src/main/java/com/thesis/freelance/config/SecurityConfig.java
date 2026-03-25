@@ -87,6 +87,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/index.html").permitAll()
+                        .requestMatchers("/cert/scheduler/**").permitAll()
+
 
 
                         .anyRequest().authenticated()

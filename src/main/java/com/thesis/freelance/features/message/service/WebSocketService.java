@@ -1,6 +1,7 @@
 package com.thesis.freelance.features.message.service;
 
 import com.thesis.freelance.features.message.dto.MessageWsDto;
+import com.thesis.freelance.features.message.dto.ReadStatusUpdateDto;
 import com.thesis.freelance.features.notification.dto.NotificationWsDto;
 import com.thesis.freelance.features.conversation.dto.TypingIndicatorDto;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,10 @@ public class WebSocketService {
     public void sendTypingIndicator(UUID conversationId, TypingIndicatorDto typing) {
         messagingTemplate.convertAndSend("/chat/conversation/" + conversationId + "/typing", typing);
         log.debug("Typing indicator sent to /chat/conversation/{}/typing", conversationId);
+    }
+
+    public void sendMessageReadStatus(UUID userId, ReadStatusUpdateDto readStatusUpdate) {
+        messagingTemplate.convertAndSend("/chat/user/" + userId, readStatusUpdate);
+        log.debug("Read status update sent to /chat/user/{}", userId);
     }
 }

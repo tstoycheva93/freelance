@@ -44,4 +44,10 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
     @Modifying
     @Query("UPDATE Message m SET m.isRead = true WHERE m.conversation.id = :convId AND m.receiver.id = :userId AND m.isRead = false")
     int markAsReadByConversationAndReceiver(@Param("convId") UUID conversationId, @Param("userId") UUID userId);
+
+    List<Message> findByConversation_IdAndReceiver_IdAndIsReadFalse(UUID conversationId, UUID receiverId);
+
+    @Modifying
+    @Query("DELETE FROM Message m WHERE m.conversation.id = :conversationId")
+    void deleteByConversation_Id(@Param("conversationId") UUID conversationId);
 }

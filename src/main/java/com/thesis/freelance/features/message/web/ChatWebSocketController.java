@@ -16,11 +16,11 @@ import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -37,8 +37,14 @@ public class ChatWebSocketController {
     @SendToUser("/chat/user/recipient")
     @Transactional
     public MessageWsDto handleSendMessage(@Payload SendMessageDto request,
-                                          @AuthenticationPrincipal UserDetails userDetails) {
-        User sender = userRepository.findByUsername(userDetails.getUsername())
+                                          StompHeaderAccessor accessor) {
+        Principal principal = accessor.getUser();
+        if (principal == null) {
+            throw new SecurityException("User not authenticated");
+        }
+        
+        String username = principal.getName();
+        User sender = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (request.clientMessageId() != null) {
@@ -74,10 +80,6 @@ public class ChatWebSocketController {
                 .clientMessageId(request.clientMessageId())
                 .build();
 
-        if (request.clientMessageId() != null) {
-            message.setId(request.clientMessageId());
-        }
-
         Message savedMessage = messageRepository.save(message);
 
         conversation.updateLastMsgAt(savedMessage.getSentAt());
@@ -102,8 +104,13 @@ public class ChatWebSocketController {
 
     @MessageMapping("/chat.typing")
     public void handleTypingIndicator(@Payload TypingIndicatorDto typing,
-                                      @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
+                                      StompHeaderAccessor accessor) {
+        Principal principal = accessor.getUser();
+        if (principal == null) {
+            throw new SecurityException("User not authenticated");
+        }
+        
+        User user = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         TypingIndicatorDto indicator = new TypingIndicatorDto(

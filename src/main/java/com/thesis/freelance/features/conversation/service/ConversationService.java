@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.conversation.service;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.conversation.dto.*;
@@ -8,14 +9,17 @@ import com.thesis.freelance.features.conversation.repository.ConversationReposit
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
 import com.thesis.freelance.features.message.dto.MessageDto;
+import com.thesis.freelance.features.message.dto.ReadStatusUpdateDto;
 import com.thesis.freelance.features.message.entity.Message;
 import com.thesis.freelance.features.message.repository.MessageRepository;
+import com.thesis.freelance.features.message.service.WebSocketService;
 import com.thesis.freelance.features.offer.entity.Offer;
 import com.thesis.freelance.features.offer.repository.OfferRepository;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,12 +38,13 @@ public class ConversationService {
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
     private final OfferRepository offerRepository;
+    private final WebSocketService webSocketService;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     @Transactional(readOnly = true)
     public List<ConversationListDto> getConversationsForUser(UUID userId) {
-        List<Conversation> conversations = conversationRepository.findAllByUserIdNoFilter(userId);
+        List<Conversation> conversations = conversationRepository.findAllByUserId(userId, ActivityStatus.ACTIVE);
         
         return conversations.stream()
                 .map(conv -> mapToConversationListDto(conv, userId))
@@ -72,40 +77,33 @@ public class ConversationService {
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        Optional<Client> currentClient = clientRepository.findByUserId(currentUserId);
-        Optional<Freelancer> currentFreelancer = freelancerRepository.findByUserId(currentUserId);
-
-        Client client;
-        Freelancer freelancer;
-        Offer offer = null;
-
-        if (currentClient.isPresent()) {
-            client = currentClient.get();
-            freelancer = freelancerRepository.findByUserId(request.otherUserId())
-                    .orElseThrow(() -> new NoSuchElementException("Freelancer not found"));
-        } else if (currentFreelancer.isPresent()) {
-            freelancer = currentFreelancer.get();
-            client = clientRepository.findByUserId(request.otherUserId())
-                    .orElseThrow(() -> new NoSuchElementException("Client not found"));
-        } else {
-            throw new IllegalStateException("User is neither a client nor a freelancer");
+        if (request.offerId() == null) {
+            throw new IllegalArgumentException("Offer ID is required");
         }
 
-        if (request.offerId() != null) {
-            offer = offerRepository.findById(request.offerId())
-                    .orElseThrow(() -> new NoSuchElementException("Offer not found"));
+        Offer offer = offerRepository.findById(request.offerId())
+                .orElseThrow(() -> new NoSuchElementException("Offer not found"));
 
-            Optional<Conversation> existing = conversationRepository.findExistingConversation(
-                    client.getId(), freelancer.getId(), offer.getId());
-            if (existing.isPresent()) {
-                return getConversationById(existing.get().getId(), currentUserId);
-            }
-        } else {
-            Optional<Conversation> existing = conversationRepository.findExistingConversationWithoutOffer(
-                    client.getId(), freelancer.getId());
-            if (existing.isPresent()) {
-                return getConversationById(existing.get().getId(), currentUserId);
-            }
+        Client client = offer.getPosting().getClient();
+        Freelancer freelancer = offer.getFreelancer();
+        
+        UUID currentUserId2 = currentUser.getId();
+        if (!client.getUserId().equals(currentUserId2) && 
+            !freelancer.getUserId().equals(currentUserId2)) {
+            throw new SecurityException("User is not part of this offer");
+        }
+
+        Optional<Conversation> existing = conversationRepository.findExistingConversation(
+                client.getId(), freelancer.getId(), offer.getId(), ActivityStatus.ACTIVE);
+        if (existing.isPresent()) {
+            return getConversationById(existing.get().getId(), currentUserId);
+        }
+
+        Optional<Conversation> deleted = conversationRepository.findDeletedConversation(
+                client.getId(), freelancer.getId(), offer.getId());
+        if (deleted.isPresent()) {
+            messageRepository.deleteByConversation_Id(deleted.get().getId());
+            conversationRepository.hardDeleteById(deleted.get().getId());
         }
 
         Conversation conversation = new Conversation();
@@ -126,7 +124,42 @@ public class ConversationService {
             throw new SecurityException("User not authorized for this conversation");
         }
 
-        messageRepository.markAsReadByConversationAndReceiver(conversationId, userId);
+        List<Message> unreadMessages = messageRepository.findByConversation_IdAndReceiver_IdAndIsReadFalse(conversationId, userId);
+        
+        if (!unreadMessages.isEmpty()) {
+            for (Message msg : unreadMessages) {
+                msg.setRead(true);
+            }
+            messageRepository.saveAll(unreadMessages);
+            
+            Set<UUID> senderIds = unreadMessages.stream()
+                    .map(m -> m.getSender().getId())
+                    .collect(Collectors.toSet());
+            
+            List<UUID> messageIds = unreadMessages.stream().map(Message::getId).collect(Collectors.toList());
+            ReadStatusUpdateDto readUpdate = new ReadStatusUpdateDto(
+                    conversationId.toString(),
+                    messageIds,
+                    true
+            );
+            
+            for (UUID senderId : senderIds) {
+                webSocketService.sendMessageReadStatus(senderId, readUpdate);
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteConversation(UUID conversationId, UUID userId) {
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new NoSuchElementException("Conversation not found"));
+
+        if (!isUserPartOfConversation(conversation, userId)) {
+            throw new SecurityException("Not authorized to delete this conversation");
+        }
+
+        conversation.setActivityStatus(ActivityStatus.DELETED);
+        conversationRepository.save(conversation);
     }
 
     private boolean isUserPartOfConversation(Conversation conversation, UUID userId) {
@@ -200,7 +233,7 @@ public class ConversationService {
         boolean isSentByMe = sender != null && sender.getId().equals(currentUserId);
         String senderName = sender != null ? sender.getFullName() : "Unknown";
         String senderPhoto = sender != null ? sender.getPhotoUrl() : null;
-        String sentAt = message.getSentAt() != null ? message.getSentAt().format(TIME_FORMATTER) : null;
+        String sentAt = message.getSentAt() != null ? message.getSentAt().toString() : null;
 
         return new MessageDto(
                 message.getId(),
