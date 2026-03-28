@@ -36,7 +36,7 @@ public class AuthMeService {
 
         LocationDto locationDto = null;
         if (user.getLocation() != null) {
-            locationDto = new LocationDto(user.getLocation().getId(), user.getLocation().getName(), user.getLocation().getLatitude(), user.getLocation().getLongitude());
+            locationDto = new LocationDto(user.getLocation().getId(), user.getLocation().getName(), user.getLocation().getLatitude(), user.getLocation().getLongitude(), null);
         }
 
         return new UserDto(

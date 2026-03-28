@@ -2,6 +2,7 @@ package com.thesis.freelance.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thesis.freelance.common.util.ValidPassword;
+import com.thesis.freelance.common.util.ValidPhoneNumber;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,10 +36,7 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(
-            regexp = "^\\+3598[7-9]\\d{7}$",
-            message = "Phone number must be valid Bulgarian mobile (e.g., +35988xxxxxxx)"
-    )
+    @ValidPhoneNumber(message = "Invalid phone number. Use format: +[country code][number]")
     private String phone;
 
     @NotBlank(message = "Password is required")

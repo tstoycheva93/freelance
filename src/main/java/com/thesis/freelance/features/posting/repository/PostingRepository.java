@@ -45,12 +45,13 @@ public interface PostingRepository extends JpaRepository<Posting, UUID> {
     @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.activityStatus = :activityStatus AND p.location.id = :locationId")
     Page<Posting> findAllByLocationId(@Param("activityStatus") ActivityStatus activityStatus, @Param("locationId") UUID locationId, Pageable pageable);
 
-    // Search filter (title, description, client company name)
+    // Search filter (title, description, client company name, location)
     @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location " +
             "WHERE p.activityStatus = :activityStatus " +
             "AND (:search IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "   OR LOWER(p.client.companyName) LIKE LOWER(CONCAT('%', :search, '%')))")
+            "   OR LOWER(p.client.companyName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(p.location.name) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Posting> findAllBySearch(@Param("activityStatus") ActivityStatus activityStatus, @Param("search") String search, Pageable pageable);
 
     // Search + Location
@@ -79,7 +80,8 @@ public interface PostingRepository extends JpaRepository<Posting, UUID> {
             "WHERE p.activityStatus = :activityStatus AND p.status = :status " +
             "AND (:search IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "   OR LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "   OR LOWER(p.client.companyName) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "   OR LOWER(p.client.companyName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "   OR LOWER(p.location.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
             "AND (:categoryId IS NULL OR p.categoryId = :categoryId) " +
             "AND (:locationId IS NULL OR p.location.id = :locationId)")
     Page<Posting> findAllByStatusAndSearchAndCategoryAndLocation(

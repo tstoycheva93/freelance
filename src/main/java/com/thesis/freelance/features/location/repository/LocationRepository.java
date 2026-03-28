@@ -22,4 +22,7 @@ public interface LocationRepository extends JpaRepository<Location, UUID> {
 
     @Query("SELECT l FROM Location l WHERE l.activityStatus = :activityStatus")
     List<Location> findAllByActivityStatus(@Param("activityStatus") ActivityStatus activityStatus);
+
+    @Query("SELECT l FROM Location l WHERE LOWER(l.name) LIKE LOWER(CONCAT('%', :query, '%')) ORDER BY l.name")
+    List<Location> searchByName(@Param("query") String query);
 }

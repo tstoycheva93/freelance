@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class CertificationSchedulerController {
 
+    //endpoint za proverka
+    //POST http://localhost:8080/api/cert/scheduler/certifications/check-expired
+
     private final CertificationScheduler certificationScheduler;
 
     @PostMapping("/certifications/check-expired")

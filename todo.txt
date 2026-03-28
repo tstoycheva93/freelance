@@ -1,5 +1,7 @@
 -delete posting - cascade za offers??
 -match - double percentage field in offer and in posting compared against freelancer
+-generate cv
+-dogovor, statement
 
 
 admin:
@@ -7,10 +9,9 @@ da slaga inactive na useri, review, posting
 da preglejda flags na user, review
 da pozvolqva na useri da redaktirat username, birth date
 da prashtat sistemen email na vsichki active - newsletter, system
-crud za location, category, skill
+crud za category, skill
 
 --------------------------------------------------------
-POST http://localhost:8080/api/cert/scheduler/certifications/check-expired
 
 netstat -ano | findstr :8080
 taskkill /PID <PID> /F

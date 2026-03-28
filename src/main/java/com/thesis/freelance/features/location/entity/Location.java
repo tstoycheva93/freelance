@@ -22,18 +22,16 @@ public class Location extends BaseEntity {
     @Column(nullable = false, length = 255)
     private String name;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "country_id",
+            foreignKey = @ForeignKey(name = "fk_location_country")
+    )
+    private Country country;
+
     @Column(precision = 10, scale = 8)
     private BigDecimal latitude;
 
     @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
-
-    public record Coordinates(BigDecimal lat, BigDecimal lng) {}
-
-    @Transient
-    public Coordinates getCoordinates() {
-        return new Coordinates(latitude, longitude);
-    }
-
-
 }

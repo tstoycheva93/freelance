@@ -19,4 +19,9 @@ public class LocationController {
     public ResponseEntity<List<LocationDto>> getAllLocations() {
         return ResponseEntity.ok(locationService.getAllLocations());
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<LocationDto>> searchLocations(@RequestParam String query) {
+        return ResponseEntity.ok(locationService.searchLocations(query));
+    }
 }

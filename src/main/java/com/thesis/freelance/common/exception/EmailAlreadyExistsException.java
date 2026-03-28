@@ -6,7 +6,7 @@ public class EmailAlreadyExistsException extends ApiException {
     
     public EmailAlreadyExistsException(String email) {
         super(
-            "Email already registered: " + email,
+            "Email taken.",
             HttpStatus.CONFLICT,
             "EMAIL_ALREADY_EXISTS",
             "Please use a different email or try logging in"

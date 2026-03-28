@@ -229,20 +229,30 @@ public class ProfileService {
             User currentUser = userRepository.findById(currentUserId).orElse(null);
             if (currentUser != null && currentUser.getLocation() != null) {
                 Location currentLocation = currentUser.getLocation();
+                
+                if (currentLocation.getLatitude() == null || currentLocation.getLongitude() == null) {
+                    int start = page * size;
+                    int end = Math.min(start + size, peopleDtos.size());
+                    List<PeopleDto> pagedContent = start < peopleDtos.size() 
+                        ? peopleDtos.subList(start, end) 
+                        : List.of();
+                    return new PageImpl<>(pagedContent, PageRequest.of(page, size), peopleDtos.size());
+                }
+                
                 final double currentLat = currentLocation.getLatitude().doubleValue();
                 final double currentLon = currentLocation.getLongitude().doubleValue();
                 
                 final boolean descending = "desc".equalsIgnoreCase(sortOrder);
                 
                 peopleDtos.sort((a, b) -> {
-                    Double distA = a.getLocation() != null && a.getLocation().latitude() != null ? 
+                    Double distA = a.getLocation() != null && a.getLocation().lat() != null ? 
                         calculateDistanceKm(currentLat, currentLon, 
-                            a.getLocation().latitude().doubleValue(),
-                            a.getLocation().longitude().doubleValue()) : null;
-                    Double distB = b.getLocation() != null && b.getLocation().latitude() != null ? 
+                            a.getLocation().lat().doubleValue(),
+                            a.getLocation().lng().doubleValue()) : null;
+                    Double distB = b.getLocation() != null && b.getLocation().lat() != null ? 
                         calculateDistanceKm(currentLat, currentLon,
-                            b.getLocation().latitude().doubleValue(),
-                            b.getLocation().longitude().doubleValue()) : null;
+                            b.getLocation().lat().doubleValue(),
+                            b.getLocation().lng().doubleValue()) : null;
                     
                     if (distA == null && distB == null) return 0;
                     if (distA == null) return 1;
@@ -330,7 +340,8 @@ public class ProfileService {
                 user.getLocation().getId(), 
                 user.getLocation().getName(),
                 user.getLocation().getLatitude(),
-                user.getLocation().getLongitude()
+                user.getLocation().getLongitude(),
+                null
             );
         }
 
@@ -360,7 +371,8 @@ public class ProfileService {
                 user.getLocation().getId(), 
                 user.getLocation().getName(),
                 user.getLocation().getLatitude(),
-                user.getLocation().getLongitude()
+                user.getLocation().getLongitude(),
+                null
             );
         }
         return new UserDto(
