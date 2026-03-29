@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Service Agreement</title>
+    <style type="text/css">
+        /* Set physical page margins here instead of on the body */
+        @page {
+            size: A4;
+            margin: 40px;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #333333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header styling */
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2d3748;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #2b6cb0; }
+        .title { font-size: 20px; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
+        .reference { font-size: 14px; color: #718096; margin-top: 5px; }
+
+        /* General Sections */
+        .section { margin-bottom: 25px; page-break-inside: avoid; }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        /* Layout Tables (Replaces the div-based display:table) */
+        table.layout-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        td.col-half {
+            width: 50%;
+            vertical-align: top;
+            padding-right: 20px;
+        }
+
+        .label { font-weight: bold; color: #4a5568; margin-bottom: 2px; }
+        .value { color: #1a202c; }
+
+        /* Project Scope */
+        .project-title { font-weight: bold; margin-bottom: 10px; }
+        .project-desc { font-size: 14px; text-align: justify; }
+
+        /* Terms Block */
+        .terms {
+            background-color: #f7fafc;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* Signatures */
+        .signatures { margin-top: 50px; page-break-inside: avoid; }
+        .sign-line { border-bottom: 1px solid #718096; margin-top: 40px; margin-bottom: 5px; }
+        .sign-label { font-size: 12px; color: #718096; }
+        .sign-name { font-size: 14px; margin-top: 5px; color: #1a202c; }
+        .sign-date { font-size: 11px; color: #718096; margin-top: 3px; }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="logo">TalentFlow</div>
+    <div class="title">Service Agreement</div>
+    <div class="reference">Reference: {{offerId}}</div>
+</div>
+
+<div class="section">
+    <div class="section-title">Parties</div>
+    <table class="layout-table">
+        <tr>
+            <td class="col-half">
+                <div class="label">Client:</div>
+                <div class="value">{{clientName}}</div>
+            </td>
+            <td class="col-half">
+                <div class="label">Freelancer:</div>
+                <div class="value">{{freelancerName}}</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="section">
+    <div class="section-title">Project Scope</div>
+    <div class="project-title">{{postingTitle}}</div>
+    <div class="project-desc">{{postingDescription}}</div>
+</div>
+
+<div class="section">
+    <div class="section-title">Terms</div>
+    <table class="layout-table">
+        <tr>
+            <td class="col-half">
+                <div class="label">Agreed Price:</div>
+                <div class="value">${{price}}</div>
+            </td>
+            <td class="col-half">
+                <div class="label">Delivery Date:</div>
+                <div class="value">{{deliveryDate}}</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="section terms">
+    This agreement is entered into through the TalentFlow platform. By accepting this offer, the Client agrees to the proposed price and terms, and the Freelancer agrees to deliver the specified work by the delivery date. Payment and delivery are governed by TalentFlow's Terms of Service.
+</div>
+
+<div class="signatures">
+    <table class="layout-table">
+        <tr>
+            <td class="col-half">
+                <div class="sign-line">{{#if freelancerSigned}}Signed electronically{{else}}Pending{{/if}}</div>
+                <div class="sign-label">Freelancer Signature</div>
+                <div class="sign-name">{{freelancerName}}</div>
+            </td>
+            <td class="col-half">
+                <div class="sign-line">{{#if clientSigned}}Signed electronically{{else}}Awaiting signature{{/if}}</div>
+                <div class="sign-label">Client Signature</div>
+                <div class="sign-name">{{clientName}}</div>
+                {{#if clientSignedAt}}
+                <div class="sign-date">Signed on {{clientSignedAt}}</div>
+                {{/if}}
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="footer">
+    Generated on {{date}} by TalentFlow
+</div>
+</body>
+</html>

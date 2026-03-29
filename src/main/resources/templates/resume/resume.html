@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+        /* Reset and enforce full height for the PDF page */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        @page {
+            size: A4;
+            margin: 0; /* Full bleed to allow colors to touch the edges */
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 13px;
+            color: #334155; /* Modern slate text */
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* MASTER TABLE: This is the Flying Saucer magic bullet.
+           It forces the sidebar and main content to span the exact remaining height of the page.
+        */
+        table.master-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        /* --- HEADER ROW (Auto-height) --- */
+        tr.header-row {
+            height: 1%; /* Forces the row to only be as tall as its content */
+        }
+
+        td.header-frame-cell {
+            padding: 40px 48px;
+            background-color: #f8fafc; /* Very soft slate tint */
+            border-top: 8px solid #0f172a; /* Bold, elegant top frame line */
+            border-bottom: 2px solid #cbd5e1; /* Crisp bottom frame divider */
+        }
+
+        /* Inner table to align avatar and info horizontally */
+        table.inner-header {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td.avatar-cell {
+            width: 100px;
+            vertical-align: middle;
+        }
+
+        td.info-cell {
+            vertical-align: middle;
+            padding-left: 20px;
+        }
+
+        /* Avatar Styling */
+        .cv-avatar img {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+        }
+
+        .cv-avatar-initials {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            background: #e2e8f0;
+            text-align: center;
+            line-height: 80px;
+            font-size: 24px;
+            font-family: 'Georgia', serif;
+            color: #0f172a;
+        }
+
+        /* Header Typography */
+        .cv-name {
+            font-family: 'Georgia', serif;
+            font-size: 34px;
+            letter-spacing: -0.5px;
+            color: #0f172a; /* Deep, almost-black slate */
+            margin-bottom: 2px;
+        }
+
+        .cv-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0284c7; /* Modern sky blue accent */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .cv-level {
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-size: 14px;
+            color: #64748b;
+            display: inline-block;
+        }
+
+        .cv-contacts { margin-top: 12px; }
+        .cv-contact {
+            display: inline-block;
+            font-size: 12px;
+            color: #475569;
+            margin-right: 20px;
+            margin-bottom: 4px;
+        }
+
+        /* --- BODY ROW (Stretches to bottom) --- */
+        tr.body-row {
+            height: 99%; /* Forces the columns to stretch down the page */
+        }
+
+        td.sidebar-cell {
+            width: 33%;
+            background-color: #f1f5f9; /* Distinct modern column color */
+            border-right: 1px solid #e2e8f0;
+            padding: 40px 30px 40px 48px;
+            vertical-align: top;
+        }
+
+        td.main-cell {
+            width: 67%;
+            background-color: #ffffff;
+            padding: 40px 48px 40px 40px;
+            vertical-align: top;
+        }
+
+        /* Sections */
+        .sidebar-section { margin-bottom: 40px; page-break-inside: avoid; }
+        .main-section { margin-bottom: 40px; page-break-inside: avoid; }
+
+        /* Modern Section Labels */
+        .section-label {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #0f172a;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 8px;
+        }
+
+        .cv-bio { font-size: 13px; color: #475569; line-height: 1.8; }
+
+        /* Modern outline skills */
+        .skill-pill {
+            display: inline-block;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: transparent;
+            color: #334155;
+            border: 1px solid #94a3b8;
+            margin-right: 6px;
+            margin-bottom: 8px;
+        }
+
+        /* Entries */
+        .entry {
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 24px;
+            page-break-inside: avoid;
+        }
+        .entry:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+
+        table.entry-header-table { width: 100%; border-collapse: collapse; }
+
+        td.entry-title-cell {
+            font-size: 15px;
+            font-weight: bold;
+            color: #0f172a;
+            vertical-align: top;
+        }
+
+        td.entry-dates-cell {
+            font-size: 12px;
+            color: #64748b;
+            text-align: right;
+            vertical-align: top;
+            white-space: nowrap;
+            width: 140px;
+        }
+
+        .entry-sub { margin-top: 4px; }
+        .entry-company {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #475569;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .entry-type {
+            display: inline-block;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            background: #e0f2fe; /* Light sky blue background */
+            color: #0284c7; /* Sky blue text */
+            vertical-align: middle;
+        }
+
+        .entry-desc { font-size: 13px; color: #475569; line-height: 1.7; margin-top: 10px; }
+
+        /* Certifications */
+        .cert-entry { padding-bottom: 16px; margin-bottom: 16px; page-break-inside: avoid; }
+        .cert-entry:last-child { padding-bottom: 0; margin-bottom: 0; }
+        .cert-title { font-size: 13px; font-weight: bold; color: #0f172a; }
+        .cert-org { font-size: 12px; color: #475569; margin-top: 3px; }
+        .cert-meta { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<table class="master-table">
+
+    <tr class="header-row">
+        <td colspan="2" class="header-frame-cell">
+            <table class="inner-header">
+                <tr>
+                    <td class="avatar-cell">
+                        {{#if photoUrl}}
+                        <div class="cv-avatar"><img src="{{photoUrl}}" alt="" /></div>
+                        {{else}}
+                        <div class="cv-avatar-initials">{{initials}}</div>
+                        {{/if}}
+                    </td>
+                    <td class="info-cell">
+                        <div class="cv-name">{{firstName}} {{lastName}}</div>
+                        <div>
+                            <span class="cv-title">{{title}}</span>
+                            <span class="cv-level">{{experienceLevel}}</span>
+                        </div>
+                        <div class="cv-contacts">
+                            <div class="cv-contact">{{email}}</div>
+                            <div class="cv-contact">{{phone}}</div>
+                            <div class="cv-contact">{{location}}</div>
+                            <div class="cv-contact">{{website}}</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr class="body-row">
+
+        <td class="sidebar-cell">
+            <div class="sidebar-section">
+                <div class="section-label">About</div>
+                <div class="cv-bio">{{description}}</div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-label">Skills</div>
+                <div>
+                    {{#each skills}}
+                    <span class="skill-pill">{{this}}</span>
+                    {{/each}}
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-label">Certifications</div>
+                {{#each certifications}}
+                <div class="cert-entry">
+                    <div class="cert-title">{{this.title}}</div>
+                    <div class="cert-org">{{this.organization}}</div>
+                    <div class="cert-meta">ID: {{this.identifier}} - {{this.date}} - {{this.expiration}}</div>
+                </div>
+                {{/each}}
+            </div>
+        </td>
+
+        <td class="main-cell">
+            <div class="main-section">
+                <div class="section-label">Work Experience</div>
+                {{#each work}}
+                <div class="entry">
+                    <table class="entry-header-table">
+                        <tr>
+                            <td class="entry-title-cell">{{this.title}}</td>
+                            <td class="entry-dates-cell">{{this.startDate}} - {{this.endDate}}</td>
+                        </tr>
+                    </table>
+                    <div class="entry-sub">
+                        <span class="entry-company">{{this.company}}</span>
+                        <span class="entry-type">{{this.type}}</span>
+                    </div>
+                    <div class="entry-desc">{{this.description}}</div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="main-section">
+                <div class="section-label">Education</div>
+                {{#each education}}
+                <div class="entry">
+                    <table class="entry-header-table">
+                        <tr>
+                            <td class="entry-title-cell">{{this.degree}} in {{this.field}}</td>
+                            <td class="entry-dates-cell">{{this.startDate}} - {{this.endDate}}</td>
+                        </tr>
+                    </table>
+                    <div class="entry-sub"><span class="entry-company">{{this.institution}}</span></div>
+                    <div class="entry-desc">{{this.description}}</div>
+                </div>
+                {{/each}}
+            </div>
+        </td>
+
+    </tr>
+</table>
+
+</body>
+</html>
