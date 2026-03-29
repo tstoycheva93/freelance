@@ -19,6 +19,8 @@ import com.thesis.freelance.features.skill.entity.Skill;
 import com.thesis.freelance.features.skill.repository.SkillRepository;
 import com.thesis.freelance.features.uploadedCV.entity.UploadedCV;
 import com.thesis.freelance.features.uploadedCV.repository.UploadedCVRepository;
+import com.thesis.freelance.features.user.entity.User;
+import com.thesis.freelance.features.user.repository.UserRepository;
 import com.thesis.freelance.features.work.entity.Work;
 import com.thesis.freelance.features.work.repository.WorkRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,7 @@ public class FreelancerDetailsService {
     private final CertificationRepository certificationRepository;
     private final UploadedCVRepository uploadedCVRepository;
     private final SkillRepository skillRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public FreelancerDetailsDto getFreelancerDetails(UUID freelancerId) {
@@ -73,8 +76,21 @@ public class FreelancerDetailsService {
         Optional<UploadedCV> cv = uploadedCVRepository.findFirstByFreelancer_IdOrderByUploadedAtDesc(freelancerId, ActivityStatus.ACTIVE);
         FreelancerCVDto cvDto = cv.map(this::toCVDto).orElse(null);
 
+        String firstName = "";
+        String lastName = "";
+        if (freelancer.getUserId() != null) {
+            Optional<User> userOpt = userRepository.findById(freelancer.getUserId());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                firstName = user.getName() != null ? user.getName() : "";
+                lastName = user.getSurname() != null ? user.getSurname() : "";
+            }
+        }
+
         return new FreelancerDetailsDto(
                 freelancer.getId(),
+                firstName,
+                lastName,
                 freelancer.getTitle(),
                 freelancer.getBio(),
                 freelancer.getExperience(),

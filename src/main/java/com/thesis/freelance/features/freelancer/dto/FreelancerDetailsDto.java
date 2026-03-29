@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public record FreelancerDetailsDto(
         UUID id,
+        String firstName,
+        String lastName,
         String title,
         String bio,
         ExperienceLevel experience,

@@ -2,9 +2,13 @@ package com.thesis.freelance.features.freelancer.web;
 
 import com.thesis.freelance.features.category.service.CategoryService;
 import com.thesis.freelance.features.freelancer.dto.*;
+import com.thesis.freelance.features.freelancer.service.CvGenerationService;
 import com.thesis.freelance.features.freelancer.service.FreelancerDetailsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +17,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/freelancer/details")
 @RequiredArgsConstructor
+@Slf4j
 public class FreelancerDetailsController {
 
     private final FreelancerDetailsService freelancerDetailsService;
+    private final CvGenerationService cvGenerationService;
 
     @GetMapping
     public ResponseEntity<?> getFreelancerDetails(@RequestParam UUID freelancerId) {
@@ -118,5 +124,25 @@ public class FreelancerDetailsController {
             @PathVariable UUID cvId) {
         freelancerDetailsService.deleteCV(cvId, freelancerId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/generate-cv")
+    public ResponseEntity<?> generateCv(
+            @RequestParam UUID freelancerId,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName) {
+        log.info("Received generate-cv request for freelancer: {}", freelancerId);
+        try {
+            byte[] pdfBytes = cvGenerationService.generateCvPdf(freelancerId);
+            log.info("CV generated successfully, size: {} bytes", pdfBytes.length);
+            String fileName = cvGenerationService.generateCvFileName(firstName, lastName);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            log.error("CV generation failed: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 }

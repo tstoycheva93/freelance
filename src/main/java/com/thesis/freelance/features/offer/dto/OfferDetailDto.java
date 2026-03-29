@@ -20,6 +20,9 @@ public record OfferDetailDto(
     String message,
     LocalDate deliveryTime,
     List<String> attachments,
+    List<String> deliverableUrls,
+    boolean deliverableVisible,
+    LocalDateTime deliveredAt,
     LocalDateTime createdAt,
     
     UUID postingId,

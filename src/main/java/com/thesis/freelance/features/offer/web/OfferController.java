@@ -14,11 +14,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -30,6 +35,8 @@ public class OfferController {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
+
+    public record UnsatisfactoryRequest(BigDecimal partialAmount) {}
 
     @GetMapping
     public ResponseEntity<Page<OfferWithPostingDto>> getOffers(
@@ -94,21 +101,19 @@ public class OfferController {
     @PatchMapping("/{offerId}/status")
     public ResponseEntity<OfferForPostingDto> updateOfferStatus(
             @PathVariable UUID offerId,
-            @RequestParam String status,
+            @RequestParam OfferStatus status,
+            @RequestBody(required = false) UnsatisfactoryRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        OfferStatus newStatus = OfferStatus.fromValue(status);
-
-        OfferForPostingDto updatedOffer = offerService.updateOfferStatus(
-                offerId, newStatus, user.getId());
-
+        BigDecimal amount = request != null ? request.partialAmount() : null;
+        OfferForPostingDto updatedOffer = offerService.updateOfferStatus(offerId, status, user.getId(), amount);
         return ResponseEntity.ok(updatedOffer);
     }
 
-    @PostMapping("/posting/{postingId}/offers")
+    @PostMapping("/{postingId}")
     public ResponseEntity<OfferForPostingDto> createOffer(
             @PathVariable UUID postingId,
             @RequestBody CreateOfferRequestDto requestDto,
@@ -159,5 +164,100 @@ public class OfferController {
 
         offerService.deleteOffer(offerId, user.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/deliverables")
+    public ResponseEntity<Void> submitDeliverables(
+            @PathVariable UUID id,
+            @RequestBody List<String> fileUrls,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        offerService.submitDeliverables(id, fileUrls, user.getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/deliverables")
+    public ResponseEntity<List<String>> getDeliverables(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        com.thesis.freelance.features.offer.entity.Offer offer = offerService.getOfferEntityById(id);
+        
+        boolean isClientOwner = offer.getPosting().getClient().getUserId().equals(user.getId());
+        boolean isFreelancerOwner = offer.getFreelancer().getUserId() != null 
+                && offer.getFreelancer().getUserId().equals(user.getId());
+        
+        if (!isClientOwner && !isFreelancerOwner) {
+            throw new SecurityException("Not authorized");
+        }
+
+        if (isClientOwner && !offer.isDeliverableVisible()) {
+            throw new SecurityException("Deliverables are not yet visible");
+        }
+
+        return ResponseEntity.ok(offer.getDeliverableUrls());
+    }
+
+    @GetMapping("/{id}/contract")
+    public ResponseEntity<byte[]> getContract(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        byte[] pdf = offerService.getContractPdf(id, user.getId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "contract-" + id + ".pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdf);
+    }
+
+    @GetMapping("/{id}/contract/status")
+    public ResponseEntity<Map<String, Object>> getContractStatus(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        return ResponseEntity.ok(offerService.getContractStatus(id, user.getId()));
+    }
+
+    @GetMapping("/{id}/receipt")
+    public ResponseEntity<byte[]> getReceipt(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        byte[] pdf = offerService.getReceiptPdf(id, user.getId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "receipt-" + id + ".pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdf);
+    }
+
+    @GetMapping("/{id}/receipt/exists")
+    public ResponseEntity<Map<String, Boolean>> checkReceiptExists(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        boolean exists = offerService.doesReceiptExist(id, user.getId());
+        return ResponseEntity.ok(Map.of("exists", exists));
     }
 }

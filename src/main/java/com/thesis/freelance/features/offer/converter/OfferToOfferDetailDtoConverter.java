@@ -34,6 +34,9 @@ public class OfferToOfferDetailDtoConverter {
                 offer.getMessage(),
                 offer.getDeliveryTime(),
                 offer.getAttachments(),
+                offer.getDeliverableUrls(),
+                offer.isDeliverableVisible(),
+                offer.getDeliveredAt(),
                 offer.getCreatedAt(),
 
                 posting.getId(),

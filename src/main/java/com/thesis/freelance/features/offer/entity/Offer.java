@@ -7,8 +7,12 @@ import com.thesis.freelance.features.posting.entity.Posting;
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,9 +76,16 @@ public class Offer extends BaseEntity {
         this.status = OfferStatus.CANCELED;
     }
 
+    public void markDelivered() {
+        this.status = OfferStatus.DELIVERED;
+        this.deliverableVisible = true;
+        this.deliveredAt = LocalDateTime.now();
+    }
+
     //<-------------------- ATTACHMENTS ----------------------->
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     @CollectionTable(
             name = "offers_attachments",
             joinColumns = @JoinColumn(name = "offer_id")
@@ -88,5 +99,23 @@ public class Offer extends BaseEntity {
 
     public void removeAttachment(String url) {
         this.attachments.remove(url);
+    }
+
+    //<-------------------- DELIVERABLES ----------------------->
+
+    @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "offer_deliverables", joinColumns = @JoinColumn(name = "offer_id"))
+    @Column(name = "file_url", length = 500)
+    private List<String> deliverableUrls = new ArrayList<>();
+
+    @Column(name = "deliverable_visible", nullable = false)
+    private boolean deliverableVisible = false;
+
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
+
+    public void addDeliverable(String url) {
+        this.deliverableUrls.add(url);
     }
 }

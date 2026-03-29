@@ -1,7 +1,10 @@
 -delete posting - cascade za offers??
 -match - double percentage field in offer and in posting compared against freelancer
--generate cv
--dogovor, statement
+
+posting da moje da se zatvarq samo ako nqma pending/shortlisted
+posting da moje da stava completed i ako e active, i ako e closed
+butona za iztrivane na offer
+sudurjanieto na contract/receipt
 
 
 admin:
@@ -18,16 +21,3 @@ taskkill /PID <PID> /F
 
 net stop winnat
 net start winnat
-
-logging.level.org.springframework.web.socket=DEBUG
-logging.level.org.springframework.messaging=TRACE
-logging.level.org.springframework.security=TRACE
-logging.level.com.thesis.freelance.security.jwt=DEBUG
-logging.level.org.springframework.web.socket.config=DEBUG
-logging.level.org.springframework.web.servlet.handler=DEBUG
-logging.level.org.springframework.web.socket.server.support.DefaultHandshakeHandler=TRACE
-logging.level.org.springframework.web.socket.sockjs.transport.handler=TRACE
-logging.level.org.springframework.web.socket.sockjs=TRACE
-logging.level.org.springframework.web.socket.sockjs.transport=TRACE
-logging.level.org.springframework.web.socket.server.support=TRACE
-

@@ -251,39 +251,30 @@ public class PostingService {
     @Transactional
     public PostingDetailDto updateStatus(UUID id, PostingStatus status, String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
-        
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         Posting posting = postingRepository.findById(id)
-                .orElseThrow(() -> new PostingNotFoundException(id));
-        
+                .orElseThrow(() -> new IllegalArgumentException("Posting not found"));
+
         if (!posting.getClient().getUserId().equals(user.getId())) {
-            throw new UnauthorizedPostingAccessException(id);
+            throw new SecurityException("Not authorized");
         }
-        
-        boolean wasActive = posting.getStatus() == PostingStatus.ACTIVE;
 
         posting.setStatus(status);
         Posting savedPosting = postingRepository.save(posting);
-        
-        if (wasActive && (status == PostingStatus.CLOSED || status == PostingStatus.COMPLETED)) {
-            List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
-            for (Offer offer : activeOffers) {
-                offer.setStatus(OfferStatus.CANCELED);
-                offerRepository.save(offer);
-            }
-        }
 
-        if (status == PostingStatus.COMPLETED) {
-            List<Offer> activeOffers = offerRepository.findAcceptedOffersByPostingId(id, ActivityStatus.ACTIVE);
+        if(status == PostingStatus.CLOSED) {
+            List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
+            
             for (Offer offer : activeOffers) {
-                offer.setStatus(OfferStatus.COMPLETED);
-                offerRepository.save(offer);
-                notificationService.notifyPostingCompleted(
+                notificationService.notifyOfferCanceled(
                         offer.getFreelancer().getUserId(),
                         offer.getId(),
                         offer.getPosting().getTitle()
                 );
-
+                
+                offer.setStatus(OfferStatus.CANCELED);
+                offerRepository.save(offer);
             }
         }
 
