@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum PostingStatus {
 
     ACTIVE("active"),
-    COMPLETED("completed"),
     CLOSED("closed");
 
     private final String value;

@@ -54,24 +54,6 @@ public class PostingService {
     private final NotificationService notificationService;
     
     @Transactional(readOnly = true)
-    public Page<PostingTileDto> getAllPostings(Pageable pageable) {
-        Page<Posting> postings = postingRepository.findAllWithClientAndLocation(ActivityStatus.ACTIVE, pageable);
-        return postings.map(postingToTileDtoConverter::convert);
-    }
-    
-    @Transactional(readOnly = true)
-    public Page<PostingTileDto> getPostingsByStatus(PostingStatus status, Pageable pageable) {
-        Page<Posting> postings = postingRepository.findAllByStatus(ActivityStatus.ACTIVE, status, pageable);
-        return postings.map(postingToTileDtoConverter::convert);
-    }
-    
-    @Transactional(readOnly = true)
-    public Page<PostingTileDto> getPostingsByCategory(UUID categoryId, Pageable pageable) {
-        Page<Posting> postings = postingRepository.findAllByCategoryId(ActivityStatus.ACTIVE, categoryId, pageable);
-        return postings.map(postingToTileDtoConverter::convert);
-    }
-
-    @Transactional(readOnly = true)
     public Page<PostingTileDto> getPostings(PostingStatus status, String search, UUID categoryId, UUID locationId, Pageable pageable) {
         boolean hasStatus = status != null;
         boolean hasSearch = search != null && !search.isBlank();
@@ -237,7 +219,8 @@ public class PostingService {
         savedPostingRepository.deleteByPostingId(id);
         postingSkillsRepository.deleteByPostingId(id);
         posting.setAttachmentUrls(new ArrayList<>());
-        postingRepository.delete(posting);
+        posting.setActivityStatus(ActivityStatus.DELETED);
+        postingRepository.save(posting);
     }
     
     @Transactional
@@ -246,6 +229,23 @@ public class PostingService {
                 .orElseThrow(() -> new PostingNotFoundException(id));
         posting.incrementViews();
         postingRepository.save(posting);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasPendingOrShortlistedOffers(UUID postingId) {
+        List<Offer> offers = offerRepository.findActiveOffersByPostingId(postingId, ActivityStatus.ACTIVE);
+        return !offers.isEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasOffers(UUID postingId) {
+        return offerRepository.countByPostingIdAndActivityStatus(postingId, ActivityStatus.ACTIVE) > 0;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasActiveWorkOffers(UUID postingId) {
+        return offerRepository.countByPostingIdAndStatusIn(postingId, 
+            java.util.Arrays.asList(OfferStatus.ACCEPTED, OfferStatus.DELIVERED)) > 0;
     }
     
     @Transactional
@@ -262,21 +262,21 @@ public class PostingService {
 
         posting.setStatus(status);
         Posting savedPosting = postingRepository.save(posting);
-
-        if(status == PostingStatus.CLOSED) {
-            List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
-            
-            for (Offer offer : activeOffers) {
-                notificationService.notifyOfferCanceled(
-                        offer.getFreelancer().getUserId(),
-                        offer.getId(),
-                        offer.getPosting().getTitle()
-                );
-                
-                offer.setStatus(OfferStatus.CANCELED);
-                offerRepository.save(offer);
-            }
-        }
+//
+//        if(status == PostingStatus.CLOSED) {
+//            List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
+//
+//            for (Offer offer : activeOffers) {
+//                notificationService.notifyOfferCanceled(
+//                        offer.getFreelancer().getUserId(),
+//                        offer.getId(),
+//                        offer.getPosting().getTitle()
+//                );
+//
+//                offer.setStatus(OfferStatus.CANCELED);
+//                offerRepository.save(offer);
+//            }
+//        }
 
         
         return postingToDetailDtoConverter.convert(

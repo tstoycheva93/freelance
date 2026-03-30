@@ -297,13 +297,7 @@ public class OfferService {
             }
         }
 
-        log.info("Notifications sent for offer {}, now checking posting auto-complete", offerId);
-
-        if (newStatus == OfferStatus.COMPLETED || newStatus == OfferStatus.UNSATISFACTORY) {
-            checkAndAutoCompletePosting(savedOffer.getPosting().getId());
-        }
-
-        log.info("Posting auto-complete check done for offer {}, now building response", offerId);
+        log.info("Notifications sent for offer {}", offerId);
 
         User freelancerUser = freelancerUserId != null ? userRepository.findById(freelancerUserId).orElse(null) : null;
 
@@ -313,22 +307,6 @@ public class OfferService {
         dto.setSkills(skills);
 
         return dto;
-    }
-
-    @Transactional
-    public OfferForPostingDto updateOfferStatus(UUID offerId, OfferStatus newStatus, UUID requestingUserId) {
-        return updateOfferStatus(offerId, newStatus, requestingUserId, null);
-    }
-    
-    private void checkAndAutoCompletePosting(UUID postingId) {
-        long unresolvedCount = offerRepository.countByPostingIdAndStatusIn(postingId, 
-            java.util.Arrays.asList(OfferStatus.ACCEPTED, OfferStatus.DELIVERED));
-            
-        if (unresolvedCount == 0) {
-            Posting posting = postingRepository.findById(postingId).orElseThrow();
-            posting.setStatus(PostingStatus.COMPLETED);
-            postingRepository.save(posting);
-        }
     }
     
     @Transactional

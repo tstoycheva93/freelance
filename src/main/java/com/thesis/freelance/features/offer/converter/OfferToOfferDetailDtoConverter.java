@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.offer.converter;
 
+import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.category.entity.Category;
 import com.thesis.freelance.features.category.repository.CategoryRepository;
 import com.thesis.freelance.features.freelancer.dto.FreelancerCVDto;
@@ -27,6 +28,8 @@ public class OfferToOfferDetailDtoConverter {
                 ? new FreelancerCVDto(cv.getId(), cv.getAttachmentName(), cv.getAttachmentUrl(), cv.getUploadedAt())
                 : null;
 
+        boolean postingDeleted = posting.getActivityStatus() == ActivityStatus.DELETED;
+
         return new OfferDetailDto(
                 offer.getId(),
                 offer.getStatus(),
@@ -41,6 +44,7 @@ public class OfferToOfferDetailDtoConverter {
 
                 posting.getId(),
                 posting.getStatus(),
+                postingDeleted,
                 posting.getTitle(),
                 category,
                 posting.getPhotoUrl(),

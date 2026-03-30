@@ -26,7 +26,7 @@
         }
         .logo { font-size: 24px; font-weight: bold; color: #2b6cb0; }
         .title { font-size: 20px; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; }
-        .ref { font-size: 14px; color: #718096; margin-top: 5px; }
+        .ref { font-size: 13px; color: #718096; margin-top: 5px; }
 
         /* Parties Layout Table */
         table.parties-table {
@@ -37,6 +37,9 @@
         td.party {
             width: 50%;
             vertical-align: top;
+            padding: 15px;
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
         }
         .party-title {
             font-weight: bold;
@@ -51,14 +54,15 @@
         table.line-items {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         table.line-items th {
             text-align: left;
             padding: 10px;
-            border-bottom: 2px solid #e2e8f0;
-            color: #718096;
+            border-bottom: 2px solid #2d3748;
+            color: #4a5568;
             font-size: 14px;
+            text-transform: uppercase;
         }
         table.line-items td {
             padding: 15px 10px;
@@ -77,31 +81,45 @@
             border-bottom: none;
             border-top: 2px solid #2d3748;
             color: #1a202c;
+            padding-top: 15px;
         }
         td.total-label { text-align: right; }
 
         /* Status Badge */
-        .badge-container { text-align: center; margin-top: 20px; }
+        .badge-container { text-align: right; margin-bottom: 30px; padding-right: 10px; }
         .status-badge {
             display: inline-block;
             padding: 8px 15px;
             background-color: #c6f6d5;
             color: #22543d;
-            border-radius: 20px;
+            border-radius: 4px;
             font-weight: bold;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            border: 1px solid #9ae6b4;
         }
+
+        /* Disclaimers */
+        .disclaimer-section {
+            background-color: #edf2f7;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #4a5568;
+            text-align: justify;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .disclaimer-title { font-weight: bold; margin-bottom: 10px; color: #2d3748; font-size: 14px; }
 
         /* Footer */
         .footer {
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #a0aec0;
-            margin-top: 50px;
             border-top: 1px solid #e2e8f0;
-            padding-top: 20px;
+            padding-top: 15px;
         }
     </style>
 </head>
@@ -109,19 +127,20 @@
 <div class="header">
     <div class="logo">TalentFlow</div>
     <div class="title">Payment Receipt</div>
-    <div class="ref">Invoice Ref: {{offerId}}</div>
-    <div class="ref">Date: {{date}}</div>
+    <div class="ref">Invoice Ref: {{offerId}} &nbsp;|&nbsp; Date: {{date}}</div>
 </div>
 
 <table class="parties-table">
     <tr>
-        <td class="party">
-            <div class="party-title">From / Billed To</div>
+        <td class="party" style="border-right: none;">
+            <div class="party-title">Billed To (Client)</div>
             <div class="party-name">{{clientName}}</div>
+            <div class="item-desc">{{clientEmail}}</div>
         </td>
         <td class="party">
-            <div class="party-title">To / Payee</div>
+            <div class="party-title">Payee (Freelancer)</div>
             <div class="party-name">{{freelancerName}}</div>
+            <div class="item-desc">{{freelancerEmail}}</div>
         </td>
     </tr>
 </table>
@@ -137,23 +156,32 @@
     <tr>
         <td>
             <div class="item-title">{{postingTitle}}</div>
-            <div class="item-desc">Freelance services rendered via TalentFlow</div>
+            <div class="item-desc">Agreed amount for freelance services rendered via TalentFlow.</div>
         </td>
         <td class="amount">${{settledAmount}}</td>
     </tr>
     <tr class="total-row">
-        <td class="total-label">Total Paid</td>
+        <td class="total-label">Final Settled Amount</td>
         <td class="amount">${{settledAmount}}</td>
     </tr>
     </tbody>
 </table>
 
 <div class="badge-container">
-    <div class="status-badge">Settled and Completed</div>
+    <div class="status-badge">Settled</div>
+</div>
+
+<div class="disclaimer-section">
+    <div class="disclaimer-title">Payment Obligation &amp; Legal Disclosures</div>
+    <p style="margin-top: 0; margin-bottom: 8px;"><strong>1. Payment Obligation &amp; Proof of Settlement:</strong> The Client is strictly obligated to remit payment to the Freelancer in a timely manner, executed via a method mutually arranged and consented to by both parties. This document serves as official, legally binding proof that such payment has been successfully authorized and settled.</p>
+    <p style="margin-top: 0; margin-bottom: 8px;"><strong>2. Tax Liability:</strong> TalentFlow acts solely as a platform facilitator. The Payee (Freelancer) operates as an independent contractor and assumes sole responsibility for the calculation, reporting, and remittance of any applicable local, state, or federal taxes associated with this income.</p>
+    <p style="margin-top: 0; margin-bottom: 8px;"><strong>3. Finality of Transaction:</strong> This receipt constitutes definitive proof of payment. This settlement is final, binding, and non-refundable. By executing this transaction, both parties acknowledge the complete financial resolution of the contracted services under the agreed-upon Service Agreement.</p>
+    <p style="margin-top: 0; margin-bottom: 0;"><strong>4. Platform Fees:</strong> Any applicable platform service fees or payment gateway processing fees have been assessed and deducted prior to this final remittance in accordance with TalentFlow's Terms of Service.</p>
 </div>
 
 <div class="footer">
-    This receipt is automatically generated by TalentFlow to confirm the settlement of funds between the client and the freelancer.
+    TalentFlow Inc. | 123 Innovation Drive, Tech District | support@talentflow.com<br/>
+    This document is automatically generated and serves as official proof of transaction.
 </div>
 </body>
 </html>

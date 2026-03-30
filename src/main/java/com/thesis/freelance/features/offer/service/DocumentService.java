@@ -27,7 +27,7 @@ public class DocumentService {
     public byte[] generateContract(Offer offer, boolean freelancerSigned, boolean clientSigned, java.time.LocalDateTime clientSignedAt) {
         try {
             Handlebars handlebars = new Handlebars(new ClassPathTemplateLoader("/templates", ".html"));
-            Template template = handlebars.compile("offer/contract");
+            Template template = handlebars.compile("legal/contract");
             
             User freelancerUser = userRepository.findById(offer.getFreelancer().getUserId()).orElseThrow();
             User clientUser = userRepository.findById(offer.getPosting().getClient().getUserId()).orElseThrow();
@@ -58,7 +58,7 @@ public class DocumentService {
     public byte[] generateReceipt(Offer offer, BigDecimal settledAmount) {
         try {
             Handlebars handlebars = new Handlebars(new ClassPathTemplateLoader("/templates", ".html"));
-            Template template = handlebars.compile("offer/receipt");
+            Template template = handlebars.compile("legal/receipt");
             
             User freelancerUser = userRepository.findById(offer.getFreelancer().getUserId()).orElseThrow();
             User clientUser = userRepository.findById(offer.getPosting().getClient().getUserId()).orElseThrow();

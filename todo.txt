@@ -1,10 +1,6 @@
--delete posting - cascade za offers??
--match - double percentage field in offer and in posting compared against freelancer
-
-posting da moje da se zatvarq samo ako nqma pending/shortlisted
-posting da moje da stava completed i ako e active, i ako e closed
-butona za iztrivane na offer
-sudurjanieto na contract/receipt
+match - double percentage field in offer and in posting compared against freelancer
+izvestiq za novite statusi offer_delivered, offer_completed, offer_expired
+offer expiration handling: ako e pending/shortlisted - stava canceled, ako e accepted - stava unsatisfactory, ako e delivered - nishto, moje da se prashta izvestie puk nz
 
 
 admin:

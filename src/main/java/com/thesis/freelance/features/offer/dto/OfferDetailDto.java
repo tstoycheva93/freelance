@@ -27,6 +27,7 @@ public record OfferDetailDto(
     
     UUID postingId,
     PostingStatus postingStatus,
+    Boolean postingDeleted,
     String postingTitle,
     Category postingCategory,
     String postingPhotoUrl,

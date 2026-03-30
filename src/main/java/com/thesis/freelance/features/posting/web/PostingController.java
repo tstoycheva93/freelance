@@ -59,6 +59,8 @@ public class PostingController {
         return ResponseEntity.ok(postingService.getPostingById(id));
     }
 
+
+
     @PostMapping
     public ResponseEntity<PostingDetailDto> createPosting(
             @Valid @RequestBody CreatePostingDto dto,
@@ -129,6 +131,24 @@ public class PostingController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         savedPostingService.unsavePosting(user.getId(), id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/hasPendingOffers")
+    public ResponseEntity<Boolean> hasPendingOffers(@PathVariable UUID id) {
+        boolean hasPending = postingService.hasPendingOrShortlistedOffers(id);
+        return ResponseEntity.ok(hasPending);
+    }
+
+    @GetMapping("/{id}/hasOffers")
+    public ResponseEntity<Boolean> hasOffers(@PathVariable UUID id) {
+        boolean hasOffers = postingService.hasOffers(id);
+        return ResponseEntity.ok(hasOffers);
+    }
+
+    @GetMapping("/{id}/hasActiveWorkOffers")
+    public ResponseEntity<Boolean> hasActiveWorkOffers(@PathVariable UUID id) {
+        boolean hasActiveWorkOffers = postingService.hasActiveWorkOffers(id);
+        return ResponseEntity.ok(hasActiveWorkOffers);
     }
 
 }

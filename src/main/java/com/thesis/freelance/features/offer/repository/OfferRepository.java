@@ -70,6 +70,9 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
     // Count offers by status for a posting
     long countByPostingIdAndStatusIn(UUID postingId, List<OfferStatus> statuses);
 
+    // Count all offers for a posting
+    long countByPostingIdAndActivityStatus(UUID postingId, ActivityStatus activityStatus);
+
     // Find offer by ID with attachments eager fetched
     @Query("SELECT o FROM Offer o LEFT JOIN FETCH o.attachments WHERE o.id = :offerId")
     Optional<Offer> findByIdWithAttachments(@Param("offerId") UUID offerId);
