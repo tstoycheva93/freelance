@@ -9,9 +9,12 @@ public enum NotificationType {
     OFFER_ACCEPTED("offer_accepted"),
     OFFER_REJECTED("offer_rejected"),
     OFFER_CANCELLED("offer_cancelled"),
-    POSTING_COMPLETED("posting_completed"),
+    OFFER_DELIVERED("offer_delivered"),
+    OFFER_COMPLETED("offer_completed"),
+    OFFER_UNSATISFACTORY("offer_unsatisfactory"),
     EXPIRED_CERTIFICATE("expired_certificate"),
     EXPIRED_POSTING("expired_posting"),
+    EXPIRED_OFFER("expired_offer"),
     NEW_REVIEW("new_review");
 
     private final String value;

@@ -72,9 +72,7 @@ public class Offer extends BaseEntity {
         this.status = OfferStatus.REJECTED;
     }
 
-    public void cancel() {
-        this.status = OfferStatus.CANCELED;
-    }
+    public void cancel() { this.status = OfferStatus.CANCELED; }
 
     public void markDelivered() {
         this.status = OfferStatus.DELIVERED;

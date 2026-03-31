@@ -198,10 +198,14 @@ public class OfferService {
 
         if (isClientOwner && !isFreelancerOwner) {
             if (newStatus == OfferStatus.COMPLETED && offer.getStatus() != OfferStatus.DELIVERED) {
-                throw new IllegalStateException("Can only complete delivered offers");
+                if (offer.getStatus() != OfferStatus.ACCEPTED || !java.time.LocalDate.now().isAfter(offer.getDeliveryTime())) {
+                    throw new IllegalStateException("Can only complete delivered offers or accepted offers past delivery time");
+                }
             }
             if (newStatus == OfferStatus.UNSATISFACTORY && offer.getStatus() != OfferStatus.DELIVERED) {
-                throw new IllegalStateException("Can only mark delivered offers as unsatisfactory");
+                if (offer.getStatus() != OfferStatus.ACCEPTED || !java.time.LocalDate.now().isAfter(offer.getDeliveryTime())) {
+                    throw new IllegalStateException("Can only mark delivered offers or accepted offers past delivery time as unsatisfactory");
+                }
             }
         }
 
@@ -281,11 +285,23 @@ public class OfferService {
                             savedOffer.getPosting().getTitle()
                     );
                 } else if (newStatus == OfferStatus.DELIVERED) {
-                    // TODO: add notifyOfferDelivered in NotificationService, use generic for now if needed or leave out
+                    notificationService.notifyOfferDelivered(
+                            clientUserId,
+                            savedOffer.getId(),
+                            savedOffer.getPosting().getTitle()
+                    );
                 } else if (newStatus == OfferStatus.COMPLETED) {
-                    // TODO: add notifyOfferCompleted
+                    notificationService.notifyOfferCompleted(
+                            freelancerUserId,
+                            savedOffer.getId(),
+                            savedOffer.getPosting().getTitle()
+                    );
                 } else if (newStatus == OfferStatus.UNSATISFACTORY) {
-                    // TODO: add notifyOfferUnsatisfactory
+                    notificationService.notifyOfferUnsatisfactory(
+                            freelancerUserId,
+                            savedOffer.getId(),
+                            savedOffer.getPosting().getTitle()
+                    );
                 }
             }
             if (newStatus == OfferStatus.CANCELED && isFreelancerOwner && clientUserId != null) {

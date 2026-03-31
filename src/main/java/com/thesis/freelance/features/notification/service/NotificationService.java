@@ -137,6 +137,27 @@ public class NotificationService {
                 "/offer/" + offerId);
     }
 
+    public void notifyOfferExpiredClient(UUID userId, String postingTitle, UUID offerId) {
+        createAndNotify(userId, NotificationType.EXPIRED_OFFER,
+                "Offer Expired",
+                "Deadline passed for offer to " + postingTitle + ". Wait for deliverables, or cancel and finalize the settlement.",
+                "/offer/" + offerId);
+    }
+
+    public void notifyOfferExpiredFreelancer(UUID userId, String postingTitle, UUID offerId) {
+        createAndNotify(userId, NotificationType.EXPIRED_OFFER,
+                "Offer Expired",
+                "Deadline passed for offer to " + postingTitle + ". Expect the client to finalize the settlement.",
+                "/offer/" + offerId);
+    }
+
+    public void notifyOfferExpiredCanceled(UUID userId, String postingTitle, UUID offerId) {
+        createAndNotify(userId, NotificationType.EXPIRED_OFFER,
+                "Offer Expired",
+                "An offer for " + postingTitle + " has expired and has been canceled automatically.",
+                "/offer/" + offerId);
+    }
+
     public void notifyPostingExpired(UUID clientId, String postingTitle, UUID postingId) {
         createAndNotify(clientId, NotificationType.EXPIRED_POSTING,
                 "Posting Expired",
@@ -147,14 +168,7 @@ public class NotificationService {
     public void notifyOfferAccepted(UUID freelancerId, UUID offerId, String postingTitle) {
         createAndNotify(freelancerId, NotificationType.OFFER_ACCEPTED,
                 "Offer Accepted!",
-                "Your offer for " + postingTitle + " has been accepted. Congratulations!",
-                "/offer/" + offerId);
-    }
-
-    public void notifyPostingCompleted(UUID freelancerId, UUID offerId, String postingTitle) {
-        createAndNotify(freelancerId, NotificationType.POSTING_COMPLETED,
-                "Posting Completed!",
-                "Posting " + postingTitle + " has been completed! Your offer is marked as completed as well.",
+                "Your offer for " + postingTitle + " has been accepted. Congrats!",
                 "/offer/" + offerId);
     }
 
@@ -162,6 +176,27 @@ public class NotificationService {
         createAndNotify(freelancerId, NotificationType.OFFER_REJECTED,
                 "Offer Rejected",
                 "Your offer for " + postingTitle + " was rejected. You can try again with a better offer.",
+                "/offer/" + offerId);
+    }
+
+    public void notifyOfferCompleted(UUID freelancerId, UUID offerId, String postingTitle) {
+        createAndNotify(freelancerId, NotificationType.OFFER_COMPLETED,
+                "Offer Completed",
+                "Your offer for " + postingTitle + " was completed by the client. Download your billing receipt.",
+                "/offer/" + offerId);
+    }
+
+    public void notifyOfferUnsatisfactory(UUID freelancerId, UUID offerId, String postingTitle) {
+        createAndNotify(freelancerId, NotificationType.OFFER_UNSATISFACTORY,
+                "Offer Unsatisfactory",
+                "Your offer for " + postingTitle + " was marked as unsatisfactory and a partial settlement was issued. Download your billing receipt.",
+                "/offer/" + offerId);
+    }
+
+    public void notifyOfferDelivered(UUID clientId, UUID offerId, String postingTitle) {
+        createAndNotify(clientId, NotificationType.OFFER_DELIVERED,
+                "Deliverables Available",
+                "You received a submission for an offer to " + postingTitle + ". Review and finalize the offer.",
                 "/offer/" + offerId);
     }
 

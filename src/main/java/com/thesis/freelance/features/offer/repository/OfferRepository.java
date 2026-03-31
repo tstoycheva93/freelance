@@ -11,18 +11,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface OfferRepository extends JpaRepository<Offer, UUID> {
-    @Query("SELECT o FROM Offer o WHERE o.freelancer.id = :freelancerId AND o.activityStatus = :activityStatus")
-    List<Offer> findAllByFreelancer_Id(@Param("freelancerId") UUID freelancerId, @Param("activityStatus") ActivityStatus activityStatus);
-
-    @Query("SELECT o FROM Offer o WHERE o.freelancer.userId = :userId AND o.activityStatus = :activityStatus")
-    List<Offer> findAllByFreelancerUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
-
     @Query("SELECT o FROM Offer o WHERE o.freelancer.userId = :userId")
     List<Offer> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
 
@@ -47,12 +40,12 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
     @Query("SELECT o FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus AND o.status = :status")
     Page<Offer> findByPostingIdAndActivityStatusAndStatus(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus, @Param("status") OfferStatus status, Pageable pageable);
 
-    // Check for existing active offer (pending/shortlisted/accepted)
-    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED)")
+    // Check for existing active offer (pending/shortlisted/accepted/delivered)
+    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED)")
     boolean hasActiveOfferByPostingAndFreelancer(@Param("postingId") UUID postingId, @Param("freelancerUserId") UUID freelancerUserId, @Param("activityStatus") com.thesis.freelance.common.enums.ActivityStatus activityStatus);
 
     // Get active offer ID
-    @Query("SELECT o.id FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED) ORDER BY o.createdAt DESC")
+    @Query("SELECT o.id FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED) ORDER BY o.createdAt DESC")
     Optional<UUID> findActiveOfferIdByPostingAndFreelancer(@Param("postingId") UUID postingId, @Param("freelancerUserId") UUID freelancerUserId, @Param("activityStatus") com.thesis.freelance.common.enums.ActivityStatus activityStatus);
 
     // Find all active offers for a posting
@@ -62,10 +55,6 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
     // Find all active offers for a freelancer
     @Query("SELECT o FROM Offer o WHERE o.freelancer.id = :freelancerId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED)")
     List<Offer> findActiveOffersByFreelancerId(@Param("freelancerId") UUID freelancerId, @Param("activityStatus") ActivityStatus activityStatus);
-
-    // Count active offers for a posting (for reopen notification)
-    @Query("SELECT COUNT(o) FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus AND o.status = :status")
-    long countByPostingIdAndActivityStatusAndStatus(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus, @Param("status") OfferStatus status);
 
     // Count offers by status for a posting
     long countByPostingIdAndStatusIn(UUID postingId, List<OfferStatus> statuses);
@@ -85,7 +74,4 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
     @Query("SELECT o FROM Offer o WHERE o.id = :offerId")
     Optional<Offer> findByIdWithAttachmentsAndDeliverables(@Param("offerId") UUID offerId);
 
-//za kato shte gi pravi completed
-@Query("SELECT o FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.ACCEPTED)")
-    List<Offer> findAcceptedOffersByPostingId(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus);
 }

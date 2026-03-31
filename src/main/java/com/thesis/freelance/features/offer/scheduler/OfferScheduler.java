@@ -67,6 +67,77 @@ public class OfferScheduler {
             postingRepository.save(posting);
         }
         
-        log.info("Expired deadline check completed. Processed {} postings", activePostings.size());
+        log.info("Expired posting check completed. Processed {} postings", activePostings.size());
+    }
+
+    @Scheduled(cron = "0 0 12 * * *")
+    @Transactional
+    public void cancelExpiredOffers() {
+        log.info("Running scheduled task: cancelExpiredOffers");
+
+        List<Offer> ongoingOffers = offerRepository.findAll().stream()
+                .filter(o -> o.getActivityStatus() == ActivityStatus.ACTIVE)
+                .filter(o -> o.getStatus() == OfferStatus.PENDING || o.getStatus() == OfferStatus.SHORTLISTED)
+                .filter(o -> o.getDeliveryTime() != null && o.getDeliveryTime().isBefore(LocalDate.now()))
+                .toList();
+
+        for (Offer offer : ongoingOffers) {
+            log.info("Pending/shortlisted offer {} is expired, canceling.", offer.getId());
+
+            var clientUserId = offer.getPosting().getClient().getUserId();
+            if (clientUserId != null) {
+                notificationService.notifyOfferExpiredCanceled(
+                        clientUserId,
+                        offer.getPosting().getTitle(),
+                        offer.getId()
+                );
+            }
+
+            var freelancerUserId = offer.getFreelancer().getUserId();
+            if (freelancerUserId != null) {
+                notificationService.notifyOfferExpiredCanceled(
+                        freelancerUserId,
+                        offer.getPosting().getTitle(),
+                        offer.getId()
+                );
+            }
+
+            offer.setStatus(OfferStatus.CANCELED);
+            offerRepository.save(offer);
+        }
+
+        List<Offer> acceptedAndDeliveredOffers = offerRepository.findAll().stream()
+                .filter(o -> o.getActivityStatus() == ActivityStatus.ACTIVE)
+                .filter(o -> o.getStatus() == OfferStatus.ACCEPTED || o.getStatus() == OfferStatus.DELIVERED)
+                .filter(o -> o.getDeliveryTime() != null && o.getDeliveryTime().isBefore(LocalDate.now()))
+                .toList();
+
+        for (Offer offer : acceptedAndDeliveredOffers) {
+            log.info("Accepted/delivered offer {} is expired.", offer.getId());
+
+            var clientUserId = offer.getPosting().getClient().getUserId();
+            if (clientUserId != null) {
+                notificationService.notifyOfferExpiredClient(
+                        clientUserId,
+                        offer.getPosting().getTitle(),
+                        offer.getId()
+                );
+            }
+
+            var freelancerUserId = offer.getFreelancer().getUserId();
+            if (freelancerUserId != null) {
+                notificationService.notifyOfferExpiredFreelancer(
+                        freelancerUserId,
+                        offer.getPosting().getTitle(),
+                        offer.getId()
+                );
+            }
+
+
+        }
+
+
+
+        log.info("Expired offer check completed. Processed {} offers", ongoingOffers.size());
     }
 }

@@ -16,7 +16,6 @@ import com.thesis.freelance.features.offer.repository.ShortlistedOfferRepository
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.posting.repository.SavedPostingRepository;
 import com.thesis.freelance.features.review.repository.ReviewRepository;
-import com.thesis.freelance.features.transaction.repository.TransactionRepository;
 import com.thesis.freelance.features.user.dto.ChangePasswordDto;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
@@ -51,7 +50,6 @@ public class UserSecurityService {
     private final NotificationRepository notificationRepository;
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
-    private final TransactionRepository transactionRepository;
     private final ReviewRepository reviewRepository;
     private final TrustedDeviceRepository trustedDeviceRepository;
 
@@ -150,13 +148,11 @@ public class UserSecurityService {
         notificationRepository.findByUserIdOrderByCreatedAtDescNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
         conversationRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
         messageRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        transactionRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
         reviewRepository.findAllByUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
 
         notificationRepository.saveAll(notificationRepository.findByUserIdOrderByCreatedAtDescNoFilter(userId));
         conversationRepository.saveAll(conversationRepository.findAllByUserIdNoFilter(userId));
         messageRepository.saveAll(messageRepository.findAllByUserIdNoFilter(userId));
-        transactionRepository.saveAll(transactionRepository.findAllByUserIdNoFilter(userId));
         reviewRepository.saveAll(reviewRepository.findAllByUserIdNoFilter(userId));
     }
 }

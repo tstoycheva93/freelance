@@ -1,7 +1,4 @@
 match - double percentage field in offer and in posting compared against freelancer
-izvestiq za novite statusi offer_delivered, offer_completed, offer_expired
-offer expiration handling: ako e pending/shortlisted - stava canceled, ako e accepted - stava unsatisfactory, ako e delivered - nishto, moje da se prashta izvestie puk nz
-
 
 admin:
 da slaga inactive na useri, review, posting
