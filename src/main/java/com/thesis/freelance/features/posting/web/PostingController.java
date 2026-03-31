@@ -5,6 +5,7 @@ import com.thesis.freelance.features.posting.dto.CreatePostingDto;
 import com.thesis.freelance.features.posting.dto.PostingDetailDto;
 import com.thesis.freelance.features.posting.dto.PostingTileDto;
 import com.thesis.freelance.features.posting.dto.UpdatePostingDto;
+import com.thesis.freelance.features.posting.service.MatchService;
 import com.thesis.freelance.features.posting.service.PostingService;
 import com.thesis.freelance.features.posting.service.SavedPostingService;
 import com.thesis.freelance.features.user.entity.User;
@@ -21,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,6 +33,7 @@ public class PostingController {
     private final PostingService postingService;
     private final SavedPostingService savedPostingService;
     private final UserRepository userRepository;
+    private final MatchService matchService;
     
     @GetMapping
     public ResponseEntity<Page<PostingTileDto>> getAllPostings(
@@ -41,7 +44,8 @@ public class PostingController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) UUID locationId,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal UserDetails userDetails) {
         
         Sort sort = sortOrder.equalsIgnoreCase("asc") 
                 ? Sort.by(sortBy).ascending() 
@@ -50,6 +54,15 @@ public class PostingController {
         
         PostingStatus postingStatus = status != null ? PostingStatus.fromValue(status) : null;
         Page<PostingTileDto> postings = postingService.getPostings(postingStatus, search, categoryId, locationId, pageable);
+        
+        if (userDetails != null) {
+            User currentUser = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+            if (currentUser != null && currentUser.isFreelancer()) {
+                for (PostingTileDto tile : postings.getContent()) {
+                    tile.setMatchPercentage(matchService.computeMatch(tile.getId(), currentUser.getId()));
+                }
+            }
+        }
         
         return ResponseEntity.ok(postings);
     }
@@ -149,6 +162,24 @@ public class PostingController {
     public ResponseEntity<Boolean> hasActiveWorkOffers(@PathVariable UUID id) {
         boolean hasActiveWorkOffers = postingService.hasActiveWorkOffers(id);
         return ResponseEntity.ok(hasActiveWorkOffers);
+    }
+
+    @GetMapping("/{id}/match")
+    public ResponseEntity<Map<String, Integer>> getMatchScore(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.ok(Map.of());
+        }
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        if (user == null || !user.isFreelancer()) {
+            return ResponseEntity.ok(Map.of());
+        }
+        Integer score = matchService.computeMatch(id, user.getId());
+        if (score == null) {
+            return ResponseEntity.ok(Map.of());
+        }
+        return ResponseEntity.ok(Map.of("matchPercentage", score));
     }
 
 }

@@ -31,4 +31,5 @@ public class PostingTileDto {
     private String locationName;
     private List<String> skills;
     private ClientMiniDto client;
+    private Integer matchPercentage;
 }

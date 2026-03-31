@@ -1,8 +1,8 @@
 match - double percentage field in offer and in posting compared against freelancer
+flags
 
 admin:
-da slaga inactive na useri, review, posting
-da preglejda flags na user, review
+da preglejda flags na user, review, posting, offer
 da pozvolqva na useri da redaktirat username, birth date
 da prashtat sistemen email na vsichki active - newsletter, system
 crud za category, skill
