@@ -83,6 +83,7 @@ public class SecurityConfig {
                         .requestMatchers("/cv/**").authenticated()
                         .requestMatchers("/conversations/**").authenticated()
                         .requestMatchers("/notifications/**").authenticated()
+                        .requestMatchers("/flags/**").authenticated()
 
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()

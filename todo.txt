@@ -1,5 +1,4 @@
-match - double percentage field in offer and in posting compared against freelancer
-flags
+flags backend
 
 admin:
 da preglejda flags na user, review, posting, offer
@@ -14,3 +13,22 @@ taskkill /PID <PID> /F
 
 net stop winnat
 net start winnat
+
+
+------------------------------------------------------------
+Use Vue Router's route guards: Same app, same build, but the admin UI is entirely isolated by layout and route guards.
+// router/index.js
+{
+  path: '/office',
+  component: AdminLayout,
+  meta: { requiresAdmin: true },
+  children: [ ... ]
+}
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAdmin && !store.getters.isAdmin) {
+    next('/403')
+  } else {
+    next()
+  }
+})
