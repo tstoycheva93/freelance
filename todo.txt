@@ -1,34 +1,9 @@
-flags backend
-
-admin:
-da preglejda flags na user, review, posting, offer
-da pozvolqva na useri da redaktirat username, birth date
-da prashtat sistemen email na vsichki active - newsletter, system
-crud za category, skill
-
 --------------------------------------------------------
+
+
 
 netstat -ano | findstr :8080
 taskkill /PID <PID> /F
 
 net stop winnat
 net start winnat
-
-
-------------------------------------------------------------
-Use Vue Router's route guards: Same app, same build, but the admin UI is entirely isolated by layout and route guards.
-// router/index.js
-{
-  path: '/office',
-  component: AdminLayout,
-  meta: { requiresAdmin: true },
-  children: [ ... ]
-}
-
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAdmin && !store.getters.isAdmin) {
-    next('/403')
-  } else {
-    next()
-  }
-})

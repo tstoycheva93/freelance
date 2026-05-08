@@ -91,8 +91,6 @@ public class RegisterService {
             case "FREELANCER":
                 createFreelancerProfile(user);
                 break;
-            case "ADMIN": //TODO REMOVE LATER
-                break;
             default:
                 throw new InvalidRoleException(roleName);
         }
