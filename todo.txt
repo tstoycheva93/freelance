@@ -1,5 +1,10 @@
---------------------------------------------------------
+remove flag from offer
+add flag type in the flag dialog
+details stranicite ne sa svyrzani
+types po paketi
+da ne polzvat glass card
 
+--------------------------------------------------------
 
 
 netstat -ano | findstr :8080
