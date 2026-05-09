@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum FlagTarget {
 
     FLAG_PROFILE("flag_profile"),
-    FLAG_OFFER("flag_offer"),
     FLAG_POSTING("flag_posting"),
     FLAG_REVIEW("flag_review");
 

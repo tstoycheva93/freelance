@@ -120,6 +120,24 @@ public class EmailService {
         }
     }
 
+    @Async("batchEmailExecutor")
+    public void sendBatchEmail(String to, String subject, String htmlContent) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            helper.setFrom(fromEmail);
+
+            mailSender.send(message);
+            log.info("Batch email sent successfully to: {}", to);
+        } catch (MessagingException e) {
+            log.error("Failed to send batch email to: {}. Error: {}", to, e.getMessage());
+            throw new RuntimeException("Failed to send batch email to " + to, e);
+        }
+    }
+
     public void sendNotificationEmail(String to, String title, String content, String ctaText, String ctaLink) {
         try {
             Context context = new Context();

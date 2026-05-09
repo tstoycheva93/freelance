@@ -15,7 +15,18 @@ public enum NotificationType {
     EXPIRED_CERTIFICATE("expired_certificate"),
     EXPIRED_POSTING("expired_posting"),
     EXPIRED_OFFER("expired_offer"),
-    NEW_REVIEW("new_review");
+    NEW_REVIEW("new_review"),
+
+    //admin da prashta
+    CUSTOM("custom"),
+    REGISTRATION_CLOSED("registration_closed"),
+    CONTENT_VIOLATION("content_violation"),
+
+    //admin da poluchava
+    NEW_FLAG("new_flag"),
+    NEW_USER("new_user"),
+    NEW_POSTING("new_posting");
+
 
     private final String value;
 

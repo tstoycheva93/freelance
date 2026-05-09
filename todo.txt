@@ -1,12 +1,8 @@
-remove flag from offer
 add flag type in the flag dialog
-details stranicite ne sa svyrzani OK
-nov dashboard OK
-types po paketi
-da ne polzvat glass card OK
+kak shte se dobavq admin
+account settings za admin da sa sushtite kato na user
 
 --------------------------------------------------------
-
 
 netstat -ano | findstr :8080
 taskkill /PID <PID> /F
