@@ -1,8 +1,9 @@
 remove flag from offer
 add flag type in the flag dialog
-details stranicite ne sa svyrzani
+details stranicite ne sa svyrzani OK
+nov dashboard OK
 types po paketi
-da ne polzvat glass card
+da ne polzvat glass card OK
 
 --------------------------------------------------------
 
