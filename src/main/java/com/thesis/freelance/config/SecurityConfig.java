@@ -1,5 +1,6 @@
 package com.thesis.freelance.config;
 
+import com.thesis.freelance.security.MaintenanceModeFilter;
 import com.thesis.freelance.security.jwt.JwtAuthenticationEntryPoint;
 import com.thesis.freelance.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final MaintenanceModeFilter maintenanceModeFilter;
 
     /*@Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -65,6 +67,7 @@ public class SecurityConfig {
                         .requestMatchers("/home/**").permitAll()
                         .requestMatchers("/roles").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/system/public/**").permitAll()
 
                         //za admin
                         .requestMatchers("/office/**").hasRole("ADMIN")
@@ -95,7 +98,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(maintenanceModeFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

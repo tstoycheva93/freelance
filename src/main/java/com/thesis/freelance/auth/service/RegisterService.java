@@ -4,6 +4,8 @@ import com.thesis.freelance.auth.converter.RegisterRequestToUserConverter;
 import com.thesis.freelance.auth.dto.RegisterRequest;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.exception.*;
+import com.thesis.freelance.features.system.entity.SystemConfig;
+import com.thesis.freelance.features.system.service.SystemConfigService;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
@@ -28,9 +30,15 @@ public class RegisterService {
     private final RegisterRequestToUserConverter converter;
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
+    private final SystemConfigService systemConfigService;
 
     @Transactional
     public void registerUser(@Valid RegisterRequest request) {
+        if (!systemConfigService.isRegistrationEnabled()) {
+            SystemConfig config = systemConfigService.getConfig();
+            throw new RegistrationDisabledException(config.getRegistrationMessage());
+        }
+
         validateAge(request.getBirthDate());
         checkUsernameAndEmailUniqueness(request.getUsername(), request.getEmail());
         

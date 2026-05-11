@@ -91,6 +91,41 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    // Handle maintenance mode exception
+    @ExceptionHandler(MaintenanceModeException.class)
+    public ResponseEntity<Map<String, Object>> handleMaintenanceMode(
+            MaintenanceModeException ex, HttpServletRequest request) {
+
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.FORBIDDEN,
+            "MAINTENANCE_MODE",
+            ex.getMessage(),
+            null,
+            request,
+            ex
+        );
+        errorResponse.put("maintenanceMode", true);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    // Handle registration disabled exception
+    @ExceptionHandler(RegistrationDisabledException.class)
+    public ResponseEntity<Map<String, Object>> handleRegistrationDisabled(
+            RegistrationDisabledException ex, HttpServletRequest request) {
+
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.FORBIDDEN,
+            "REGISTRATION_DISABLED",
+            ex.getMessage(),
+            null,
+            request,
+            ex
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
     // Handle phone already exists exception
     @ExceptionHandler(PhoneAlreadyExistsException.class)
     public ResponseEntity<Map<String, Object>> handlePhoneAlreadyExistsException(

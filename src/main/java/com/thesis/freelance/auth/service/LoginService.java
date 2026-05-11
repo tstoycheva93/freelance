@@ -3,6 +3,8 @@ package com.thesis.freelance.auth.service;
 import com.thesis.freelance.auth.dto.LoginRequest;
 import com.thesis.freelance.auth.dto.LoginResponse;
 import com.thesis.freelance.common.exception.InvalidCredentialsException;
+import com.thesis.freelance.common.exception.MaintenanceModeException;
+import com.thesis.freelance.features.system.service.SystemConfigService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
 import com.thesis.freelance.security.jwt.JwtTokenProvider;
@@ -21,6 +23,7 @@ public class LoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final TwoFactorAuthService twoFactorAuthService;
+    private final SystemConfigService systemConfigService;
 
     public LoginResponse login(LoginRequest loginRequest) {
         try {
@@ -33,6 +36,12 @@ public class LoginService {
 
             User user = userRepository.findByUsername(loginRequest.getUsername())
                     .orElseThrow(() -> new InvalidCredentialsException());
+
+            if (systemConfigService.isMaintenanceMode() && !user.isAdmin()) {
+                throw new MaintenanceModeException(
+                        "Platform is currently under maintenance. Only administrators can log in."
+                );
+            }
 
             String deviceId = loginRequest.getDeviceId();
             String deviceName = loginRequest.getDeviceName();
