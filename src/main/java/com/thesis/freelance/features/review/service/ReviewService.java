@@ -66,7 +66,20 @@ public class ReviewService {
         }
 
         User reviewee = review.getReviewee();
-        reviewRepository.delete(review);
+        review.setActivityStatus(ActivityStatus.INACTIVE);
+        reviewRepository.save(review);
+
+        updateRevieweeRating(reviewee);
+    }
+
+    @Transactional
+    public void adminDeleteReview(UUID reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException(reviewId));
+
+        User reviewee = review.getReviewee();
+        review.setActivityStatus(ActivityStatus.INACTIVE);
+        reviewRepository.save(review);
 
         updateRevieweeRating(reviewee);
     }

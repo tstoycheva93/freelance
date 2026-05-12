@@ -112,7 +112,7 @@ public class AdminUserRepository {
         return em.createNativeQuery("""
             SELECT f.reason, f.created_at, f.status
             FROM flag f
-            WHERE f.target_id = :userId
+            WHERE f.reporter_id = :userId
             ORDER BY f.created_at DESC
             LIMIT :limit
             """)

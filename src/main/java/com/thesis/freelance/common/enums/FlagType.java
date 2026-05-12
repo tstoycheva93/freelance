@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum FlagType {
 
-    SPAM ("spam"),
-    SCAM("scam"),
+    SPAM("spam"),
     INAPPROPRIATE("inappropriate"),
-    FAKE("fake"),
-    OTHER("other");
+    OTHER("other"),
+    ILLEGAL_ACTIVITY("illegal_activity"),
+    ABUSE("abuse"),
+    FRAUD("fraud");
 
     private final String value;
 
@@ -24,8 +25,10 @@ public enum FlagType {
 
     @JsonCreator
     public static FlagType fromValue(String value) {
+        if (value == null) return null;
+        String normalized = value.toLowerCase().replace(' ', '_').replace('-', '_');
         for (FlagType type : FlagType.values()) {
-            if (type.value.equalsIgnoreCase(value)) {
+            if (type.value.equals(normalized)) {
                 return type;
             }
         }

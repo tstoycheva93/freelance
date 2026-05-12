@@ -24,7 +24,7 @@ public class FlagService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Flag createFlag(FlagTarget target, UUID targetId, UUID reporterUserId) {
+    public Flag createFlag(FlagTarget target, UUID targetId, FlagType type, String reason, UUID reporterUserId) {
         User reporter = userRepository.findById(reporterUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Reporter not found"));
 
@@ -35,7 +35,8 @@ public class FlagService {
         Flag flag = Flag.builder()
                 .target(target)
                 .targetId(targetId)
-                .type(FlagType.OTHER)
+                .type(type != null ? type : FlagType.OTHER)
+                .reason(reason)
                 .status(FlagStatus.PENDING)
                 .reporter(reporter)
                 .build();

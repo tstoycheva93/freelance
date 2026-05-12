@@ -27,9 +27,9 @@ public class AdminPostingRepository {
         }
         if (flagged != null && !flagged.isEmpty() && !flagged.equalsIgnoreCase("No Preference")) {
             if (flagged.equalsIgnoreCase("Yes, Flagged")) {
-                clauses.add("EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING')");
+                clauses.add("EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING' AND f.status = 'PENDING')");
             } else {
-                clauses.add("NOT EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING')");
+                clauses.add("NOT EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING' AND f.status = 'PENDING')");
             }
         }
         if (dateFrom != null && !dateFrom.isEmpty()) {
@@ -62,7 +62,7 @@ public class AdminPostingRepository {
                    DATE_FORMAT(p.created_at, '%Y-%m-%d'),
                    p.experience_level, COALESCE(l.name, 'Remotely'),
                    p.status,
-                   EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING'),
+                   EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING' AND f.status = 'PENDING'),
                    p.activity_status
             FROM posting p
             LEFT JOIN category c ON p.category_id = c.id
@@ -75,9 +75,9 @@ public class AdminPostingRepository {
         }
         if (flagged != null && !flagged.isEmpty() && !flagged.equalsIgnoreCase("No Preference")) {
             if (flagged.equalsIgnoreCase("Yes, Flagged")) {
-                sql.append(" AND EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING')");
+                sql.append(" AND EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING' AND f.status = 'PENDING')");
             } else {
-                sql.append(" AND NOT EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING')");
+                sql.append(" AND NOT EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING' AND f.status = 'PENDING')");
             }
         }
         if (dateFrom != null && !dateFrom.isEmpty()) {
@@ -145,7 +145,7 @@ public class AdminPostingRepository {
                    p.activity_status, p.budget, p.views_count, COALESCE(p.photo_url, ''),
                    DATE_FORMAT(p.created_at, '%Y-%m-%d'), p.deadline,
                    p.experience_level, COALESCE(l.name, 'Remotely'),
-                   EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING'),
+                   EXISTS(SELECT 1 FROM flag f WHERE f.target_id = p.id AND f.target = 'FLAG_POSTING' AND f.status = 'PENDING'),
                    u.name, u.username, cl.user_id,
                    COALESCE(u.rating, 0), COALESCE(u.reviews_count, 0),
                    (SELECT GROUP_CONCAT(s.skill SEPARATOR '||') FROM posting_skills ps

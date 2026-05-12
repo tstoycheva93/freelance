@@ -1,7 +1,6 @@
-add flag type in the flag dialog
-
-kak shte se dobavq admin
-account settings za admin da sa sushtite kato na user
+admin notifications
+admin sending notifications
+deleting flagged accounts/reviews
 
 --------------------------------------------------------
 

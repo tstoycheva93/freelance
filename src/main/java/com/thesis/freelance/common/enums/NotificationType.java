@@ -20,7 +20,6 @@ public enum NotificationType {
     //admin da prashta
     CUSTOM("custom"),
     REGISTRATION_CLOSED("registration_closed"),
-    CONTENT_VIOLATION("content_violation"),
 
     //admin da poluchava
     NEW_FLAG("new_flag"),

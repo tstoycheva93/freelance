@@ -2,6 +2,7 @@ package com.thesis.freelance.features.flag.web;
 
 import com.thesis.freelance.common.enums.FlagStatus;
 import com.thesis.freelance.common.enums.FlagTarget;
+import com.thesis.freelance.common.enums.FlagType;
 import com.thesis.freelance.features.flag.entity.Flag;
 import com.thesis.freelance.features.flag.service.FlagService;
 import com.thesis.freelance.features.user.entity.User;
@@ -33,7 +34,7 @@ public class FlagController {
         User reporter = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Flag flag = flagService.createFlag(request.target(), request.targetId(), reporter.getId());
+        Flag flag = flagService.createFlag(request.target(), request.targetId(), request.type(), request.reason(), reporter.getId());
         
         if (flag == null) {
             return ResponseEntity.ok().build();
@@ -71,7 +72,7 @@ public class FlagController {
         return ResponseEntity.ok(flag);
     }
 
-    public record CreateFlagRequest(FlagTarget target, UUID targetId) {}
+    public record CreateFlagRequest(FlagTarget target, UUID targetId, FlagType type, String reason) {}
 
     public record FlagReviewRequest(FlagStatus status, String reason) {}
 }
