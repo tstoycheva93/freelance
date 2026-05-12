@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -212,6 +213,46 @@ public class NotificationService {
                 "Expired Certificate",
                 "Your certificate '" + certificateTitle + "' has expired and has been hidden from your profile. Renew or remove it now!",
                 "/settings/");
+    }
+
+    public void notifyRegistrationClosed() {
+        List<User> allUsers = userRepository.findNonAdminUsers();
+        for (User user : allUsers) {
+            createAndNotify(user.getId(), NotificationType.REGISTRATION_CLOSED,
+                    "Registration Closed",
+                    "Registration has been disabled by the administration.",
+                    "/");
+        }
+    }
+
+    public void notifyNewUser(UUID newUserId, String username) {
+        List<User> admins = userRepository.findByUserRole_Role("ADMIN");
+        for (User admin : admins) {
+            createAndNotify(admin.getId(), NotificationType.NEW_USER,
+                    "New User Registered",
+                    "User @" + username + " has joined the platform.",
+                    "/office/users/" + newUserId);
+        }
+    }
+
+    public void notifyNewPosting(UUID postingId, String postingTitle) {
+        List<User> admins = userRepository.findByUserRole_Role("ADMIN");
+        for (User admin : admins) {
+            createAndNotify(admin.getId(), NotificationType.NEW_POSTING,
+                    "New Posting Created",
+                    "A new posting \"" + postingTitle + "\" has been created.",
+                    "/office/postings/" + postingId);
+        }
+    }
+
+    public void notifyNewFlag(UUID flagId) {
+        List<User> admins = userRepository.findByUserRole_Role("ADMIN");
+        for (User admin : admins) {
+            createAndNotify(admin.getId(), NotificationType.NEW_FLAG,
+                    "New Flag Reported",
+                    "A new flag has been submitted and awaits review.",
+                    "/office/flags/" + flagId);
+        }
     }
 
     private NotificationDto mapToDto(Notification notification) {

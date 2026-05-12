@@ -1,5 +1,6 @@
 package com.thesis.freelance.features.system.service;
 
+import com.thesis.freelance.features.notification.service.NotificationService;
 import com.thesis.freelance.features.system.entity.SystemConfig;
 import com.thesis.freelance.features.system.repository.SystemConfigRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class SystemConfigService {
     private static final UUID CONFIG_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     private final SystemConfigRepository systemConfigRepository;
+    private final NotificationService notificationService;
 
     @Cacheable("systemConfig")
     public SystemConfig getConfig() {
@@ -33,7 +35,11 @@ public class SystemConfigService {
         config.setRegistrationMessage(message);
         config.setUpdatedBy(updatedBy);
         config.setUpdatedAt(LocalDateTime.now());
-        return systemConfigRepository.save(config);
+        SystemConfig saved = systemConfigRepository.save(config);
+        if (!enabled) {
+            notificationService.notifyRegistrationClosed();
+        }
+        return saved;
     }
 
     @CacheEvict(value = "systemConfig", allEntries = true)

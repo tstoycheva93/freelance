@@ -71,6 +71,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     List<User> findByUserRole_RoleAndEmailsOnTrue(String role);
 
+    List<User> findByUserRole_Role(String role);
+
+    @Query("SELECT u FROM User u WHERE u.userRole.role != 'ADMIN'")
+    List<User> findNonAdminUsers();
+
     @Query("SELECT u FROM User u WHERE u.createdAt >= :since AND u.emailsOn = true")
     List<User> findRecentByEmailsOn(@Param("since") LocalDateTime since);
 

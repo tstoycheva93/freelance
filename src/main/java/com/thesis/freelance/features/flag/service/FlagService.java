@@ -5,6 +5,7 @@ import com.thesis.freelance.common.enums.FlagTarget;
 import com.thesis.freelance.common.enums.FlagType;
 import com.thesis.freelance.features.flag.entity.Flag;
 import com.thesis.freelance.features.flag.repository.FlagRepository;
+import com.thesis.freelance.features.notification.service.NotificationService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class FlagService {
 
     private final FlagRepository flagRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public Flag createFlag(FlagTarget target, UUID targetId, FlagType type, String reason, UUID reporterUserId) {
@@ -41,7 +43,9 @@ public class FlagService {
                 .reporter(reporter)
                 .build();
 
-        return flagRepository.save(flag);
+        Flag saved = flagRepository.save(flag);
+        notificationService.notifyNewFlag(saved.getId());
+        return saved;
     }
 
     @Transactional(readOnly = true)

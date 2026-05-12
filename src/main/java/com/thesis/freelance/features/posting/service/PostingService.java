@@ -137,6 +137,8 @@ public class PostingService {
             saveSkills(savedPosting, dto.skillIds());
         }
 
+        notificationService.notifyNewPosting(savedPosting.getId(), savedPosting.getTitle());
+
         return postingToDetailDtoConverter.convert(
                 postingRepository.findByIdWithClientAndLocation(ActivityStatus.ACTIVE, savedPosting.getId())
         );

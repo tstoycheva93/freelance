@@ -4,6 +4,7 @@ import com.thesis.freelance.auth.converter.RegisterRequestToUserConverter;
 import com.thesis.freelance.auth.dto.RegisterRequest;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.common.exception.*;
+import com.thesis.freelance.features.notification.service.NotificationService;
 import com.thesis.freelance.features.system.entity.SystemConfig;
 import com.thesis.freelance.features.system.service.SystemConfigService;
 import com.thesis.freelance.features.client.entity.Client;
@@ -31,6 +32,7 @@ public class RegisterService {
     private final ClientRepository clientRepository;
     private final FreelancerRepository freelancerRepository;
     private final SystemConfigService systemConfigService;
+    private final NotificationService notificationService;
 
     @Transactional
     public void registerUser(@Valid RegisterRequest request) {
@@ -71,8 +73,10 @@ public class RegisterService {
         
         userRepository.save(user);
         verificationService.sendVerificationEmail(user.getUsername());
-        
+
         createProfileBasedOnRole(user);
+
+        notificationService.notifyNewUser(user.getId(), user.getUsername());
     }
     
     private void checkUsernameAndEmailUniqueness(String username, String email) {
