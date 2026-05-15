@@ -9,9 +9,11 @@ import com.thesis.freelance.auth.service.PasswordResetService;
 import com.thesis.freelance.auth.service.RegisterService;
 import com.thesis.freelance.auth.service.TwoFactorAuthService;
 import com.thesis.freelance.auth.service.VerificationService;
+import com.thesis.freelance.features.user.dto.AdminRegistrationRequest;
 import com.thesis.freelance.features.user.dto.UserDto;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.AdminInviteService;
 import com.thesis.freelance.security.jwt.JwtTokenProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class AuthController {
     private final AuthMeService authMeService;
     private final TwoFactorAuthService twoFactorAuthService;
     private final PasswordResetService passwordResetService;
+    private final AdminInviteService adminInviteService;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
@@ -43,6 +46,18 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> register(@RequestBody @Valid RegisterRequest registerRequest){
         registerService.registerUser(registerRequest);
         return ResponseEntity.ok(Map.of("message", "User registered successfully!"));
+    }
+
+    @PostMapping("/register-admin")
+    public ResponseEntity<Map<String, String>> registerAdmin(@RequestBody @Valid AdminRegistrationRequest request) {
+        adminInviteService.registerAdmin(request);
+        return ResponseEntity.ok(Map.of("message", "Admin registered successfully!"));
+    }
+
+    @GetMapping("/register-admin/validate")
+    public ResponseEntity<Map<String, String>> validateAdminInvite(@RequestParam String token) {
+        String email = adminInviteService.validateAndGetEmail(token);
+        return ResponseEntity.ok(Map.of("email", email));
     }
 
     @PostMapping("/login")

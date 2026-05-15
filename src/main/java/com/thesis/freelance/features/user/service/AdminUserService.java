@@ -151,10 +151,7 @@ public class AdminUserService {
             registered = ts.toLocalDateTime().toLocalDate().toString();
         }
 
-        String born = "";
-        if (r[8] instanceof java.sql.Date birthDt) {
-            born = birthDt.toLocalDate().toString();
-        }
+        String born = r[8] != null ? String.valueOf(r[8]) : "";
 
         String userStatus;
         if ("DELETED".equalsIgnoreCase(activityStatus)) {

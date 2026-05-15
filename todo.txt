@@ -1,6 +1,4 @@
-admin notifications
-admin sending notifications
-deleting flagged accounts/reviews
+
 
 --------------------------------------------------------
 

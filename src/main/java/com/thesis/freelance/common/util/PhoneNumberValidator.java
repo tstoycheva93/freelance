@@ -27,7 +27,7 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
     @Override
     public boolean isValid(String phone, ConstraintValidatorContext context) {
         if (phone == null || phone.isBlank()) {
-            return false;
+            return true;
         }
 
         // Remove any spaces or dashes

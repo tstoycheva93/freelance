@@ -138,6 +138,21 @@ public class EmailService {
         }
     }
 
+    public void sendAdminInviteEmail(String to, String inviteLink) {
+        try {
+            Context context = new Context();
+            context.setVariable("inviteLink", inviteLink);
+            context.setVariable("appUrl", appUrl);
+
+            String html = templateEngine.process("email/admin-invite", context);
+            sendHtmlEmail(to, "You're invited to join TalentFlow as an Administrator", html);
+        } catch (Exception e) {
+            log.error("Failed to load admin invite template: {}", e.getMessage());
+            String fallback = "You've been invited to become an administrator on TalentFlow. Accept the invite here: " + inviteLink;
+            sendEmail(to, "Admin Invitation - TalentFlow", fallback);
+        }
+    }
+
     public void sendNotificationEmail(String to, String title, String content, String ctaText, String ctaLink) {
         try {
             Context context = new Context();
