@@ -1,5 +1,27 @@
+optimizations
+{
+Minor Cleanup Items (Not Missing Features)
+The only things flagged are production-readiness concerns — none represent missing functionality:
 
+Priority	Quick Fix
+🔴	Remove System.out.println in PostingController.java:83
+🔴	Turn off show-sql=true and Hibernate DEBUG logging in application.properties
+🟡	Refactor the reflection hack in OfferService.java:359-366
+🟡	Replace findAll() + stream filter in OfferScheduler with JPQL queries
+🟢	Fix wrong Material icon (location_on) for email/phone in ViewOfferPage.tsx
 
+}
+offer actions timing
+{
+The 1-minute delay is caused by synchronous email sending blocking the thread.
+In Spring, the @Async annotation only works when a method is called from outside the bean (via the Spring proxy). In your EmailService.java, the method sendNotificationEmail() is missing the @Async annotation, and it calls sendHtmlEmail(). Because this is a self-invocation (internal call within the same class), the @Async on sendHtmlEmail is bypassed, and the app waits for the slow SMTP server to respond before finishing the offer update.
+Steps
+Add @Async directly to sendNotificationEmail in EmailService.java.
+Add @Async to all other specialized email methods in EmailService.java that are called from external services (sendVerificationEmail, sendPasswordResetEmail, sendCongratulationsEmail, sendTwoFactorAuthEmail, sendAdminInviteEmail).
+(Optional) In DocumentService.java, ensure PdfRendererBuilder and template compilation aren't excessively blocking, but fixing the email execution will likely solve 95% of the delay.
+Spring requires #setThreadNamePrefix on your async task executor config to easily spot async threads in the logs and confirm this is working.
+}
+tests
 --------------------------------------------------------
 
 netstat -ano | findstr :8080

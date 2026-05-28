@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface OfferReceiptRepository extends JpaRepository<OfferReceipt, UUID> {
     Optional<OfferReceipt> findByOfferId(UUID offerId);
     boolean existsByOfferId(UUID offerId);
+    void deleteByOfferId(UUID offerId);
 }

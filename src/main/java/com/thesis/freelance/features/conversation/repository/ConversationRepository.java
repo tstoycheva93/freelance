@@ -35,4 +35,6 @@ public interface ConversationRepository extends JpaRepository<Conversation, UUID
     @Modifying
     @Query("DELETE FROM Conversation c WHERE c.id = :id")
     void hardDeleteById(@Param("id") UUID id);
+
+    void deleteByOfferId(UUID offerId);
 }

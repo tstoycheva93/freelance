@@ -31,7 +31,10 @@ import com.thesis.freelance.features.offer.exception.UnauthorizedOfferAccessExce
 import com.thesis.freelance.features.offer.repository.OfferRepository;
 import com.thesis.freelance.features.offer.repository.OfferContractRepository;
 import com.thesis.freelance.features.offer.repository.OfferReceiptRepository;
+import com.thesis.freelance.features.conversation.repository.ConversationRepository;
+import com.thesis.freelance.features.message.repository.MessageRepository;
 import com.thesis.freelance.features.notification.service.NotificationService;
+import com.thesis.freelance.features.offer.repository.ShortlistedOfferRepository;
 import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.skill.dto.SkillDto;
@@ -70,6 +73,9 @@ public class OfferService {
     private final DocumentService documentService;
     private final OfferContractRepository offerContractRepository;
     private final OfferReceiptRepository offerReceiptRepository;
+    private final ConversationRepository conversationRepository;
+    private final ShortlistedOfferRepository shortlistedOfferRepository;
+    private final MessageRepository messageRepository;
 
     @Transactional(readOnly = true)
     public Page<OfferWithPostingDto> getOffersForFreelancer(UUID freelancerUserId, OfferStatus status, Pageable pageable) {
@@ -495,7 +501,7 @@ public class OfferService {
 
     @Transactional
     public void deleteOffer(UUID offerId, UUID requestingUserId) {
-        Offer offer = offerRepository.findByIdWithAttachments(offerId)
+        Offer offer = offerRepository.findByIdWithAttachmentsAndDeliverables(offerId)
                 .orElseThrow(() -> new OfferNotFoundException(offerId));
 
         UUID freelancerUserId = offer.getFreelancer().getUserId();
@@ -508,7 +514,14 @@ public class OfferService {
             throw new UnauthorizedOfferAccessException();
         }
 
+        messageRepository.deleteByOfferId(offerId);
+        conversationRepository.deleteByOfferId(offerId);
+        shortlistedOfferRepository.deleteByOfferId(offerId);
+        offerContractRepository.deleteByOfferId(offerId);
+        offerReceiptRepository.deleteByOfferId(offerId);
+
         offer.setAttachments(new ArrayList<>());
+        offer.setDeliverableUrls(new ArrayList<>());
         offerRepository.delete(offer);
     }
     

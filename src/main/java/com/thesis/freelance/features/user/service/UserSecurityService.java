@@ -79,9 +79,15 @@ public class UserSecurityService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // Delete Freelancer/Client (hard delete)
-        freelancerRepository.deleteByUserId(userId);
-        clientRepository.deleteByUserId(userId);
+        // Deactivate Freelancer/Client (soft delete)
+        freelancerRepository.findByUserId(userId).ifPresent(freelancer -> {
+            freelancer.setActivityStatus(ActivityStatus.DELETED);
+            freelancerRepository.save(freelancer);
+        });
+        clientRepository.findByUserId(userId).ifPresent(client -> {
+            client.setActivityStatus(ActivityStatus.DELETED);
+            clientRepository.save(client);
+        });
 
         // Deactivate all linked data (INACTIVE)
         deactivateFreelancerLinkedData(userId);

@@ -50,4 +50,8 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
     @Modifying
     @Query("DELETE FROM Message m WHERE m.conversation.id = :conversationId")
     void deleteByConversation_Id(@Param("conversationId") UUID conversationId);
+
+    @Modifying
+    @Query("DELETE FROM Message m WHERE m.conversation.offer.id = :offerId")
+    void deleteByOfferId(@Param("offerId") UUID offerId);
 }

@@ -18,5 +18,7 @@ public interface ShortlistedOfferRepository extends JpaRepository<ShortlistedOff
 
     @Query("SELECT s FROM ShortlistedOffer s WHERE s.client.userId = :userId")
     List<ShortlistedOffer> findAllByClientUserIdNoFilter(@Param("userId") UUID userId);
+
+    void deleteByOfferId(UUID offerId);
 }
 
