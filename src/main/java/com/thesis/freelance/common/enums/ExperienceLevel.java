@@ -8,7 +8,6 @@ import java.util.Map;
 
 public enum ExperienceLevel {
 
-    //TODO decide - map e sus slojnost O1 a ostanalite s On
     ENTRY("entry"),
     MID("mid"),
     SENIOR("senior"),

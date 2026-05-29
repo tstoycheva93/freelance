@@ -264,21 +264,14 @@ public class PostingService {
 
         posting.setStatus(status);
         Posting savedPosting = postingRepository.save(posting);
-//
-//        if(status == PostingStatus.CLOSED) {
-//            List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
-//
-//            for (Offer offer : activeOffers) {
-//                notificationService.notifyOfferCanceled(
-//                        offer.getFreelancer().getUserId(),
-//                        offer.getId(),
-//                        offer.getPosting().getTitle()
-//                );
-//
-//                offer.setStatus(OfferStatus.CANCELED);
-//                offerRepository.save(offer);
-//            }
-//        }
+        if(status == PostingStatus.CLOSED) {
+            List<Offer> activeOffers = offerRepository.findActiveOffersByPostingId(id, ActivityStatus.ACTIVE);
+
+            for (Offer offer : activeOffers) {
+                offer.setStatus(OfferStatus.CANCELED);
+                offerRepository.save(offer);
+            }
+        }
 
         
         return postingToDetailDtoConverter.convert(

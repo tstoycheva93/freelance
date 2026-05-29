@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_conversation_last_msg_at", columnList = "last_msg_at")
         },
         uniqueConstraints = {
-                // TODO decide if unique per posting or direct
                 @UniqueConstraint(
                         name = "uk_conversation_offer_client_freelancer",
                         columnNames = {"offer_id", "client_id", "freelancer_id"}

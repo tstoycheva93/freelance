@@ -1,16 +1,3 @@
-optimizations
-{
-Minor Cleanup Items (Not Missing Features)
-The only things flagged are production-readiness concerns — none represent missing functionality:
-
-Priority	Quick Fix
-🔴	Remove System.out.println in PostingController.java:83
-🔴	Turn off show-sql=true and Hibernate DEBUG logging in application.properties
-🟡	Refactor the reflection hack in OfferService.java:359-366
-🟡	Replace findAll() + stream filter in OfferScheduler with JPQL queries
-🟢	Fix wrong Material icon (location_on) for email/phone in ViewOfferPage.tsx
-
-}
 offer actions timing
 {
 The 1-minute delay is caused by synchronous email sending blocking the thread.
@@ -21,7 +8,92 @@ Add @Async to all other specialized email methods in EmailService.java that are 
 (Optional) In DocumentService.java, ensure PdfRendererBuilder and template compilation aren't excessively blocking, but fixing the email execution will likely solve 95% of the delay.
 Spring requires #setThreadNamePrefix on your async task executor config to easily spot async threads in the logs and confirm this is working.
 }
+
+---------------------------------------------------------------
+plan for offer category dto:
+Add String categoryName as a parameter to both convertForFreelancer and convertForClient methods in OfferToOfferWithPostingDtoConverter.java.
+Within the same converter, replace the .categoryName(null) lines with .categoryName(categoryName) in the builder chains.
+In OfferService.java, pass categoryName directly into convertForFreelancer and convertForClient (around lines 100 and 128).
+Delete the private setCategoryName reflection method (lines 365-372) and remove its calls from OfferService.
+
+---------------------------------------------------------------
+plan for findall:
+1.
+PostingRepository
+Add a query method to fetch only active postings whose deadlines have passed:
+
+java
+
+
+    @Query("SELECT p FROM Posting p WHERE p.activityStatus = :activityStatus " +
+           "AND p.status = com.thesis.freelance.common.enums.PostingStatus.ACTIVE " +
+           "AND p.deadline IS NOT NULL AND p.deadline < :now")
+    List<Posting> findExpiredActivePostings(
+            @Param("activityStatus") ActivityStatus activityStatus,
+            @Param("now") java.time.LocalDate now
+    );
+2.
+OfferRepository
+Add two query methods to fetch only expired offers under specific statuses:
+
+java
+
+
+    @Query("SELECT o FROM Offer o WHERE o.activityStatus = :activityStatus " +
+           "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED) " +
+           "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
+    List<Offer> findExpiredOngoingOffers(
+            @Param("activityStatus") ActivityStatus activityStatus,
+            @Param("now") java.time.LocalDate now
+    );
+    @Query("SELECT o FROM Offer o WHERE o.activityStatus = :activityStatus " +
+           "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED) " +
+           "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
+    List<Offer> findExpiredAcceptedAndDeliveredOffers(
+            @Param("activityStatus") ActivityStatus activityStatus,
+            @Param("now") java.time.LocalDate now
+    );
+3.
+OfferScheduler
+Update the scheduled methods to fetch the filtered lists directly from the database instead of using findAll() + .stream().filter(...):
+
+Method 1: cancelOffersForExpiredDeadlines()
+java
+
+
+// REPLACE:
+List<Posting> activePostings = postingRepository.findAll().stream()
+        .filter(p -> p.getStatus() == PostingStatus.ACTIVE)
+        .filter(p -> p.getDeadline() != null && p.getDeadline().isBefore(LocalDate.now()))
+        .toList();
+// WITH:
+List<Posting> activePostings = postingRepository.findExpiredActivePostings(
+        ActivityStatus.ACTIVE, LocalDate.now());
+Method 2: cancelExpiredOffers()
+java
+
+
+// REPLACE:
+List<Offer> ongoingOffers = offerRepository.findAll().stream()
+        .filter(o -> o.getActivityStatus() == ActivityStatus.ACTIVE)
+        .filter(o -> o.getStatus() == OfferStatus.PENDING || o.getStatus() == OfferStatus.SHORTLISTED)
+        .filter(o -> o.getDeliveryTime() != null && o.getDeliveryTime().isBefore(LocalDate.now()))
+        .toList();
+List<Offer> acceptedAndDeliveredOffers = offerRepository.findAll().stream()
+        .filter(o -> o.getActivityStatus() == ActivityStatus.ACTIVE)
+        .filter(o -> o.getStatus() == OfferStatus.ACCEPTED || o.getStatus() == OfferStatus.DELIVERED)
+        .filter(o -> o.getDeliveryTime() != null && o.getDeliveryTime().isBefore(LocalDate.now()))
+        .toList();
+// WITH:
+List<Offer> ongoingOffers = offerRepository.findExpiredOngoingOffers(
+        ActivityStatus.ACTIVE, LocalDate.now());
+List<Offer> acceptedAndDeliveredOffers = offerRepository.findExpiredAcceptedAndDeliveredOffers(
+        ActivityStatus.ACTIVE, LocalDate.now());
+
+----------------------------------------------------------------
+
 tests
+
 --------------------------------------------------------
 
 netstat -ano | findstr :8080

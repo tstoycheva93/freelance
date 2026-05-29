@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-//TODO work type enum?
 @Entity
 @Table(
         name = "work",

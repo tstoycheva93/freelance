@@ -27,7 +27,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//TODO fix type setting
 
 public class Skill extends BaseEntity {
 

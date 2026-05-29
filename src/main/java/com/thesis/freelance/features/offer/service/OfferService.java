@@ -34,7 +34,6 @@ import com.thesis.freelance.features.offer.repository.OfferReceiptRepository;
 import com.thesis.freelance.features.conversation.repository.ConversationRepository;
 import com.thesis.freelance.features.message.repository.MessageRepository;
 import com.thesis.freelance.features.notification.service.NotificationService;
-import com.thesis.freelance.features.offer.repository.ShortlistedOfferRepository;
 import com.thesis.freelance.features.posting.entity.Posting;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.skill.dto.SkillDto;
@@ -74,7 +73,6 @@ public class OfferService {
     private final OfferContractRepository offerContractRepository;
     private final OfferReceiptRepository offerReceiptRepository;
     private final ConversationRepository conversationRepository;
-    private final ShortlistedOfferRepository shortlistedOfferRepository;
     private final MessageRepository messageRepository;
 
     @Transactional(readOnly = true)
@@ -516,7 +514,6 @@ public class OfferService {
 
         messageRepository.deleteByOfferId(offerId);
         conversationRepository.deleteByOfferId(offerId);
-        shortlistedOfferRepository.deleteByOfferId(offerId);
         offerContractRepository.deleteByOfferId(offerId);
         offerReceiptRepository.deleteByOfferId(offerId);
 

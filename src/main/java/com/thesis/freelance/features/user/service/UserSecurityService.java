@@ -12,7 +12,6 @@ import com.thesis.freelance.features.freelancer.repository.FreelancerSkillsRepos
 import com.thesis.freelance.features.message.repository.MessageRepository;
 import com.thesis.freelance.features.notification.repository.NotificationRepository;
 import com.thesis.freelance.features.offer.repository.OfferRepository;
-import com.thesis.freelance.features.offer.repository.ShortlistedOfferRepository;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.posting.repository.SavedPostingRepository;
 import com.thesis.freelance.features.review.repository.ReviewRepository;
@@ -45,7 +44,6 @@ public class UserSecurityService {
     private final FreelancerSkillsRepository freelancerSkillsRepository;
     private final PostingRepository postingRepository;
     private final OfferRepository offerRepository;
-    private final ShortlistedOfferRepository shortlistedOfferRepository;
     private final SavedPostingRepository savedPostingRepository;
     private final NotificationRepository notificationRepository;
     private final ConversationRepository conversationRepository;
@@ -144,10 +142,8 @@ public class UserSecurityService {
 
     private void deactivateClientLinkedData(UUID userId) {
         postingRepository.findAllByClientUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
-        shortlistedOfferRepository.findAllByClientUserIdNoFilter(userId).forEach(e -> e.setActivityStatus(ActivityStatus.INACTIVE));
 
         postingRepository.saveAll(postingRepository.findAllByClientUserIdNoFilter(userId));
-        shortlistedOfferRepository.saveAll(shortlistedOfferRepository.findAllByClientUserIdNoFilter(userId));
     }
 
     private void deactivateUserLinkedData(UUID userId) {
