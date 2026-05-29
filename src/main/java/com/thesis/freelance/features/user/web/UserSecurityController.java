@@ -1,52 +1,65 @@
 package com.thesis.freelance.features.user.web;
 
 import com.thesis.freelance.features.user.dto.ChangePasswordDto;
+import com.thesis.freelance.features.user.entity.User;
+import com.thesis.freelance.features.user.repository.UserRepository;
 import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserSecurityController {
-//TODO: use the authenticated user in the controller, dont pass param from frontend and pass username to service methods
+
     private final UserSecurityService userSecurityService;
+    private final UserRepository userRepository;
 
     @GetMapping("/2fa")
-    public ResponseEntity<?> get2FAStatus(@RequestParam UUID userId) {
-        boolean isEnabled = userSecurityService.get2FAStatus(userId);
+    public ResponseEntity<?> get2FAStatus(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        boolean isEnabled = userSecurityService.get2FAStatus(user.getId());
         return ResponseEntity.ok().body(java.util.Map.of("isEnabled", isEnabled));
     }
 
     @PutMapping("/2fa")
     public ResponseEntity<?> toggle2FA(
-            @RequestParam UUID userId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody java.util.Map<String, Boolean> request) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Boolean enabled = request.get("enabled");
-        userSecurityService.set2FAStatus(userId, enabled);
+        userSecurityService.set2FAStatus(user.getId(), enabled);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/2fa/devices")
-    public ResponseEntity<?> getTrustedDevices(@RequestParam UUID userId) {
-        return ResponseEntity.ok(userSecurityService.getTrustedDevices(userId));
+    public ResponseEntity<?> getTrustedDevices(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return ResponseEntity.ok(userSecurityService.getTrustedDevices(user.getId()));
     }
 
     @PutMapping("/security/password")
     public ResponseEntity<?> changePassword(
-            @RequestParam UUID userId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody ChangePasswordDto dto) {
-        userSecurityService.changePassword(userId, dto);
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        userSecurityService.changePassword(user.getId(), dto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/security/account")
-    public ResponseEntity<?> deleteAccount(@RequestParam UUID userId) {
-        userSecurityService.deleteAccount(userId);
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        userSecurityService.deleteAccount(user.getId());
         return ResponseEntity.ok().build();
     }
 }

@@ -2,13 +2,15 @@ package com.thesis.freelance.features.user.web;
 
 import com.thesis.freelance.features.user.dto.UserAccountDto;
 import com.thesis.freelance.features.user.dto.UserAccountUpdateDto;
+import com.thesis.freelance.features.user.entity.User;
+import com.thesis.freelance.features.user.repository.UserRepository;
 import com.thesis.freelance.features.user.service.UserAccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/user/account")
@@ -16,16 +18,21 @@ import java.util.UUID;
 public class UserAccountController {
 
     private final UserAccountService userAccountService;
+    private final UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<?> getAccount(@RequestParam UUID userId) {
-        return ResponseEntity.ok(userAccountService.getAccount(userId));
+    public ResponseEntity<?> getAccount(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return ResponseEntity.ok(userAccountService.getAccount(user.getId()));
     }
 
     @PutMapping
     public ResponseEntity<?> updateAccount(
-            @RequestParam UUID userId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody UserAccountUpdateDto dto) {
-        return ResponseEntity.ok(userAccountService.updateAccount(userId, dto));
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return ResponseEntity.ok(userAccountService.updateAccount(user.getId(), dto));
     }
 }
