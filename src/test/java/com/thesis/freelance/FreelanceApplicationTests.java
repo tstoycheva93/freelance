@@ -2,11 +2,14 @@ package com.thesis.freelance;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
-@ActiveProfiles("local")
 class FreelanceApplicationTests {
+
+    @MockitoBean
+    private JavaMailSenderImpl javaMailSender;
 
     @Test
     void contextLoads() {
