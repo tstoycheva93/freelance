@@ -13,7 +13,7 @@ import java.util.UUID;
 @Component
 public class OfferToOfferWithPostingDtoConverter {
 
-    public OfferWithPostingDto convertForFreelancer(Offer offer, User clientUser) {
+    public OfferWithPostingDto convertForFreelancer(Offer offer, User clientUser, String categoryName) {
         return OfferWithPostingDto.builder()
                 .id(offer.getId())
                 .price(offer.getPrice())
@@ -27,7 +27,7 @@ public class OfferToOfferWithPostingDtoConverter {
                 .postingBudget(offer.getPosting().getBudget())
                 .postingDeadline(offer.getPosting().getDeadline())
                 .postingStatus(offer.getPosting().getStatus())
-                .categoryName(null) //set by service
+                .categoryName(categoryName)
                 .clientUserId(clientUser.getId())
                 .clientPhotoUrl(clientUser.getPhotoUrl())
                 .clientRating(clientUser.getRating())
@@ -37,7 +37,7 @@ public class OfferToOfferWithPostingDtoConverter {
                 .build();
     }
 
-    public OfferWithPostingDto convertForClient(Offer offer, Freelancer freelancer, User freelancerUser) {
+    public OfferWithPostingDto convertForClient(Offer offer, Freelancer freelancer, User freelancerUser, String categoryName) {
         return OfferWithPostingDto.builder()
                 .id(offer.getId())
                 .price(offer.getPrice())
@@ -51,7 +51,7 @@ public class OfferToOfferWithPostingDtoConverter {
                 .postingBudget(offer.getPosting().getBudget())
                 .postingDeadline(offer.getPosting().getDeadline())
                 .postingStatus(offer.getPosting().getStatus())
-                .categoryName(null)
+                .categoryName(categoryName)
                 .freelancerUserId(freelancerUser.getId())
                 .freelancerPhotoUrl(freelancerUser.getPhotoUrl())
                 .freelancerRating(freelancerUser.getRating())

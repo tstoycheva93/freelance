@@ -74,4 +74,19 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
     @Query("SELECT o FROM Offer o WHERE o.id = :offerId")
     Optional<Offer> findByIdWithAttachmentsAndDeliverables(@Param("offerId") UUID offerId);
 
+    @Query("SELECT o FROM Offer o WHERE o.activityStatus = :activityStatus " +
+           "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED) " +
+           "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
+    List<Offer> findExpiredOngoingOffers(
+            @Param("activityStatus") ActivityStatus activityStatus,
+            @Param("now") java.time.LocalDate now
+    );
+
+    @Query("SELECT o FROM Offer o WHERE o.activityStatus = :activityStatus " +
+           "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED) " +
+           "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
+    List<Offer> findExpiredAcceptedAndDeliveredOffers(
+            @Param("activityStatus") ActivityStatus activityStatus,
+            @Param("now") java.time.LocalDate now
+    );
 }

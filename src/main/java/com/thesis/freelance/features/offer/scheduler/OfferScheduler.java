@@ -31,10 +31,8 @@ public class OfferScheduler {
     public void cancelOffersForExpiredDeadlines() {
         log.info("Running scheduled task: cancelOffersForExpiredDeadlines");
         
-        List<Posting> activePostings = postingRepository.findAll().stream()
-                .filter(p -> p.getStatus() == PostingStatus.ACTIVE)
-                .filter(p -> p.getDeadline() != null && p.getDeadline().isBefore(LocalDate.now()))
-                .toList();
+        List<Posting> activePostings = postingRepository.findExpiredActivePostings(
+                ActivityStatus.ACTIVE, LocalDate.now());
         
         for (Posting posting : activePostings) {
             log.info("Posting {} has expired deadline, canceling all offers", posting.getId());
@@ -75,11 +73,8 @@ public class OfferScheduler {
     public void cancelExpiredOffers() {
         log.info("Running scheduled task: cancelExpiredOffers");
 
-        List<Offer> ongoingOffers = offerRepository.findAll().stream()
-                .filter(o -> o.getActivityStatus() == ActivityStatus.ACTIVE)
-                .filter(o -> o.getStatus() == OfferStatus.PENDING || o.getStatus() == OfferStatus.SHORTLISTED)
-                .filter(o -> o.getDeliveryTime() != null && o.getDeliveryTime().isBefore(LocalDate.now()))
-                .toList();
+        List<Offer> ongoingOffers = offerRepository.findExpiredOngoingOffers(
+                ActivityStatus.ACTIVE, LocalDate.now());
 
         for (Offer offer : ongoingOffers) {
             log.info("Pending/shortlisted offer {} is expired, canceling.", offer.getId());
@@ -106,11 +101,8 @@ public class OfferScheduler {
             offerRepository.save(offer);
         }
 
-        List<Offer> acceptedAndDeliveredOffers = offerRepository.findAll().stream()
-                .filter(o -> o.getActivityStatus() == ActivityStatus.ACTIVE)
-                .filter(o -> o.getStatus() == OfferStatus.ACCEPTED || o.getStatus() == OfferStatus.DELIVERED)
-                .filter(o -> o.getDeliveryTime() != null && o.getDeliveryTime().isBefore(LocalDate.now()))
-                .toList();
+        List<Offer> acceptedAndDeliveredOffers = offerRepository.findExpiredAcceptedAndDeliveredOffers(
+                ActivityStatus.ACTIVE, LocalDate.now());
 
         for (Offer offer : acceptedAndDeliveredOffers) {
             log.info("Accepted/delivered offer {} is expired.", offer.getId());

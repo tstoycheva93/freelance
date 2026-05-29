@@ -60,6 +60,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendVerificationEmail(String to, String verificationLink) {
         try {
             Context context = new Context();
@@ -75,6 +76,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendPasswordResetEmail(String to, String resetLink) {
         try {
             Context context = new Context();
@@ -90,6 +92,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendCongratulationsEmail(String to) {
         try {
             Context context = new Context();
@@ -104,6 +107,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendTwoFactorAuthEmail(String to, String code, String deviceName) {
         try {
             Context context = new Context();
@@ -138,6 +142,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendAdminInviteEmail(String to, String inviteLink) {
         try {
             Context context = new Context();
@@ -153,6 +158,7 @@ public class EmailService {
         }
     }
 
+    @Async
     public void sendNotificationEmail(String to, String title, String content, String ctaText, String ctaLink) {
         try {
             Context context = new Context();

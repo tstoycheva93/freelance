@@ -95,8 +95,7 @@ public class OfferService {
             
             String categoryName = getCategoryName(posting.getCategoryId());
             
-            OfferWithPostingDto dto = offerToOfferWithPostingDtoConverter.convertForFreelancer(offer, clientUser);
-            setCategoryName(dto, categoryName);
+            OfferWithPostingDto dto = offerToOfferWithPostingDtoConverter.convertForFreelancer(offer, clientUser, categoryName);
             
             return dto;
         });
@@ -123,8 +122,7 @@ public class OfferService {
             
             List<SkillDto> skills = getFreelancerSkills(freelancer.getId());
             
-            OfferWithPostingDto dto = offerToOfferWithPostingDtoConverter.convertForClient(offer, freelancer, freelancerUser);
-            setCategoryName(dto, categoryName);
+            OfferWithPostingDto dto = offerToOfferWithPostingDtoConverter.convertForClient(offer, freelancer, freelancerUser, categoryName);
             dto.setSkills(skills);
             
             return dto;
@@ -358,15 +356,6 @@ public class OfferService {
     private List<SkillDto> getFreelancerSkills(UUID freelancerId) {
         List<FreelancerSkills> skills = freelancerSkillsRepository.findByFreelancerIdWithSkill(freelancerId, ActivityStatus.ACTIVE);
         return skillListMapper.apply(skills);
-    }
-
-    private void setCategoryName(OfferWithPostingDto dto, String categoryName) {
-        try {
-            var field = OfferWithPostingDto.class.getDeclaredField("categoryName");
-            field.setAccessible(true);
-            field.set(dto, categoryName);
-        } catch (Exception e) {
-        }
     }
 
     @Transactional

@@ -91,4 +91,12 @@ public interface PostingRepository extends JpaRepository<Posting, UUID> {
             @Param("categoryId") UUID categoryId,
             @Param("locationId") UUID locationId,
             Pageable pageable);
+
+    @Query("SELECT p FROM Posting p WHERE p.activityStatus = :activityStatus " +
+           "AND p.status = com.thesis.freelance.common.enums.PostingStatus.ACTIVE " +
+           "AND p.deadline IS NOT NULL AND p.deadline < :now")
+    List<Posting> findExpiredActivePostings(
+            @Param("activityStatus") ActivityStatus activityStatus,
+            @Param("now") java.time.LocalDate now
+    );
 }
