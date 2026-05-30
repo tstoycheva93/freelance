@@ -1,5 +1,6 @@
 package com.thesis.freelance.common.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -238,6 +239,40 @@ public class GlobalExceptionHandler {
             ex
         );
         
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    // Handle JPA entity not found exceptions
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleEntityNotFound(
+            EntityNotFoundException ex, HttpServletRequest request) {
+
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "ENTITY_NOT_FOUND",
+            ex.getMessage(),
+            "The requested resource could not be found",
+            request,
+            ex
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    // Handle illegal state exceptions
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalState(
+            IllegalStateException ex, HttpServletRequest request) {
+
+        Map<String, Object> errorResponse = createErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            "ILLEGAL_STATE",
+            ex.getMessage(),
+            "The request could not be processed due to the current state of the resource",
+            request,
+            ex
+        );
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

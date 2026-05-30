@@ -3,6 +3,7 @@ package com.thesis.freelance.features.user.service;
 import com.thesis.freelance.auth.service.PasswordResetService;
 import com.thesis.freelance.auth.service.VerificationService;
 import com.thesis.freelance.common.enums.ActivityStatus;
+import com.thesis.freelance.common.exception.UserNotFoundException;
 import com.thesis.freelance.features.user.dto.AdminUserDetailResponse;
 import com.thesis.freelance.features.user.dto.AdminUserDetailResponse.FlagHistoryItem;
 import com.thesis.freelance.features.user.dto.AdminUserDto;
@@ -90,7 +91,7 @@ public class AdminUserService {
     @Transactional
     public void suspendUser(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         user.setActivityStatus(ActivityStatus.INACTIVE);
         userRepository.save(user);
     }
@@ -98,7 +99,7 @@ public class AdminUserService {
     @Transactional
     public void reactivateUser(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         user.setActivityStatus(ActivityStatus.ACTIVE);
         userRepository.save(user);
     }
@@ -110,20 +111,20 @@ public class AdminUserService {
 
     public void forcePasswordReset(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         passwordResetService.sendResetEmail(user.getEmail());
     }
 
     public void forceVerify(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         verificationService.sendVerificationEmail(user.getUsername());
     }
 
     @Transactional
     public void deleteUserPhoto(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         user.setPhotoUrl("");
         userRepository.save(user);
     }

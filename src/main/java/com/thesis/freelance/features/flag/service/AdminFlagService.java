@@ -4,8 +4,9 @@ import com.thesis.freelance.features.flag.dto.AdminFlagDetailDto;
 import com.thesis.freelance.features.flag.dto.AdminFlagDto;
 import com.thesis.freelance.features.flag.dto.AdminFlagListResponse;
 import com.thesis.freelance.features.flag.dto.AdminFlagReviewRequest;
+import com.thesis.freelance.features.flag.exception.FlagAlreadyReviewedException;
+import com.thesis.freelance.features.flag.exception.FlagNotFoundException;
 import com.thesis.freelance.features.flag.repository.AdminFlagRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +86,7 @@ public class AdminFlagService {
 
     public AdminFlagDetailDto getFlagDetail(UUID id) {
         Object[] r = adminFlagRepo.findFlagDetailById(id);
-        if (r == null) throw new EntityNotFoundException("Flag not found: " + id);
+        if (r == null) throw new FlagNotFoundException(id);
 
         UUID flagId = toUUID(r[0]);
         String targetType = formatTarget((String) r[1]);
@@ -111,11 +112,11 @@ public class AdminFlagService {
         int updated = adminFlagRepo.reviewFlag(id, request.status().name(), request.reason(), adminUserId);
         if (updated == 0) {
             AdminFlagDetailDto current = getFlagDetail(id);
-            if (current == null) throw new EntityNotFoundException("Flag not found: " + id);
+            if (current == null) throw new FlagNotFoundException(id);
             if (!"PENDING".equals(current.status())) {
-                throw new IllegalStateException("Flag has already been reviewed");
+                throw new FlagAlreadyReviewedException(id);
             }
-            throw new EntityNotFoundException("Flag not found: " + id);
+            throw new FlagNotFoundException(id);
         }
     }
 

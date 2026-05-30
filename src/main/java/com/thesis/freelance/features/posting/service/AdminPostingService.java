@@ -1,6 +1,7 @@
 package com.thesis.freelance.features.posting.service;
 
 import com.thesis.freelance.features.posting.dto.*;
+import com.thesis.freelance.features.posting.exception.PostingNotFoundException;
 import com.thesis.freelance.features.posting.repository.AdminPostingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -120,22 +121,26 @@ public class AdminPostingService {
 
     @Transactional
     public void deactivatePosting(UUID id) {
-        adminPostingRepo.deactivatePosting(id);
+        int updated = adminPostingRepo.deactivatePosting(id);
+        if (updated == 0) throw new PostingNotFoundException(id);
     }
 
     @Transactional
     public void closePosting(UUID id) {
-        adminPostingRepo.closePosting(id);
+        int updated = adminPostingRepo.closePosting(id);
+        if (updated == 0) throw new PostingNotFoundException(id);
     }
 
     @Transactional
     public void reopenPosting(UUID id) {
-        adminPostingRepo.reopenPosting(id);
+        int updated = adminPostingRepo.reopenPosting(id);
+        if (updated == 0) throw new PostingNotFoundException(id);
     }
 
     @Transactional
     public void reactivatePosting(UUID id) {
-        adminPostingRepo.reactivatePosting(id);
+        int updated = adminPostingRepo.reactivatePosting(id);
+        if (updated == 0) throw new PostingNotFoundException(id);
     }
 
     private List<String> splitGroupConcat(String val) {

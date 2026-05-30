@@ -178,23 +178,23 @@ public class AdminPostingRepository {
             .getResultList();
     }
 
-    public void deactivatePosting(UUID id) {
-        em.createNativeQuery("UPDATE posting SET activity_status = 'INACTIVE' WHERE id = :id")
+    public int deactivatePosting(UUID id) {
+        return em.createNativeQuery("UPDATE posting SET activity_status = 'INACTIVE' WHERE id = :id")
                 .setParameter("id", id).executeUpdate();
     }
 
-    public void closePosting(UUID id) {
-        em.createNativeQuery("UPDATE posting SET status = 'CLOSED' WHERE id = :id")
+    public int closePosting(UUID id) {
+        return em.createNativeQuery("UPDATE posting SET status = 'CLOSED' WHERE id = :id")
                 .setParameter("id", id).executeUpdate();
     }
 
-    public void reopenPosting(UUID id) {
-        em.createNativeQuery("UPDATE posting SET status = 'ACTIVE' WHERE id = :id")
+    public int reopenPosting(UUID id) {
+        return em.createNativeQuery("UPDATE posting SET status = 'ACTIVE' WHERE id = :id")
                 .setParameter("id", id).executeUpdate();
     }
 
-    public void reactivatePosting(UUID id) {
-        em.createNativeQuery("UPDATE posting SET activity_status = 'ACTIVE' WHERE id = :id")
+    public int reactivatePosting(UUID id) {
+        return em.createNativeQuery("UPDATE posting SET activity_status = 'ACTIVE' WHERE id = :id")
                 .setParameter("id", id).executeUpdate();
     }
 }
