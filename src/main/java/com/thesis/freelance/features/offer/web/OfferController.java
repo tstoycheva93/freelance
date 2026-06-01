@@ -1,15 +1,15 @@
 package com.thesis.freelance.features.offer.web;
 
 import com.thesis.freelance.common.enums.OfferStatus;
-import com.thesis.freelance.features.client.repository.ClientRepository;
-import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
+import com.thesis.freelance.features.client.service.ClientPersonalService;
+import com.thesis.freelance.features.freelancer.service.FreelancerPersonalService;
 import com.thesis.freelance.features.offer.dto.CreateOfferRequestDto;
 import com.thesis.freelance.features.offer.dto.OfferDetailDto;
 import com.thesis.freelance.features.offer.dto.OfferForPostingDto;
 import com.thesis.freelance.features.offer.dto.OfferWithPostingDto;
 import com.thesis.freelance.features.offer.service.OfferService;
 import com.thesis.freelance.features.user.entity.User;
-import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,9 +32,9 @@ import java.util.UUID;
 public class OfferController {
 
     private final OfferService offerService;
-    private final UserRepository userRepository;
-    private final ClientRepository clientRepository;
-    private final FreelancerRepository freelancerRepository;
+    private final UserSecurityService userSecurityService;
+    private final ClientPersonalService clientPersonalService;
+    private final FreelancerPersonalService freelancerPersonalService;
 
     public record UnsatisfactoryRequest(BigDecimal partialAmount) {}
 
@@ -47,14 +47,13 @@ public class OfferController {
             @RequestParam(defaultValue = "desc") String sortOrder,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         UUID userId = user.getId();
 
         // Check if user is a client or freelancer
-        var client = clientRepository.findByUserId(userId);
-        var freelancer = freelancerRepository.findByUserId(userId);
+        var client = clientPersonalService.findByUserId(userId);
+        var freelancer = freelancerPersonalService.findByUserId(userId);
 
         OfferStatus offerStatus = status != null ? OfferStatus.fromValue(status) : null;
         Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
@@ -85,8 +84,7 @@ public class OfferController {
             @RequestParam(defaultValue = "desc") String sortOrder,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         OfferStatus offerStatus = status != null ? OfferStatus.fromValue(status) : null;
         Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
@@ -105,8 +103,7 @@ public class OfferController {
             @RequestBody(required = false) UnsatisfactoryRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         BigDecimal amount = request != null ? request.partialAmount() : null;
         OfferForPostingDto updatedOffer = offerService.updateOfferStatus(offerId, status, user.getId(), amount);
@@ -119,8 +116,7 @@ public class OfferController {
             @RequestBody CreateOfferRequestDto requestDto,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         // Validate user is freelancer
         if (!user.isFreelancer()) {
@@ -138,8 +134,7 @@ public class OfferController {
             @PathVariable UUID offerId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         OfferDetailDto offer = offerService.getOfferById(offerId, user.getId());
         return ResponseEntity.ok(offer);
@@ -159,8 +154,7 @@ public class OfferController {
             @PathVariable UUID offerId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         offerService.deleteOffer(offerId, user.getId());
         return ResponseEntity.noContent().build();
@@ -172,8 +166,7 @@ public class OfferController {
             @RequestBody List<String> fileUrls,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         offerService.submitDeliverables(id, fileUrls, user.getId());
         return ResponseEntity.ok().build();
@@ -184,8 +177,7 @@ public class OfferController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         com.thesis.freelance.features.offer.entity.Offer offer = offerService.getOfferEntityById(id);
         
@@ -209,8 +201,7 @@ public class OfferController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         byte[] pdf = offerService.getContractPdf(id, user.getId());
 
@@ -226,9 +217,7 @@ public class OfferController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         return ResponseEntity.ok(offerService.getContractStatus(id, user.getId()));
     }
 
@@ -237,8 +226,7 @@ public class OfferController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         byte[] pdf = offerService.getReceiptPdf(id, user.getId());
 
@@ -254,8 +242,7 @@ public class OfferController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         boolean exists = offerService.doesReceiptExist(id, user.getId());
         return ResponseEntity.ok(Map.of("exists", exists));

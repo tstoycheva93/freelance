@@ -4,6 +4,7 @@ import com.thesis.freelance.features.notification.dto.NotificationDto;
 import com.thesis.freelance.features.notification.service.NotificationService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userSecurityService;
 
     @GetMapping
     public ResponseEntity<Page<NotificationDto>> getNotifications(
@@ -50,8 +51,7 @@ public class NotificationController {
     }
 
     private UUID getCurrentUserId(UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         return user.getId();
     }
 }

@@ -7,6 +7,7 @@ import com.thesis.freelance.features.flag.entity.Flag;
 import com.thesis.freelance.features.flag.service.FlagService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,14 +26,13 @@ import java.util.UUID;
 public class FlagController {
 
     private final FlagService flagService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userSecurityService;
 
     @PostMapping
     public ResponseEntity<Flag> createFlag(
             @Valid @RequestBody CreateFlagRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        User reporter = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User reporter = userSecurityService.findByUsername(userDetails.getUsername());
 
         Flag flag = flagService.createFlag(request.target(), request.targetId(), request.type(), request.reason(), reporter.getId());
         
@@ -65,9 +65,8 @@ public class FlagController {
             @PathVariable UUID id,
             @Valid @RequestBody FlagReviewRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        User admin = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
-        
+        User admin = userSecurityService.findByUsername(userDetails.getUsername());
+
         Flag flag = flagService.reviewFlag(id, request.status(), request.reason(), admin.getId());
         return ResponseEntity.ok(flag);
     }

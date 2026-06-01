@@ -5,6 +5,7 @@ import com.thesis.freelance.auth.repository.TrustedDeviceRepository;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.certification.repository.CertificationRepository;
 import com.thesis.freelance.features.client.repository.ClientRepository;
+import com.thesis.freelance.features.conversation.entity.Conversation;
 import com.thesis.freelance.features.conversation.repository.ConversationRepository;
 import com.thesis.freelance.features.education.repository.EducationRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
@@ -156,5 +157,13 @@ public class UserSecurityService {
         conversationRepository.saveAll(conversationRepository.findAllByUserIdNoFilter(userId));
         messageRepository.saveAll(messageRepository.findAllByUserIdNoFilter(userId));
         reviewRepository.saveAll(reviewRepository.findAllByUserIdNoFilter(userId));
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    public User findById(UUID id){
+        return userRepository.findById(id).orElse(null);
     }
 }

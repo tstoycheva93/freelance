@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -60,5 +61,8 @@ public class ClientPersonalService {
                 client.getWebsite(),
                 client.getCompleteness()
         );
+    }
+    public Optional<Client> findByUserId(UUID userId) {
+        return clientRepository.findByUserId(userId);
     }
 }

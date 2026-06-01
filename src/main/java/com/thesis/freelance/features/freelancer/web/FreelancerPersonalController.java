@@ -1,12 +1,12 @@
 package com.thesis.freelance.features.freelancer.web;
 
-import com.thesis.freelance.features.freelancer.dto.FreelancerPersonalDto;
 import com.thesis.freelance.features.freelancer.dto.FreelancerPersonalUpdateDto;
 import com.thesis.freelance.features.freelancer.entity.Freelancer;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
 import com.thesis.freelance.features.freelancer.service.FreelancerPersonalService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class FreelancerPersonalController {
 
     private final FreelancerPersonalService freelancerPersonalService;
-    private final UserRepository userRepository;
-    private final FreelancerRepository freelancerRepository;
+    private final UserSecurityService userSecurityService;
 
     @GetMapping
     public ResponseEntity<?> getPersonal(@AuthenticationPrincipal UserDetails userDetails) {
@@ -38,9 +37,8 @@ public class FreelancerPersonalController {
     }
 
     private Freelancer getFreelancer(UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return freelancerRepository.findByUserId(user.getId())
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
+        return freelancerPersonalService.findByUserId(user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Freelancer profile not found"));
     }
 }

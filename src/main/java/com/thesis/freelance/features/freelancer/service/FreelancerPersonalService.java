@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -80,5 +81,9 @@ public class FreelancerPersonalService {
                 freelancer.getAvailability(),
                 freelancer.getCompleteness()
         );
+    }
+
+    public Optional<Freelancer> findByUserId(UUID userId) {
+        return freelancerRepository.findByUserId(userId);
     }
 }

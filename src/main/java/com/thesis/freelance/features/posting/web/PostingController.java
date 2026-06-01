@@ -10,6 +10,7 @@ import com.thesis.freelance.features.posting.service.PostingService;
 import com.thesis.freelance.features.posting.service.SavedPostingService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class PostingController {
     
     private final PostingService postingService;
     private final SavedPostingService savedPostingService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userSecurityService;
     private final MatchService matchService;
     
     @GetMapping
@@ -56,7 +57,7 @@ public class PostingController {
         Page<PostingTileDto> postings = postingService.getPostings(postingStatus, search, categoryId, locationId, pageable);
         
         if (userDetails != null) {
-            User currentUser = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+            User currentUser = userSecurityService.findByUsername(userDetails.getUsername());
             if (currentUser != null && currentUser.isFreelancer()) {
                 for (PostingTileDto tile : postings.getContent()) {
                     tile.setMatchPercentage(matchService.computeMatch(tile.getId(), currentUser.getId()));
@@ -120,8 +121,7 @@ public class PostingController {
     public ResponseEntity<Boolean> isPostingSaved(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         boolean isSaved = savedPostingService.isSavedByFreelancer(user.getId(), id);
         return ResponseEntity.ok(isSaved);
     }
@@ -130,8 +130,7 @@ public class PostingController {
     public ResponseEntity<Void> savePosting(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         savedPostingService.savePosting(user.getId(), id);
         return ResponseEntity.ok().build();
     }
@@ -140,8 +139,7 @@ public class PostingController {
     public ResponseEntity<Void> unsavePosting(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         savedPostingService.unsavePosting(user.getId(), id);
         return ResponseEntity.noContent().build();
     }
@@ -171,7 +169,7 @@ public class PostingController {
         if (userDetails == null) {
             return ResponseEntity.ok(Map.of());
         }
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         if (user == null || !user.isFreelancer()) {
             return ResponseEntity.ok(Map.of());
         }

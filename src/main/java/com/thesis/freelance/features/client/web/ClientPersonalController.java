@@ -1,12 +1,12 @@
 package com.thesis.freelance.features.client.web;
 
-import com.thesis.freelance.features.client.dto.ClientPersonalDto;
 import com.thesis.freelance.features.client.dto.ClientPersonalUpdateDto;
 import com.thesis.freelance.features.client.entity.Client;
 import com.thesis.freelance.features.client.repository.ClientRepository;
 import com.thesis.freelance.features.client.service.ClientPersonalService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ClientPersonalController {
 
     private final ClientPersonalService clientPersonalService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userSecurityService;
     private final ClientRepository clientRepository;
 
     @GetMapping
@@ -38,8 +38,7 @@ public class ClientPersonalController {
     }
 
     private Client getClient(UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         return clientRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Client profile not found"));
     }

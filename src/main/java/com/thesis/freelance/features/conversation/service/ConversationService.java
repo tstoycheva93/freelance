@@ -35,12 +35,8 @@ public class ConversationService {
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    private final ClientRepository clientRepository;
-    private final FreelancerRepository freelancerRepository;
     private final OfferRepository offerRepository;
     private final WebSocketService webSocketService;
-
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     @Transactional(readOnly = true)
     public List<ConversationListDto> getConversationsForUser(UUID userId) {
@@ -253,16 +249,13 @@ public class ConversationService {
 
         UUID otherUserId;
         UUID participantId;
-        boolean isOtherClient;
 
         if (currentUserId.equals(clientUserId)) {
             otherUserId = freelancerUserId;
             participantId = conversation.getFreelancer().getId();
-            isOtherClient = false;
         } else {
             otherUserId = clientUserId;
             participantId = conversation.getClient().getId();
-            isOtherClient = true;
         }
 
         if (otherUserId == null) {

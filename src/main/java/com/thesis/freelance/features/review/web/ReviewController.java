@@ -5,6 +5,7 @@ import com.thesis.freelance.features.review.entity.Review;
 import com.thesis.freelance.features.review.service.ReviewService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/new-review")
 @RequiredArgsConstructor
-public class ReviewController {
+public class  ReviewController {
 
     private final ReviewService reviewService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userSecurityService;
 
     @PostMapping
     public ResponseEntity<Review> createReview(
@@ -27,9 +28,8 @@ public class ReviewController {
             Authentication authentication) {
         
         String username = authentication.getName();
-        User currentUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
+        User currentUser = userSecurityService.findByUsername(username);
+
         Review review = reviewService.createReview(currentUser.getId(), dto);
         return ResponseEntity.ok(review);
     }
@@ -40,9 +40,8 @@ public class ReviewController {
             Authentication authentication) {
         
         String username = authentication.getName();
-        User currentUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
+        User currentUser = userSecurityService.findByUsername(username);
+
         reviewService.deleteReview(reviewId, currentUser.getId());
         return ResponseEntity.noContent().build();
     }

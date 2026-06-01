@@ -6,6 +6,7 @@ import com.thesis.freelance.features.conversation.dto.CreateConversationRequest;
 import com.thesis.freelance.features.conversation.service.ConversationService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import java.util.UUID;
 public class ConversationController {
 
     private final ConversationService conversationService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userSecurityService;
 
     @GetMapping
     public ResponseEntity<List<ConversationListDto>> getConversations(
@@ -69,8 +70,7 @@ public class ConversationController {
     }
 
     private UUID getCurrentUserId(UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         return user.getId();
     }
 }

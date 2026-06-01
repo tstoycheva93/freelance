@@ -6,6 +6,7 @@ import com.thesis.freelance.features.flag.dto.AdminFlagReviewRequest;
 import com.thesis.freelance.features.flag.service.AdminFlagService;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ import java.util.UUID;
 public class AdminFlagController {
 
     private final AdminFlagService adminFlagService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userSecurityService;
 
     @GetMapping
     public ResponseEntity<AdminFlagListResponse> getFlags(
@@ -46,8 +47,7 @@ public class AdminFlagController {
             @PathVariable UUID id,
             @Valid @RequestBody AdminFlagReviewRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        User admin = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        User admin = userSecurityService.findByUsername(userDetails.getUsername());
         adminFlagService.reviewFlag(id, request, admin.getId());
         return ResponseEntity.ok(Map.of("message", "Flag reviewed successfully"));
     }

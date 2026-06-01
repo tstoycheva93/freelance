@@ -17,12 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserSecurityController {
 
     private final UserSecurityService userSecurityService;
-    private final UserRepository userRepository;
 
     @GetMapping("/2fa")
     public ResponseEntity<?> get2FAStatus(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         boolean isEnabled = userSecurityService.get2FAStatus(user.getId());
         return ResponseEntity.ok().body(java.util.Map.of("isEnabled", isEnabled));
     }
@@ -31,8 +29,7 @@ public class UserSecurityController {
     public ResponseEntity<?> toggle2FA(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody java.util.Map<String, Boolean> request) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         Boolean enabled = request.get("enabled");
         userSecurityService.set2FAStatus(user.getId(), enabled);
         return ResponseEntity.ok().build();
@@ -40,8 +37,7 @@ public class UserSecurityController {
 
     @GetMapping("/2fa/devices")
     public ResponseEntity<?> getTrustedDevices(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         return ResponseEntity.ok(userSecurityService.getTrustedDevices(user.getId()));
     }
 
@@ -49,16 +45,14 @@ public class UserSecurityController {
     public ResponseEntity<?> changePassword(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody ChangePasswordDto dto) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         userSecurityService.changePassword(user.getId(), dto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/security/account")
     public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userSecurityService.findByUsername(userDetails.getUsername());
         userSecurityService.deleteAccount(user.getId());
         return ResponseEntity.ok().build();
     }

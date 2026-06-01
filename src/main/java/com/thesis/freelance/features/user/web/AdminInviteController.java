@@ -4,6 +4,7 @@ import com.thesis.freelance.features.user.dto.*;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
 import com.thesis.freelance.features.user.service.AdminInviteService;
+import com.thesis.freelance.features.user.service.UserSecurityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class AdminInviteController {
 
     private final AdminInviteService adminInviteService;
-    private final UserRepository userRepository;
+    private final UserSecurityService userService;
 
     @PostMapping("/invite")
     @PreAuthorize("hasRole('ADMIN')")
@@ -28,8 +29,7 @@ public class AdminInviteController {
             @Valid @RequestBody AdminInviteRequest request,
             Authentication authentication) {
         String username = authentication.getName();
-        User admin = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        User admin = userService.findByUsername(username);
         adminInviteService.sendInvite(request, admin.getId());
         return ResponseEntity.ok(Map.of("message", "Invitation sent successfully"));
     }
