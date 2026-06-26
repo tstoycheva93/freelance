@@ -53,7 +53,12 @@ public class AdminInviteService {
 
         adminInviteRepository.findByEmail(request.email()).ifPresent(existing -> {
             if (existing.getStatus() == InviteStatus.PENDING) {
-                throw new IllegalArgumentException("An active invite already exists for this email");
+                if (existing.getExpiresAt().isBefore(LocalDateTime.now())) {
+                    existing.setStatus(InviteStatus.EXPIRED);
+                    adminInviteRepository.save(existing);
+                } else {
+                    throw new IllegalArgumentException("An active invite already exists for this email");
+                }
             }
         });
 

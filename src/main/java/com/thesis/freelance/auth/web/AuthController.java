@@ -119,10 +119,10 @@ public class AuthController {
         String deviceName = request.get("deviceName");
 
         if (code == null || code.isBlank()) {
-            throw new RuntimeException("Verification code is required");
+            throw new IllegalArgumentException("Verification code is required");
         }
         if (deviceId == null || deviceId.isBlank()) {
-            throw new RuntimeException("Device ID is required");
+            throw new IllegalArgumentException("Device ID is required");
         }
 
         TwoFactorAuthService.TokenData tokenData = twoFactorAuthService.verify2FACode(code, deviceId);

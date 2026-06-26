@@ -2,6 +2,8 @@ package com.thesis.freelance.auth.service;
 
 import com.thesis.freelance.auth.entity.TrustedDevice;
 import com.thesis.freelance.auth.repository.TrustedDeviceRepository;
+import com.thesis.freelance.common.exception.ExpiredVerificationCodeException;
+import com.thesis.freelance.common.exception.InvalidVerificationCodeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,16 +59,16 @@ public class TwoFactorAuthService {
         CodeEntry entry = verificationCodes.get(code);
 
         if (entry == null) {
-            throw new RuntimeException("Invalid verification code");
+            throw new InvalidVerificationCodeException();
         }
 
         if (entry.expiry.isBefore(Instant.now())) {
             verificationCodes.remove(code);
-            throw new RuntimeException("Verification code has expired");
+            throw new ExpiredVerificationCodeException();
         }
 
         if (!entry.deviceId.equals(deviceId)) {
-            throw new RuntimeException("Device ID mismatch");
+            throw new InvalidVerificationCodeException();
         }
 
         verificationCodes.remove(code);
