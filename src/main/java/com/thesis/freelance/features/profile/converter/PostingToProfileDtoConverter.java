@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class PostingToProfileDtoConverter {
 
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository; // Added UserRepository
+    private final UserRepository userRepository;
 
     public PostingProfileDto mapPostingToDto(Posting posting) {
         String categoryName = posting.getCategoryId() != null

@@ -1,4 +1,4 @@
-package com.thesis.freelance.features.review.exception;
+package com.thesis.freelance.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

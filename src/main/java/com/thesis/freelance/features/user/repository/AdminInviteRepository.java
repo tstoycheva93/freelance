@@ -1,7 +1,7 @@
 package com.thesis.freelance.features.user.repository;
 
 import com.thesis.freelance.features.user.entity.AdminInvite;
-import com.thesis.freelance.features.user.entity.InviteStatus;
+import com.thesis.freelance.common.enums.InviteStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

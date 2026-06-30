@@ -5,7 +5,7 @@ import com.thesis.freelance.common.exception.EmailAlreadyExistsException;
 import com.thesis.freelance.common.exception.UsernameAlreadyExistsException;
 import com.thesis.freelance.features.user.dto.*;
 import com.thesis.freelance.features.user.entity.AdminInvite;
-import com.thesis.freelance.features.user.entity.InviteStatus;
+import com.thesis.freelance.common.enums.InviteStatus;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.entity.UserRole;
 import com.thesis.freelance.features.user.repository.AdminInviteRepository;

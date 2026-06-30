@@ -1,4 +1,4 @@
-package com.thesis.freelance.features.user.entity;
+package com.thesis.freelance.common.enums;
 
 public enum InviteStatus {
     PENDING,

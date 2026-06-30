@@ -33,7 +33,7 @@ public class SavedPostingService {
                 .orElseThrow(() -> new IllegalArgumentException("Freelancer not found"));
 
         if (savedPostingRepository.existsByFreelancerIdAndPostingId(freelancer.getId(), postingId)) {
-            return null; // Already saved
+            return null; // veche e saved
         }
 
         Posting posting = postingRepository.findById(postingId)

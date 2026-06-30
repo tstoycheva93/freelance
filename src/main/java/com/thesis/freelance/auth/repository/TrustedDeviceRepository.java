@@ -10,6 +10,5 @@ import java.util.UUID;
 @Repository
 public interface TrustedDeviceRepository extends JpaRepository<TrustedDevice, UUID> {
     boolean existsByUserIdAndDeviceId(UUID userId, String deviceId);
-    void deleteByUserIdAndDeviceId(UUID userId, String deviceId);
     List<TrustedDevice> findByUserId(UUID userId);
 }

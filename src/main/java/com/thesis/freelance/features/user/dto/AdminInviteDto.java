@@ -1,6 +1,6 @@
 package com.thesis.freelance.features.user.dto;
 
-import com.thesis.freelance.features.user.entity.InviteStatus;
+import com.thesis.freelance.common.enums.InviteStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

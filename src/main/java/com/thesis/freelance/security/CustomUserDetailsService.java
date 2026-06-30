@@ -26,12 +26,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                         new UsernameNotFoundException("User not found with username: " + username)
                 );
 
-        // Check if account is DELETED - return user not found for security
         if (user.getActivityStatus() == ActivityStatus.DELETED) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        // Check if account is INACTIVE (admin disabled)
         if (user.getActivityStatus() == ActivityStatus.INACTIVE) {
             throw new AccountDisabledException("Account is deactivated for user: " + username);
         }
@@ -41,10 +39,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                true,  // enabled
-                true,  // accountNonExpired
-                true,  // credentialsNonExpired
-                true,  // accountNonLocked
+                true,
+                true,
+                true,
+                true,
                 Collections.singletonList(new SimpleGrantedAuthority(roleName))
         );
     }

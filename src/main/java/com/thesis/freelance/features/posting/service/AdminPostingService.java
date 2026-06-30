@@ -1,7 +1,7 @@
 package com.thesis.freelance.features.posting.service;
 
 import com.thesis.freelance.features.posting.dto.*;
-import com.thesis.freelance.features.posting.exception.PostingNotFoundException;
+import com.thesis.freelance.common.exception.PostingNotFoundException;
 import com.thesis.freelance.features.posting.repository.AdminPostingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,5 @@
-package com.thesis.freelance.features.flag.exception;
+package com.thesis.freelance.common.exception;
 
-import com.thesis.freelance.common.exception.ApiException;
 import org.springframework.http.HttpStatus;
 
 import java.util.UUID;

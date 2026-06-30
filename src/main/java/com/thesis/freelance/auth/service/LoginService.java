@@ -75,7 +75,6 @@ public class LoginService {
                             .userId(user.getId())
                             .build();
                 }
-                // Device is already trusted — proceed to issue JWT, no re-trust needed
             }
 
             String token = jwtTokenProvider.generateToken(authentication);

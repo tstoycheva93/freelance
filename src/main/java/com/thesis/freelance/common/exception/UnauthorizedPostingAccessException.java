@@ -1,6 +1,5 @@
-package com.thesis.freelance.features.posting.exception;
+package com.thesis.freelance.common.exception;
 
-import com.thesis.freelance.common.exception.ApiException;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

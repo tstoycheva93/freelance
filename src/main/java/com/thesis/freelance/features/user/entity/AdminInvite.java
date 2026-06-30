@@ -1,6 +1,7 @@
 package com.thesis.freelance.features.user.entity;
 
 import com.thesis.freelance.common.entity.BaseEntity;
+import com.thesis.freelance.common.enums.InviteStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

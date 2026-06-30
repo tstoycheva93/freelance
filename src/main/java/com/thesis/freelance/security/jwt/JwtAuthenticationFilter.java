@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Skip JWT validation for WebSocket endpoints - they are authenticated via STOMP handshake
         String path = request.getRequestURI();
         if (path.startsWith("/ws") || path.startsWith("/api/ws")) {
             filterChain.doFilter(request, response);
