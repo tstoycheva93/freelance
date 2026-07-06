@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,12 +36,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final MaintenanceModeFilter maintenanceModeFilter;
-
-    /*@Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers("/ws/**");
-    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -88,12 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/notifications/**").authenticated()
                         .requestMatchers("/flags/**").authenticated()
 
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-ui/index.html").permitAll()
                         .requestMatchers("/cert/scheduler/**").permitAll()
-
-
 
                         .anyRequest().authenticated()
                 )
@@ -116,18 +104,6 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
-
-    /**
-     * Alternative: Create AuthenticationManager manually to ensure it uses our provider.
-     * This ensures the UserDetailsService (with activity status check) is properly integrated.
-     */
-    /*
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        ProviderManager providerManager = new ProviderManager(authenticationProvider());
-        return providerManager;
-    }
-    */
 
     @Bean
     public PasswordEncoder passwordEncoder() {

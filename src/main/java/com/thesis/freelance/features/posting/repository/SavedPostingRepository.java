@@ -17,7 +17,6 @@ import java.util.UUID;
 
 @Repository
 public interface SavedPostingRepository extends JpaRepository<SavedPosting, UUID> {
-    List<SavedPosting> findByFreelancerId(UUID freelancerId);
     boolean existsByFreelancerIdAndPostingId(UUID freelancerId, UUID postingId);
 
     @Query("SELECT s FROM SavedPosting s WHERE s.freelancer.userId = :userId")

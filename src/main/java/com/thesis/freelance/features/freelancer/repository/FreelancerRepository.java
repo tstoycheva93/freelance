@@ -10,5 +10,4 @@ import java.util.UUID;
 @Repository
 public interface FreelancerRepository extends JpaRepository<Freelancer, UUID> {
     Optional<Freelancer> findByUserId(UUID userId);
-    void deleteByUserId(UUID userId);
 }

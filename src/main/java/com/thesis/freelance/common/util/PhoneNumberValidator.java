@@ -1,59 +1,76 @@
 package com.thesis.freelance.common.util;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
-public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumber, String> {
+public class PhoneNumberValidator
+        implements ConstraintValidator<ValidPhoneNumber, String> {
 
-    // Map of country code -> total expected digits (including country code, excluding +)
-    private static final Map<String, Integer> COUNTRY_DIGIT_COUNT = new LinkedHashMap<>();
+    private static final PhoneNumberUtil PHONE_NUMBER_UTIL =
+            PhoneNumberUtil.getInstance();
 
-    static {
-        COUNTRY_DIGIT_COUNT.put("359", 11);  // Bulgaria: +359 + 8 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("30", 11);   // Greece: +30 + 10 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("382", 11);  // Montenegro: +382 + 8 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("40", 11);   // Romania: +40 + 9 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("389", 11);  // North Macedonia: +389 + 8 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("385", 11);   // Croatia: +385 + 9 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("386", 11);  // Slovenia: +386 + 8 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("387", 11);  // Bosnia: +387 + 8 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("355", 11);  // Albania: +355 + 9 digits = 11 digits
-        COUNTRY_DIGIT_COUNT.put("381", 11);  // Serbia: +381 + 9 digits = 11 digits
-    }
+    private static final Set<String> ALLOWED_REGIONS = Set.of(
+            "BG",
+            "GR",
+            "ME",
+            "RO",
+            "MK",
+            "HR",
+            "SI",
+            "BA",
+            "AL",
+            "RS"
+    );
+
+    private static final Pattern VALID_INPUT_PATTERN =
+            Pattern.compile("^\\+[0-9\\s()-]+$");
+
+    private static final Pattern SEPARATOR_PATTERN =
+            Pattern.compile("[\\s()-]");
 
     @Override
-    public boolean isValid(String phone, ConstraintValidatorContext context) {
+    public boolean isValid(
+            String phone,
+            ConstraintValidatorContext context
+    ) {
         if (phone == null || phone.isBlank()) {
             return true;
         }
 
-        // Remove any spaces or dashes
-        String cleaned = phone.replaceAll("[\\s-]", "");
+        String trimmedPhone = phone.trim();
 
-        // Must start with +
-        if (!cleaned.startsWith("+")) {
+        if (!VALID_INPUT_PATTERN.matcher(trimmedPhone).matches()) {
             return false;
         }
 
-        // Extract digits only (after +)
-        String digits = cleaned.substring(1);
+        String normalizedPhone = SEPARATOR_PATTERN
+                .matcher(trimmedPhone)
+                .replaceAll("");
 
-        // Try each supported country code
-        for (Map.Entry<String, Integer> entry : COUNTRY_DIGIT_COUNT.entrySet()) {
-            String countryCode = entry.getKey();
-            int expectedLength = entry.getValue();
+        try {
+            PhoneNumber parsedPhone = PHONE_NUMBER_UTIL.parse(
+                    normalizedPhone,
+                    null
+            );
 
-            if (digits.startsWith(countryCode)) {
-                // Check if the remaining digits match the expected count
-                String numberPart = digits.substring(countryCode.length());
-                return numberPart.length() >= 8 && numberPart.length() <= 10;
+            if (!PHONE_NUMBER_UTIL.isValidNumber(parsedPhone)) {
+                return false;
             }
-        }
 
-        // Unknown country code
-        return false;
+            String regionCode =
+                    PHONE_NUMBER_UTIL.getRegionCodeForNumber(parsedPhone);
+
+            return regionCode != null
+                    && ALLOWED_REGIONS.contains(regionCode);
+
+        } catch (NumberParseException exception) {
+            return false;
+        }
     }
 }

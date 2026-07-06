@@ -15,22 +15,11 @@ import java.util.UUID;
 
 @Repository
 public interface PostingRepository extends JpaRepository<Posting, UUID> {
-    List<Posting> findAllByClient_Id(UUID clientId);
-
-    @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId AND p.activityStatus = :activityStatus")
-    List<Posting> findAllByClientUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus);
-
     @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId AND p.activityStatus = :activityStatus")
     Page<Posting> findAllByClientUserId(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
 
     @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId")
     List<Posting> findAllByClientUserIdNoFilter(@Param("userId") UUID userId);
-
-    @Query("SELECT p FROM Posting p WHERE p.client.userId = :userId")
-    Page<Posting> findAllByClientUserIdNoFilter(@Param("userId") UUID userId, Pageable pageable);
-
-    @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.activityStatus = :activityStatus AND p.status = :status")
-    Page<Posting> findAllByStatus(@Param("activityStatus") ActivityStatus activityStatus, @Param("status") PostingStatus status, Pageable pageable);
 
     @Query("SELECT p FROM Posting p LEFT JOIN FETCH p.client LEFT JOIN FETCH p.location WHERE p.activityStatus = :activityStatus AND p.categoryId = :categoryId")
     Page<Posting> findAllByCategoryId(@Param("activityStatus") ActivityStatus activityStatus, @Param("categoryId") UUID categoryId, Pageable pageable);
@@ -93,8 +82,8 @@ public interface PostingRepository extends JpaRepository<Posting, UUID> {
             Pageable pageable);
 
     @Query("SELECT p FROM Posting p WHERE p.activityStatus = :activityStatus " +
-           "AND p.status = com.thesis.freelance.common.enums.PostingStatus.ACTIVE " +
-           "AND p.deadline IS NOT NULL AND p.deadline < :now")
+            "AND p.status = com.thesis.freelance.common.enums.PostingStatus.ACTIVE " +
+            "AND p.deadline IS NOT NULL AND p.deadline < :now")
     List<Posting> findExpiredActivePostings(
             @Param("activityStatus") ActivityStatus activityStatus,
             @Param("now") java.time.LocalDate now

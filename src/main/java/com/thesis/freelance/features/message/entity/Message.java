@@ -4,11 +4,7 @@ import com.thesis.freelance.common.entity.BaseEntity;
 import com.thesis.freelance.features.conversation.entity.Conversation;
 import com.thesis.freelance.features.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -82,10 +78,3 @@ public class Message extends BaseEntity {
                 && sender.getId().equals(user.getId());
     }
 }
-
-/*
-For saving a new message:
-messageRepository.save(message);
-conversation.updateLastMsgAt(message.getSentAt());
-conversationRepository.save(conversation);
-*/

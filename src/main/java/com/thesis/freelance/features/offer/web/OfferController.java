@@ -36,7 +36,8 @@ public class OfferController {
     private final ClientPersonalService clientPersonalService;
     private final FreelancerPersonalService freelancerPersonalService;
 
-    public record UnsatisfactoryRequest(BigDecimal partialAmount) {}
+    public record UnsatisfactoryRequest(BigDecimal partialAmount) {
+    }
 
     @GetMapping
     public ResponseEntity<Page<OfferWithPostingDto>> getOffers(
@@ -50,8 +51,6 @@ public class OfferController {
         User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         UUID userId = user.getId();
-
-        // Check if user is a client or freelancer
         var client = clientPersonalService.findByUserId(userId);
         var freelancer = freelancerPersonalService.findByUserId(userId);
 
@@ -62,10 +61,10 @@ public class OfferController {
         Page<OfferWithPostingDto> offers;
 
         if (client.isPresent()) {
-            // User is a client - get offers to their postings
+            //client - offers za tehni postings
             offers = offerService.getOffersForClient(userId, offerStatus, pageable);
         } else if (freelancer.isPresent()) {
-            // User is a freelancer - get offers they've made
+            //freelancer - tehnite offers
             offers = offerService.getOffersForFreelancer(userId, offerStatus, pageable);
         } else {
             throw new IllegalArgumentException("User is neither a client nor a freelancer");
@@ -117,8 +116,6 @@ public class OfferController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         User user = userSecurityService.findByUsername(userDetails.getUsername());
-
-        // Validate user is freelancer
         if (!user.isFreelancer()) {
             throw new IllegalStateException("Only freelancers can create offers");
         }
@@ -180,11 +177,11 @@ public class OfferController {
         User user = userSecurityService.findByUsername(userDetails.getUsername());
 
         com.thesis.freelance.features.offer.entity.Offer offer = offerService.getOfferEntityById(id);
-        
+
         boolean isClientOwner = offer.getPosting().getClient().getUserId().equals(user.getId());
-        boolean isFreelancerOwner = offer.getFreelancer().getUserId() != null 
+        boolean isFreelancerOwner = offer.getFreelancer().getUserId() != null
                 && offer.getFreelancer().getUserId().equals(user.getId());
-        
+
         if (!isClientOwner && !isFreelancerOwner) {
             throw new SecurityException("Not authorized");
         }

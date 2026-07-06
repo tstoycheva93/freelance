@@ -3,3 +3,9 @@ taskkill /PID <PID> /F
 
 net stop winnat
 net start winnat
+
+kakvoe transactional
+kak rabotqt async
+kak raboti client.ts
+websocket service+stomp
+testovete

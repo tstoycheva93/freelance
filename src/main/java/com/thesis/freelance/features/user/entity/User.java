@@ -108,9 +108,20 @@ public class User extends BaseEntity {
                 && userRole.getRole().equalsIgnoreCase(roleName);
     }
 
-    @Transient public boolean isClient()     { return hasRole("CLIENT"); }
-    @Transient public boolean isFreelancer() { return hasRole("FREELANCER"); }
-    @Transient public boolean isAdmin()      { return hasRole("ADMIN"); }
+    @Transient
+    public boolean isClient() {
+        return hasRole("CLIENT");
+    }
+
+    @Transient
+    public boolean isFreelancer() {
+        return hasRole("FREELANCER");
+    }
+
+    @Transient
+    public boolean isAdmin() {
+        return hasRole("ADMIN");
+    }
 
     @Transient
     public String getRoleName() {
@@ -122,13 +133,5 @@ public class User extends BaseEntity {
         if (name == null || name.isBlank()) return surname;
         if (surname == null || surname.isBlank()) return name;
         return name + " " + surname;
-    }
-
-    public void updateRating(BigDecimal newRating) {
-        this.rating = newRating;
-    }
-
-    public void incrementReviews() {
-        this.reviewsCount++;
     }
 }

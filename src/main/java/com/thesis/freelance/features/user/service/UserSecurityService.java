@@ -1,11 +1,9 @@
 package com.thesis.freelance.features.user.service;
 
-import com.thesis.freelance.auth.entity.TrustedDevice;
 import com.thesis.freelance.auth.repository.TrustedDeviceRepository;
 import com.thesis.freelance.common.enums.ActivityStatus;
 import com.thesis.freelance.features.certification.repository.CertificationRepository;
 import com.thesis.freelance.features.client.repository.ClientRepository;
-import com.thesis.freelance.features.conversation.entity.Conversation;
 import com.thesis.freelance.features.conversation.repository.ConversationRepository;
 import com.thesis.freelance.features.education.repository.EducationRepository;
 import com.thesis.freelance.features.freelancer.repository.FreelancerRepository;
@@ -16,10 +14,10 @@ import com.thesis.freelance.features.offer.repository.OfferRepository;
 import com.thesis.freelance.features.posting.repository.PostingRepository;
 import com.thesis.freelance.features.posting.repository.SavedPostingRepository;
 import com.thesis.freelance.features.review.repository.ReviewRepository;
+import com.thesis.freelance.features.uploadedCV.repository.UploadedCVRepository;
 import com.thesis.freelance.features.user.dto.ChangePasswordDto;
 import com.thesis.freelance.features.user.entity.User;
 import com.thesis.freelance.features.user.repository.UserRepository;
-import com.thesis.freelance.features.uploadedCV.repository.UploadedCVRepository;
 import com.thesis.freelance.features.work.repository.WorkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -78,7 +76,7 @@ public class UserSecurityService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // Deactivate Freelancer/Client (soft delete)
+        //deaktivira se rolevi zapis
         freelancerRepository.findByUserId(userId).ifPresent(freelancer -> {
             freelancer.setActivityStatus(ActivityStatus.DELETED);
             freelancerRepository.save(freelancer);
@@ -88,12 +86,11 @@ public class UserSecurityService {
             clientRepository.save(client);
         });
 
-        // Deactivate all linked data (INACTIVE)
+        //deaktivira se vsichko svurzano
         deactivateFreelancerLinkedData(userId);
         deactivateClientLinkedData(userId);
         deactivateUserLinkedData(userId);
 
-        // Set user to DELETED
         user.setActivityStatus(ActivityStatus.DELETED);
         userRepository.save(user);
     }
@@ -163,7 +160,8 @@ public class UserSecurityService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
-    public User findById(UUID id){
+
+    public User findById(UUID id) {
         return userRepository.findById(id).orElse(null);
     }
 }

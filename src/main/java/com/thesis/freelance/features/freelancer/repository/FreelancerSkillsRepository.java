@@ -15,15 +15,15 @@ import java.util.UUID;
 
 @Repository
 public interface FreelancerSkillsRepository extends JpaRepository<FreelancerSkills, UUID> {
-    List<FreelancerSkills> findByFreelancerId(UUID freelancerId);
     Optional<FreelancerSkills> findByFreelancerAndSkill(Freelancer freelancer, Skill skill);
+
     @Query("""
-    select fs
-    from FreelancerSkills fs
-    join fetch fs.skill
-    where fs.freelancer.id = :freelancerId
-    and fs.activityStatus = :activityStatus
-    """)
+            select fs
+            from FreelancerSkills fs
+            join fetch fs.skill
+            where fs.freelancer.id = :freelancerId
+            and fs.activityStatus = :activityStatus
+            """)
     List<FreelancerSkills> findByFreelancerIdWithSkill(@Param("freelancerId") UUID freelancerId, @Param("activityStatus") ActivityStatus activityStatus);
 
     @Query("SELECT fs FROM FreelancerSkills fs WHERE fs.freelancer.userId = :userId AND fs.activityStatus = :activityStatus")

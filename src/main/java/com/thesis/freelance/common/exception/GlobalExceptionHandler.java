@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         errorResponse.put("suggestion", suggestion);
         errorResponse.put("path", request.getRequestURI());
         
-        // Include stack trace only in non-production environments
+        //stack trace da e samo v production
         if (!isProduction()) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
         return errorResponse;
     }
 
-    // Handle custom API exceptions
+    //custom api
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Map<String, Object>> handleApiException(
             ApiException ex, HttpServletRequest request) {
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
-    // Handle account disabled exception specifically
+    //disabled acc
     @ExceptionHandler(AccountDisabledException.class)
     public ResponseEntity<Map<String, Object>> handleAccountDisabledException(
             AccountDisabledException ex, HttpServletRequest request) {
@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
-    // Handle maintenance mode exception
+    //maintenance
     @ExceptionHandler(MaintenanceModeException.class)
     public ResponseEntity<Map<String, Object>> handleMaintenanceMode(
             MaintenanceModeException ex, HttpServletRequest request) {
@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
-    // Handle registration disabled exception
+    //reg disabled
     @ExceptionHandler(RegistrationDisabledException.class)
     public ResponseEntity<Map<String, Object>> handleRegistrationDisabled(
             RegistrationDisabledException ex, HttpServletRequest request) {
@@ -127,7 +127,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
-    // Handle phone already exists exception
+    //telefon
     @ExceptionHandler(PhoneAlreadyExistsException.class)
     public ResponseEntity<Map<String, Object>> handlePhoneAlreadyExistsException(
             PhoneAlreadyExistsException ex, HttpServletRequest request) {
@@ -176,12 +176,11 @@ public class GlobalExceptionHandler {
     }
 
 
-    // Handle InternalAuthenticationServiceException (Spring Security wrapper)
+
     @ExceptionHandler(InternalAuthenticationServiceException.class)
     public ResponseEntity<Map<String, Object>> handleInternalAuthException(
             InternalAuthenticationServiceException ex, HttpServletRequest request) {
         
-        // Check if the cause is AccountDisabledException
         if (ex.getCause() instanceof AccountDisabledException) {
             AccountDisabledException cause = (AccountDisabledException) ex.getCause();
             Map<String, Object> errorResponse = createErrorResponse(
@@ -195,7 +194,6 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
         }
         
-        // Otherwise treat as generic authentication failure
         Map<String, Object> errorResponse = createErrorResponse(
             HttpStatus.UNAUTHORIZED,
             "AUTHENTICATION_FAILED",
@@ -208,7 +206,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    // Handle authentication exceptions
     @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(
             Exception ex, HttpServletRequest request) {
@@ -225,7 +222,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    // Handle validation exceptions
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
@@ -242,7 +238,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle JPA entity not found exceptions
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleEntityNotFound(
             EntityNotFoundException ex, HttpServletRequest request) {
@@ -259,7 +254,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    // Handle illegal state exceptions
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalState(
             IllegalStateException ex, HttpServletRequest request) {
@@ -276,7 +270,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle all other exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(
             Exception ex, HttpServletRequest request) {

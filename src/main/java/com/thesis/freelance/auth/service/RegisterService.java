@@ -84,7 +84,7 @@ public class RegisterService {
             throw new UsernameAlreadyExistsException(username);
         });
         
-        // Allow registration if user with email is DELETED
+        // pozvoleno e da se povtarq emaila ako statusa e deleted
         userRepository.findByEmail(email).ifPresent(u -> {
             if (u.getActivityStatus() != ActivityStatus.DELETED) {
                 throw new EmailAlreadyExistsException(email);

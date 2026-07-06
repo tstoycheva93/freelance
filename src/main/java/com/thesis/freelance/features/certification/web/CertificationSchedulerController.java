@@ -1,4 +1,4 @@
-package com.thesis.freelance.features.certification.controller;
+package com.thesis.freelance.features.certification.web;
 
 import com.thesis.freelance.features.certification.scheduler.CertificationScheduler;
 import lombok.RequiredArgsConstructor;
@@ -13,23 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class CertificationSchedulerController {
-
-    //endpoint za proverka
-    //POST http://localhost:8080/api/cert/scheduler/certifications/check-expired
+    //za proverka POST http://localhost:8080/api/cert/scheduler/certifications/check-expired
 
     private final CertificationScheduler certificationScheduler;
 
     @PostMapping("/certifications/check-expired")
     public ResponseEntity<String> checkExpiredCertifications() {
         log.info("Manual trigger: checkExpiredCertifications invoked");
-        
+
         try {
             certificationScheduler.checkExpiredCertifications();
             return ResponseEntity.ok("Expired certification check completed. Check server logs for details.");
         } catch (Exception e) {
             log.error("Manual trigger failed: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError()
-                .body("Certification check failed: " + e.getMessage());
+                    .body("Certification check failed: " + e.getMessage());
         }
     }
 }

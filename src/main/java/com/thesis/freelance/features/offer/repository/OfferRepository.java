@@ -19,72 +19,70 @@ public interface OfferRepository extends JpaRepository<Offer, UUID> {
     @Query("SELECT o FROM Offer o WHERE o.freelancer.userId = :userId")
     List<Offer> findAllByFreelancerUserIdNoFilter(@Param("userId") UUID userId);
 
-    // For freelancer - their offers to any posting
+    //freelancer - vsichki
     @Query("SELECT o FROM Offer o WHERE o.freelancer.userId = :userId AND o.activityStatus = :activityStatus")
     Page<Offer> findByFreelancerUserIdAndActivityStatus(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
 
     @Query("SELECT o FROM Offer o WHERE o.freelancer.userId = :userId AND o.activityStatus = :activityStatus AND o.status = :status")
     Page<Offer> findByFreelancerUserIdAndActivityStatusAndStatus(@Param("userId") UUID userId, @Param("activityStatus") ActivityStatus activityStatus, @Param("status") OfferStatus status, Pageable pageable);
 
-    // For client - offers to their postings
+    //client - kum tehnite
     @Query("SELECT o FROM Offer o WHERE o.posting.client.userId = :clientUserId AND o.activityStatus = :activityStatus")
     Page<Offer> findByPostingClientUserIdAndActivityStatus(@Param("clientUserId") UUID clientUserId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
 
     @Query("SELECT o FROM Offer o WHERE o.posting.client.userId = :clientUserId AND o.activityStatus = :activityStatus AND o.status = :status")
     Page<Offer> findByPostingClientUserIdAndActivityStatusAndStatus(@Param("clientUserId") UUID clientUserId, @Param("activityStatus") ActivityStatus activityStatus, @Param("status") OfferStatus status, Pageable pageable);
 
-    // For specific posting (client owner only)
+    //za edin posting
     @Query("SELECT o FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus")
     Page<Offer> findByPostingIdAndActivityStatus(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus, Pageable pageable);
 
     @Query("SELECT o FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus AND o.status = :status")
     Page<Offer> findByPostingIdAndActivityStatusAndStatus(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus, @Param("status") OfferStatus status, Pageable pageable);
 
-    // Check for existing active offer (pending/shortlisted/accepted/delivered)
+    //dali ima ongoing offer
     @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED)")
     boolean hasActiveOfferByPostingAndFreelancer(@Param("postingId") UUID postingId, @Param("freelancerUserId") UUID freelancerUserId, @Param("activityStatus") com.thesis.freelance.common.enums.ActivityStatus activityStatus);
 
-    // Get active offer ID
+    //ongoing offer id
     @Query("SELECT o.id FROM Offer o WHERE o.posting.id = :postingId AND o.freelancer.userId = :freelancerUserId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED, com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED) ORDER BY o.createdAt DESC")
     Optional<UUID> findActiveOfferIdByPostingAndFreelancer(@Param("postingId") UUID postingId, @Param("freelancerUserId") UUID freelancerUserId, @Param("activityStatus") com.thesis.freelance.common.enums.ActivityStatus activityStatus);
 
-    // Find all active offers for a posting
+    //vsichki ongoing za posting
     @Query("SELECT o FROM Offer o WHERE o.posting.id = :postingId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED)")
     List<Offer> findActiveOffersByPostingId(@Param("postingId") UUID postingId, @Param("activityStatus") ActivityStatus activityStatus);
 
-    // Find all active offers for a freelancer
+    //vsichki ongoing za freelancer
     @Query("SELECT o FROM Offer o WHERE o.freelancer.id = :freelancerId AND o.activityStatus = :activityStatus AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED)")
     List<Offer> findActiveOffersByFreelancerId(@Param("freelancerId") UUID freelancerId, @Param("activityStatus") ActivityStatus activityStatus);
 
-    // Count offers by status for a posting
     long countByPostingIdAndStatusIn(UUID postingId, List<OfferStatus> statuses);
 
-    // Count all offers for a posting
     long countByPostingIdAndActivityStatus(UUID postingId, ActivityStatus activityStatus);
 
-    // Find offer by ID with attachments eager fetched
+    //s attachments
     @Query("SELECT o FROM Offer o LEFT JOIN FETCH o.attachments WHERE o.id = :offerId")
     Optional<Offer> findByIdWithAttachments(@Param("offerId") UUID offerId);
 
-    // Find offer by ID with deliverables eager fetched
+    //s deliverables
     @Query("SELECT o FROM Offer o LEFT JOIN FETCH o.deliverableUrls WHERE o.id = :offerId")
     Optional<Offer> findByIdWithDeliverables(@Param("offerId") UUID offerId);
 
-    // Find offer by ID with both attachments and deliverables eager fetched
+    //i s dvete
     @Query("SELECT o FROM Offer o WHERE o.id = :offerId")
     Optional<Offer> findByIdWithAttachmentsAndDeliverables(@Param("offerId") UUID offerId);
 
     @Query("SELECT o FROM Offer o WHERE o.activityStatus = :activityStatus " +
-           "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED) " +
-           "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
+            "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.PENDING, com.thesis.freelance.common.enums.OfferStatus.SHORTLISTED) " +
+            "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
     List<Offer> findExpiredOngoingOffers(
             @Param("activityStatus") ActivityStatus activityStatus,
             @Param("now") java.time.LocalDate now
     );
 
     @Query("SELECT o FROM Offer o WHERE o.activityStatus = :activityStatus " +
-           "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED) " +
-           "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
+            "AND o.status IN (com.thesis.freelance.common.enums.OfferStatus.ACCEPTED, com.thesis.freelance.common.enums.OfferStatus.DELIVERED) " +
+            "AND o.deliveryTime IS NOT NULL AND o.deliveryTime < :now")
     List<Offer> findExpiredAcceptedAndDeliveredOffers(
             @Param("activityStatus") ActivityStatus activityStatus,
             @Param("now") java.time.LocalDate now

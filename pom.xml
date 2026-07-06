@@ -63,7 +63,7 @@
             <optional>true</optional>
         </dependency>
 
-<!--moite -->
+        <!--moite -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -86,7 +86,7 @@
             <version>0.13.0</version>
             <scope>compile</scope>
         </dependency>
-<dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>0.13.0</version>
@@ -111,6 +111,11 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+            <version>9.0.34</version>
+        </dependency>
+        <dependency>
             <groupId>com.openhtmltopdf</groupId>
             <artifactId>openhtmltopdf-pdfbox</artifactId>
             <version>1.0.10</version>
@@ -124,7 +129,7 @@
         </dependency>
     </dependencies>
 
-<!--    <dependencyManagement></dependencyManagement>-->
+    <!--    <dependencyManagement></dependencyManagement>-->
     <build>
         <plugins>
             <plugin>

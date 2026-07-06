@@ -24,7 +24,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext ctx) {
-        if (password == null || password.isBlank()) return true; // let @NotBlank handle it
+        if (password == null || password.isBlank()) return true;
 
         if (password.length() < min || password.length() > max) {
             return build(ctx, "Password must be between " + min + " and " + max + " characters");
